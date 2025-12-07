@@ -1,0 +1,14 @@
+{
+  "hero_title": "Front-End Developer — React & Next.js",
+  "hero_sub": "I build fast, modern and user-friendly websites focused on clean UI and high performance.",
+  "hire_me": "Hire Me",
+  "view_projects": "View Projects",
+  "skills_title": "Skills",
+  "projects_title": "Projects",
+  "services_title": "Services",
+  "contact_title": "Contact",
+  "email_text": "Send an email to",
+  "project_demo": "Live",
+  "project_code": "Code",
+  "footer_text": "© {{year}} — RaygalRoyal NextTech"
+}

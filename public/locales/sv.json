@@ -1,0 +1,14 @@
+{
+  "hero_title": "Front-End-utvecklare — React & Next.js",
+  "hero_sub": "Jag bygger snabba, moderna och användarvänliga webbplatser med fokus på UI och prestanda.",
+  "hire_me": "Anlita mig",
+  "view_projects": "Visa projekt",
+  "skills_title": "Kompetenser",
+  "projects_title": "Projekt",
+  "services_title": "Tjänster",
+  "contact_title": "Kontakt",
+  "email_text": "Skicka ett mail till",
+  "project_demo": "Live",
+  "project_code": "Kod",
+  "footer_text": "© {{year}} — RaygalRoyal NextTech"
+}

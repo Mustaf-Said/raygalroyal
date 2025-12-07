@@ -1,0 +1,14 @@
+{
+  "hero_title": "Horumariye Front-End — React & Next.js",
+  "hero_sub": "Waxaan dhisaa wabsaydo casri ah oo degdeg ah, ku fudud isticmaalaha oo leh UI nadiif ah.",
+  "hire_me": "I shaqaaleyso",
+  "view_projects": "Mashaariicda",
+  "skills_title": "Xirfadaha",
+  "projects_title": "Mashaariicda",
+  "services_title": "Adeegyada",
+  "contact_title": "La xiriir",
+  "email_text": "U dir email",
+  "project_demo": "Live",
+  "project_code": "Code",
+  "footer_text": "© {{year}} — RaygalRoyal NextTech"
+}

@@ -1,0 +1,14 @@
+{
+  "hero_title": "مطور واجهات أمامية — React و Next.js",
+  "hero_sub": "أبني مواقع حديثة وسريعة وسهلة الاستخدام مع التركيز على الواجهة والأداء.",
+  "hire_me": "وظفني",
+  "view_projects": "عرض المشاريع",
+  "skills_title": "المهارات",
+  "projects_title": "المشاريع",
+  "services_title": "الخدمات",
+  "contact_title": "اتصل",
+  "email_text": "أرسل بريداً إلى",
+  "project_demo": "عرض",
+  "project_code": "كود",
+  "footer_text": "© {{year}} — RaygalRoyal NextTech"
+}
