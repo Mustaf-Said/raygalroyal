@@ -55,7 +55,7 @@ export default function LanguageSwitcher({
       {/* MAIN BUTTON */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 border rounded-md bg-white dark:bg-[#2a2a2a] shadow-sm"
+        className="flex items-center gap-2 px-3 py-1.5 hover:border rounded-md bg-transparanat dark:bg-[#2a2a2a]  cursor-pointer"
       >
         <ReactCountryFlag
           countryCode={LANGUAGES[active].country}
@@ -68,7 +68,7 @@ export default function LanguageSwitcher({
 
       {/* DROPDOWN */}
       {open && (
-        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-[#2a2a2a] border rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-23 bg-white dark:bg-[#2a2a2a] rounded-lg shadow-lg z-50">
           {Object.entries(LANGUAGES).map(([code, data]) => (
             <button
               key={code}

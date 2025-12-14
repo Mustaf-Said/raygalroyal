@@ -1,9 +1,10 @@
 "use client"
-
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import LanguageSwitcher from "./LanguageSwitcher"
 
-export default function Header({ lang }: { lang: "ar" | "en" | "sv" | "so" }) {
+
+export default function Header({ lang }: { lang: "ar" | "en" | "sv" | "so"; avatarUrl?: string }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -31,7 +32,16 @@ export default function Header({ lang }: { lang: "ar" | "en" | "sv" | "so" }) {
       `}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
-        <div className="font-bold">RaygalRoyal NextTech</div>
+        <div className="flex items-center">
+          <Image
+            src="/images/logo.jpg"
+            alt="RaygalRoyal NextTech Logo"
+            width={80}   // ändra storlek här om du vill
+            height={20}
+            className="object-contain hover:drop-shadow-lg transition rounded-full"
+
+          />
+        </div>
         <LanguageSwitcher currentLang={lang} />
       </div>
     </header>

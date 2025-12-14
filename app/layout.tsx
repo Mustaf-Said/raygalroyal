@@ -1,9 +1,8 @@
 // app/layout.tsx
 import "@/styles/globals.css"
-import Footer from "./components/Footer"
-export const metadata = {
+/* export const metadata = {
   title: "RaygalRoyal NextTech",
-}
+} */
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
@@ -11,7 +10,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html suppressHydrationWarning>
       <body>
         {children}
-        <Footer />
       </body>
     </html>
   )

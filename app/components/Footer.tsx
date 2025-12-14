@@ -1,48 +1,106 @@
-function Footer() {
-  return (
-    <div className="bg-gray-900 text-white py-12">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Contact</h3>
-            <p className="text-gray-400 mb-2">
-              <a href="mailto:info@example.com">info@example.com</a>
-            </p>
-            <p className="text-gray-400">
-              123 Main Street<br />
-              City, Country 12345
-            </p>
-          </div>
+import {
+  FaGithub,
+  FaLinkedin,
+  FaWhatsapp,
+  FaEnvelope,
+} from "react-icons/fa"
 
-          {/* Social Media */}
+type FooterProps = {
+  t: Record<string, string>
+}
+
+export default function Footer({ t }: FooterProps) {
+  const year = new Date().getFullYear()
+
+  return (
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+
+          {/* CONTACT */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Follow Us</h3>
-            <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white">Facebook</a>
-              <a href="#" className="text-gray-400 hover:text-white">Twitter</a>
-              <a href="#" className="text-gray-400 hover:text-white">Instagram</a>
+            <h3 className="text-lg font-bold mb-4">
+              {t.footer_contact}
+            </h3>
+
+            <div className="flex items-center gap-3 text-gray-400 mb-3">
+              <FaEnvelope />
+              <a
+                href="mailto:youremail@example.com"
+                className="hover:text-white"
+              >
+                youremail@example.com
+              </a>
+            </div>
+
+            <div className="flex items-center gap-3 text-gray-400">
+              <FaWhatsapp />
+              <a
+                href="https://wa.me/46700000000"
+                target="_blank"
+                className="hover:text-white"
+              >
+                WhatsApp
+              </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* SOCIAL MEDIA */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Links</h3>
+            <h3 className="text-lg font-bold mb-4">
+              {t.footer_follow}
+            </h3>
+
+            <div className="flex gap-4 text-2xl text-gray-400">
+              <a
+                href="https://github.com/yourusername"
+                target="_blank"
+                className="hover:text-white"
+              >
+                <FaGithub />
+              </a>
+
+              <a
+                href="https://linkedin.com/in/yourusername"
+                target="_blank"
+                className="hover:text-white"
+              >
+                <FaLinkedin />
+              </a>
+            </div>
+          </div>
+
+          {/* QUICK LINKS */}
+          <div>
+            <h3 className="text-lg font-bold mb-4">
+              {t.footer_links}
+            </h3>
+
             <ul className="text-gray-400 space-y-2">
-              <li><a href="#" className="hover:text-white">Home</a></li>
-              <li><a href="#" className="hover:text-white">About</a></li>
-              <li><a href="#" className="hover:text-white">Services</a></li>
+              <li>
+                <a href="#skills" className="hover:text-white">
+                  Skills
+                </a>
+              </li>
+              <li>
+                <a href="#projects" className="hover:text-white">
+                  Projects
+                </a>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-white">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-700 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Your Company. All rights reserved.</p>
+        {/* COPYRIGHT */}
+        <div className="border-t border-gray-700 pt-6 text-center text-gray-400">
+          © {year} RaygalRoyal NextTech.
         </div>
       </div>
-    </div>
+    </footer>
   )
 }
-
-export default Footer;
