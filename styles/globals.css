@@ -1,5 +1,5 @@
-@import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+@import 'tailwindcss';
 
 .abril-fatface-regular {
   font-family: 'Abril Fatface', serif;
