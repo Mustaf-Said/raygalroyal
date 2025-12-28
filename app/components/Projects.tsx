@@ -9,86 +9,129 @@ const PROJECTS = [
     title: "Multilingual Portfolio",
     description: "Next.js portfolio with i18n, RTL support and modern UI.",
     tech: ["Next.js", "TypeScript", "Tailwind"],
-    live: "https://example.com",
-    code: "https://github.com/yourname/project1",
+    live: "https://nextjs.org/docs/app/guides/tailwind-v3-css",
+    code: "https://github.com/Mustaf-Said/raygalroyal",
   },
   {
     title: "React Dashboard",
     description: "Admin dashboard built with React and API integration.",
     tech: ["React", "API", "CSS"],
-    live: "https://example.com",
-    code: "https://github.com/yourname/project2",
+    live: "https://react.dev/reference/react/apis",
+    code: "https://github.com/Mustaf-Said/OpenLabrery-Project",
   },
   {
     title: "Fullstack App",
     description: "Fullstack app using Node.js, Express and MongoDB.",
     tech: ["Node.js", "Express", "MongoDB"],
-    live: "https://example.com",
-    code: "https://github.com/yourname/project3",
+    live: "https://expressjs.com/",
+    code: "https://github.com/Mustaf-Said/bokhandel-server",
   },
 ]
 
 export default function Projects({ t }: ProjectsProps) {
   return (
-    <section id="projects" className="max-w-6xl mx-auto px-6 py-20">
-      {/* TITLE */}
-      <h2 className="text-3xl md:text-4xl font-bold text-center">
-        {t.projects_title}
-      </h2>
+    <section
+      id="projects"
+      className="relative overflow-hidden py-24 bg-gray-400 font-medium"
+    >
+      {/* BACKGROUND VIDEO */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="hidden md:block absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/videos/coding.mp4" type="video/mp4" />
+      </video>
 
-      {/* SUBTITLE */}
-      <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-        {t.projects_sub}
-      </p>
+      {/* GLOBAL OVERLAY */}
+      <div className="absolute inset-0 md:bg-black/70 z-10" />
 
-      {/* GRID */}
-      <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {PROJECTS.map((project) => (
-          <div
-            key={project.title}
-            className="rounded-2xl border bg-white dark:bg-zinc-800 shadow-sm hover:shadow-lg transition"
-          >
-            <div className="p-6">
-              <h3 className="text-xl font-semibold">
-                {project.title}
-              </h3>
+      {/* CONTENT */}
+      <div className="relative z-20 max-w-6xl mx-auto px-6">
+        {/* TITLE */}
+        <h2 className="text-3xl md:text-4xl font-bold text-center md:text-white">
+          {t.projects_title}
+        </h2>
 
-              <p className="mt-2 text-gray-600 dark:text-gray-300">
-                {project.description}
-              </p>
+        <p className="mt-4 text-center md:text-gray-300">
+          {t.projects_sub}
+        </p>
 
-              {/* TECH */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.tech.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-zinc-700"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+        {/* GRID */}
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {PROJECTS.map((project) => (
+            <div
+              key={project.title}
+              className="
+                group relative h-[300px] rounded-2xl overflow-hidden
+                bg-white/90 dark:bg-transparent
+                               shadow-xl
+                transition-all duration-300
+                hover:bg-transparent dark:hover:bg-transparent
+              "
+            >
+              {/* CARD OVERLAY (för textläsbarhet vid hover) */}
+              <div
+                className="
+                  absolute inset-0 bg-black/60
+                  opacity-0 group-hover:opacity-100
+                  transition-opacity duration-300
+                "
+              />
 
-              {/* LINKS */}
-              <div className="mt-6 flex gap-4">
-                <Link
-                  href={project.live}
-                  target="_blank"
-                  className="text-blue-600 hover:underline"
-                >
-                  {t.project_live}
-                </Link>
-                <Link
-                  href={project.code}
-                  target="_blank"
-                  className="text-blue-600 hover:underline"
-                >
-                  {t.project_code}
-                </Link>
+              {/* CONTENT */}
+              <div
+                className="
+                  relative z-10 h-full flex flex-col justify-between p-6
+                  text-gray-900 dark:text-white
+                  group-hover:text-white
+                  transition-colors
+                "
+              >
+                <div>
+                  <h3 className="text-xl font-semibold">
+                    {project.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm opacity-80">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div>
+                  {/* TECH */}
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech) => (
+                      <span
+                        key={tech}
+                        className="
+                          text-xs px-2 py-1 rounded border
+                          bg-gray-200/80 dark:bg-zinc-700/80
+                          group-hover:bg-white/20 group-hover:text-white
+                          transition
+                        "
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* LINKS */}
+                  <div className="mt-4 flex gap-4 text-sm font-medium text-blue-600 group-hover:text-blue-300">
+                    <Link href={project.live} target="_blank" className="hover:underline">
+                      {t.project_live}
+                    </Link>
+                    <Link href={project.code} target="_blank" className="hover:underline">
+                      {t.project_code}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   )

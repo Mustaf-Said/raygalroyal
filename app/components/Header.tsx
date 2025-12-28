@@ -1,11 +1,18 @@
 "use client"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import Link from "next/link"
+import { GiHamburgerMenu } from "react-icons/gi"
+import { IoClose } from "react-icons/io5"
 import LanguageSwitcher from "./LanguageSwitcher"
 
-
-export default function Header({ lang }: { lang: "ar" | "en" | "sv" | "so"; avatarUrl?: string }) {
+export default function Header({
+  lang,
+}: {
+  lang: "ar" | "en" | "sv" | "so"
+}) {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -16,34 +23,89 @@ export default function Header({ lang }: { lang: "ar" | "en" | "sv" | "so"; avat
   return (
     <header
       className={`fixed z-50 transition-all duration-300
-        ${!scrolled ? `
-          top-[2vw]
-          left-1/2 -translate-x-1/2
-          w-[95vw] sm:w-[90vw] md:w-[85vw]
-          bg-white/80 dark:bg-[#2a2a2a]
-          rounded-2xl shadow
-        ` : `
-          top-0 left-0 translate-x-0
-          w-full
-          bg-white/90 dark:bg-[#1f1f1f]/90
-          shadow-lg backdrop-blur-md rounded-none
-          animate-slideDown
-        `}
+        ${!scrolled
+          ? `
+              top-[2vw]
+              left-1/2 -translate-x-1/2
+              w-[95vw] sm:w-[90vw] md:w-[85vw]
+              bg-gray-200/80 dark:bg-[#2a2a2a]
+            `
+          : `
+              top-0 left-0 translate-x-0
+              w-full
+              bg-white/90 dark:bg-[#1f1f1f]/90
+              shadow-lg backdrop-blur-md
+              p-4
+            `
+        }
       `}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <Image
-            src="/images/logo.jpg"
-            alt="RaygalRoyal NextTech Logo"
-            width={80}   // ändra storlek här om du vill
-            height={20}
-            className="object-contain hover:drop-shadow-lg transition rounded-full"
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
+        {/* LOGO */}
+        <Image
+          src="/images/logo.jpg"
+          alt="RaygalRoyal NextTech Logo"
+          width={80}
+          height={80}
+          className="w-9 mt-1.5 md:mt-auto md:w-20 h-auto rounded-full object-contain"
+        />
 
-          />
-        </div>
-        <LanguageSwitcher currentLang={lang} />
+        {/* DESKTOP MENU (>= 700px) */}
+        <nav className="hidden min-[700px]:flex items-center gap-6">
+          <Link href={`/${lang}`} className="font-medium hover:underline">
+            Home
+          </Link>
+          <Link href={`/${lang}/about`} className="font-medium hover:underline">
+            About
+          </Link>
+          <Link href={`/${lang}/#contact`} className="font-medium hover:underline">
+            Contact
+          </Link>
+          <LanguageSwitcher currentLang={lang} />
+        </nav>
+
+        {/* HAMBURGER BUTTON (< 700px) */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="min-[700px]:hidden text-2xl"
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <IoClose /> : <GiHamburgerMenu />}
+        </button>
       </div>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div className="min-[700px]:hidden mt-4 bg-transparent dark:bg-[#1f1f1f] ">
+          <nav className="flex flex-col-reverse items-end gap-4">
+            <Link
+              href={`/${lang}`}
+              onClick={() => setMenuOpen(false)}
+              className="font-medium pr-4"
+            >
+              Home
+            </Link>
+
+            <Link
+              href={`/${lang}/about`}
+              onClick={() => setMenuOpen(false)}
+              className="font-medium pr-4"
+            >
+              About
+            </Link>
+
+            <Link
+              href={`/${lang}/#contact`}
+              onClick={() => setMenuOpen(false)}
+              className="font-medium pr-4"
+            >
+              Contact
+            </Link>
+
+            <LanguageSwitcher currentLang={lang} />
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

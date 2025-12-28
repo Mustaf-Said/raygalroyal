@@ -1,21 +1,26 @@
 import type { Metadata } from "next"
-import Header from "../components/Header";
+import Header from "../components/Header"
+const SUPPORTED_LANGS = ["en", "sv", "ar", "so"] as const
+type Lang = (typeof SUPPORTED_LANGS)[number]
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lang: "ar" | "en" | "sv" | "so" }>
+  params: Promise<{ lang: string }>
 }): Promise<Metadata> {
-  const { lang } = await params
+  const rawLang = (await params).lang
+  const lang: Lang = SUPPORTED_LANGS.includes(rawLang as Lang)
+    ? (rawLang as Lang)
+    : "en"
 
-  const titles = {
+  const titles: Record<Lang, string> = {
     en: "RaygalRoyal NextTech | Frontend Developer",
     sv: "RaygalRoyal NextTech | Frontendutvecklare",
     ar: "رايغال رويال نيكست تيك | مطور واجهات أمامية",
     so: "RaygalRoyal NextTech | Horumariye Frontend",
   }
 
-  const descriptions = {
+  const descriptions: Record<Lang, string> = {
     en: "Frontend developer building modern, fast and multilingual websites with React and Next.js.",
     sv: "Frontendutvecklare som bygger moderna, snabba och flerspråkiga webbplatser med React och Next.js.",
     ar: "مطور واجهات أمامية يبني مواقع ويب حديثة وسريعة ومتعددة اللغات باستخدام React و Next.js.",
@@ -25,29 +30,6 @@ export async function generateMetadata({
   return {
     title: titles[lang],
     description: descriptions[lang],
-
-    alternates: {
-      canonical: `/${lang}`,
-      languages: {
-        en: "/en",
-        sv: "/sv",
-        ar: "/ar",
-        so: "/so",
-      },
-    },
-
-    openGraph: {
-      title: titles[lang],
-      description: descriptions[lang],
-      url: `https://yourdomain.com/${lang}`,
-      siteName: "RaygalRoyal NextTech",
-      locale: lang,
-      type: "website",
-    },
-
-    icons: {
-      icon: "/favicon.ico",
-    },
   }
 }
 
@@ -55,16 +37,22 @@ export default async function LangLayout({
   children,
   params,
 }: {
-  children: React.ReactNode;
-  params: Promise<{ lang: "ar" | "en" | "sv" | "so" }>;
+  children: React.ReactNode
+  params: Promise<{ lang: string }>
 }) {
-  const { lang } = await params;
-  const dir = lang === "ar" ? "rtl" : "ltr";
+  const rawLang = (await params).lang
+  const lang: Lang = SUPPORTED_LANGS.includes(rawLang as Lang)
+    ? (rawLang as Lang)
+    : "en"
+
+  const dir = lang === "ar" ? "rtl" : "ltr"
 
   return (
-    <div className={`${dir === "rtl" ? "rtl" : "ltr"}`}>
+    <div className={dir === "rtl" ? "rtl" : "ltr"}>
       <Header lang={lang} />
-      <main className="pt-20 bg-gray-200 min-h-screen">{children}</main>
+      <main className="pt-20 bg-gray-200 min-h-screen">
+        {children}
+      </main>
     </div>
-  );
+  )
 }

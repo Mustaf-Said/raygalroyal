@@ -1,4 +1,3 @@
-// app/layout.tsx
 import "@/styles/globals.css"
 /* export const metadata = {
   title: "RaygalRoyal NextTech",
@@ -7,8 +6,8 @@ import "@/styles/globals.css"
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html suppressHydrationWarning>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="abril-fatface-regular">
         {children}
       </body>
     </html>

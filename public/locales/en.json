@@ -32,5 +32,10 @@
   "footer_links": "Quick links",
   "footer_rights": "© {{year}} — RaygalRoyal NextTech",
   "seo_title": "RaygalRoyal NextTech | Frontend Developer",
-  "seo_description": "Frontend developer building modern, fast and multilingual websites using React and Next.js."
+  "seo_description": "Frontend developer building modern, fast and multilingual websites using React and Next.js.",
+  "about_title": "About Me",
+  "about_p1": "I am a Frontend Developer based in Sweden with a strong passion for building modern, responsive, and user-focused web applications.",
+  "about_p2": "I have completed two years of professional studies in Frontend Development in Borås, Sweden, where I built a solid foundation in HTML5, CSS, Scss, Tailwind, JavaScript, TypeScript, React & Nextjs.",
+  "about_p3": "Over the past two years, I have gained hands-on experience building websites and web applications using React, Next.js, Tailwind CSS, and API integrations.",
+  "about_p4": "I enjoy transforming complex ideas into simple, elegant, and functional digital solutions, with a strong focus on performance and user experience."
 }

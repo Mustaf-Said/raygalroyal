@@ -5,6 +5,7 @@ import Services from "../components/Services"
 import Contact from "../components/Contact"
 import Footer from "../components/Footer"
 
+
 export default async function LangPage({
   params,
 }: {
@@ -19,6 +20,7 @@ export default async function LangPage({
 
   return (
     <>
+
       <Hero t={t} lang={lang} avatarUrl="/images/profile.jpg" />
       <Skills t={t} />
       <Projects t={t} />

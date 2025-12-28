@@ -28,8 +28,9 @@ export default function Footer({ t }: FooterProps) {
               <a
                 href="mailto:youremail@example.com"
                 className="hover:text-white"
+                aria-label="Email"
               >
-                youremail@example.com
+                raygal99@hotmail.com
               </a>
             </div>
 
@@ -39,6 +40,7 @@ export default function Footer({ t }: FooterProps) {
                 href="https://wa.me/46700000000"
                 target="_blank"
                 className="hover:text-white"
+                aria-label="WhatsApp"
               >
                 WhatsApp
               </a>
@@ -53,17 +55,19 @@ export default function Footer({ t }: FooterProps) {
 
             <div className="flex gap-4 text-2xl text-gray-400">
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/Mustaf-Said/Mustaf-Said/blob/master/README.md"
                 target="_blank"
                 className="hover:text-white"
+                aria-label="Github"
               >
                 <FaGithub />
               </a>
 
               <a
-                href="https://linkedin.com/in/yourusername"
+                href="https://www.linkedin.com/in/mustafa-said-b6b164198/"
                 target="_blank"
                 className="hover:text-white"
+                aria-label="LinkedIn"
               >
                 <FaLinkedin />
               </a>
@@ -85,6 +89,11 @@ export default function Footer({ t }: FooterProps) {
               <li>
                 <a href="#projects" className="hover:text-white">
                   Projects
+                </a>
+              </li>
+              <li>
+                <a href="#services" className="hover:text-white">
+                  Services
                 </a>
               </li>
               <li>
