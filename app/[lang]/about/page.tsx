@@ -1,3 +1,5 @@
+import fs from "fs"
+import path from "path"
 
 export default async function AboutPage({
   params,
@@ -6,20 +8,24 @@ export default async function AboutPage({
 }) {
   const { lang } = await params
 
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  // ✅ Load translations from filesystem (production-safe)
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "locales",
+    `${lang}.json`
+  )
 
-  const res = await fetch(`${base}/locales/${lang}.json`, {
-    cache: "no-store",
-  })
-
-  const t = await res.json()
+  const file = fs.readFileSync(filePath, "utf-8")
+  const t = JSON.parse(file)
 
   return (
     <section className="min-h-[90vh] flex items-center">
-      <div className={`max-w-5xl mx-auto px-6 py-24
-      ${lang === "ar" ? "text-right" : "text-left"}
-    `}>
+      <div
+        className={`max-w-5xl mx-auto px-6 py-24
+          ${lang === "ar" ? "text-right" : "text-left"}
+        `}
+      >
         <h1 className="text-4xl md:text-5xl font-bold mb-10">
           {t.about_title}
         </h1>

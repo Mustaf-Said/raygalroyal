@@ -1,10 +1,12 @@
+import fs from "fs"
+import path from "path"
+
 import Hero from "@/app/components/Hero"
 import Skills from "../components/Skills"
 import Projects from "../components/Projects"
 import Services from "../components/Services"
 import Contact from "../components/Contact"
 import Footer from "../components/Footer"
-
 
 export default async function LangPage({
   params,
@@ -13,21 +15,25 @@ export default async function LangPage({
 }) {
   const { lang } = await params
 
-  // Load translations from public/locales
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-  const res = await fetch(`${base}/locales/${lang}.json`, { cache: "no-store" })
-  const t = await res.json()
+  // ✅ READ TRANSLATIONS FROM FILESYSTEM (PRODUCTION SAFE)
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "locales",
+    `${lang}.json`
+  )
+
+  const file = fs.readFileSync(filePath, "utf-8")
+  const t = JSON.parse(file)
 
   return (
     <>
-
       <Hero t={t} lang={lang} avatarUrl="/images/profile.jpg" />
       <Skills t={t} />
       <Projects t={t} />
       <Services t={t} />
       <Contact t={t} />
       <Footer t={t} />
-
     </>
   )
 }
