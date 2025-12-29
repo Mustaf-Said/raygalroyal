@@ -18,7 +18,8 @@ export default function Contact({ t }: ContactProps) {
       style={{ backgroundImage: "url(/images/contact/AI.jpg)" }}
 
     >
-      <div className="relative z-10 justify-start flex flex-col max-w-5xl mx-auto px-6  text-center">
+      <div className="relative z-10 justify-start flex flex-col max-w-5xl mx-auto px-6  text-center
+    -mt-21 sm:mt-0">
 
         {/* TITLE */}
         <h2 className="text-3xl md:text-4xl font-bold">
@@ -31,7 +32,7 @@ export default function Contact({ t }: ContactProps) {
         </p>
 
         {/* CTA */}
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
             href="mailto:raygal99@hotmailcom"
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
