@@ -20,9 +20,9 @@ export default async function AboutPage({
   const t = JSON.parse(file)
 
   return (
-    <section className="min-h-[90vh] flex items-center">
+    <section className="min-h-[90vh] flex flex-col items-center">
       <div
-        className={`max-w-5xl mx-auto px-6 py-24
+        className={`max-w-5xl mx-auto px-6 pt-24 pb-9
           ${lang === "ar" ? "text-right" : "text-left"}
         `}
       >
@@ -36,6 +36,17 @@ export default async function AboutPage({
           <p>{t.about_p3}</p>
           <p>{t.about_p4}</p>
         </div>
+      </div>
+      <div>
+        <a
+          href="/cv/CV.pdf"
+          target="_blank"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl mb-7
+             bg-gray-900 text-white hover:bg-gray-700 transition"
+        >
+          Download CV
+        </a>
+
       </div>
     </section>
   )
