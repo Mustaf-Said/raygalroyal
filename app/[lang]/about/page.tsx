@@ -39,6 +39,17 @@ export default async function AboutPage({
       </div>
       <div>
         <a
+          href="/videos/Buraanbur.mp3"
+          target="_blank"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl mb-7
+             bg-gray-900 text-white hover:bg-gray-700 transition"
+        >
+          Download My Music
+        </a>
+
+      </div>
+      <div>
+        <a
           href="/cv/CV.pdf"
           target="_blank"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl mb-7
