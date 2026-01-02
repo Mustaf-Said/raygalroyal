@@ -13,7 +13,7 @@ export default function Hero({ t, lang /* ,avatarUrl */ }: HeroProps) {
     <section className="max-w-5xl mx-auto text-center py-10 md:py-20">
       <div className="grid md:grid-cols-1 gap-8 items-center">
         <div>
-          <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+          <h1 className="text-3xl md:text-5xl pt-17 font-extrabold leading-tight">
             {t.hero_title}
           </h1>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">

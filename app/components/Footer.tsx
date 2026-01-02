@@ -3,6 +3,8 @@ import {
   FaLinkedin,
   FaWhatsapp,
   FaEnvelope,
+  FaFacebook,
+  FaTwitter
 } from "react-icons/fa"
 
 type FooterProps = {
@@ -70,6 +72,21 @@ export default function Footer({ t }: FooterProps) {
                 aria-label="LinkedIn"
               >
                 <FaLinkedin />
+              </a>
+
+              <a href="https://www.facebook.com/mustfa99"
+                target="_blank"
+                className="hover:text-white"
+                aria-label="FaceBook"
+              >
+                <FaFacebook />
+              </a>
+              <a href="https://x.com/MR4273083817955"
+                target="_blank"
+                className="hover:text-white"
+                aria-label="Twitter"
+              >
+                <FaTwitter />
               </a>
             </div>
           </div>
