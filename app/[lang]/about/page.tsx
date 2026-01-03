@@ -38,7 +38,7 @@ export default async function AboutPage({
         </div>
       </div>
 
-      <div>
+      {/* <div>
         <a
           href="/cv/CV.pdf"
           target="_blank"
@@ -48,7 +48,7 @@ export default async function AboutPage({
           Download CV
         </a>
 
-      </div>
+      </div> */}
     </section>
   )
 }
