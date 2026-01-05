@@ -124,7 +124,7 @@ export default function Footer({ t }: FooterProps) {
 
         {/* COPYRIGHT */}
         <div className="border-t border-gray-700 pt-6 text-center text-gray-400">
-          © {year} RaygalRoyal NextTech.
+          © {year} Mustafa Ibrahim.
         </div>
       </div>
     </footer>

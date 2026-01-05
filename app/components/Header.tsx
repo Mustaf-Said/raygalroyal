@@ -43,12 +43,13 @@ export default function Header({
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* LOGO */}
         <Image
-          src="/images/logo.jpg"
-          alt="RaygalRoyal NextTech Logo"
-          width={80}
-          height={80}
-          className="w-9 mt-1.5 md:mt-auto md:w-20 h-auto rounded-full object-contain"
+          src="/images/profile.jpg"
+          alt="Logo"
+          width={40}
+          height={40}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shrink-0"
         />
+
 
         {/* DESKTOP MENU (>= 700px) */}
         <nav className="hidden min-[700px]:flex items-center gap-6">
