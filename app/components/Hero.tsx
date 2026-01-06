@@ -1,62 +1,71 @@
 // app/components/Hero.tsx
 import Link from "next/link"
-/* import Image from "next/image" */
+import Image from "next/image"
 
 type HeroProps = {
   t: Record<string, string>
   lang: string
-  avatarUrl?: string
 }
 
-export default function Hero({ t, lang /* ,avatarUrl */ }: HeroProps) {
+export default function Hero({ t, lang }: HeroProps) {
   return (
-    <section className="max-w-5xl mx-auto text-center py-10 md:py-20">
-      <div className="grid md:grid-cols-1 gap-8 items-center">
-        <div>
-          <h1 className="text-3xl md:text-5xl pt-17 font-extrabold leading-tight">
+    <section className="relative max-w-6xl mx-auto px-6 pt-24 pb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-7">
+
+        {/* LEFT */}
+        <div className="max-w-xl order-2 md:order-1">
+          <h1 className="text-4xl md:text-5xl lg:text-5xl font-extrabold leading-tight">
             {t.hero_title}
           </h1>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
+
+          <p className="mt-6 text-lg text-slate-600 dark:text-slate-300">
             {t.hero_sub}
           </p>
 
-          <div className="mt-6 flex justify-center gap-3">
-            <Link href={`/${lang}#contact`} className="inline-block px-5 py-2 rounded bg-indigo-600 text-white">
+          <div className="mt-8 flex gap-4">
+            <Link
+              href={`/${lang}#contact`}
+              className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+            >
               {t.hire_me}
             </Link>
-            <Link href={`/${lang}#projects`} className="inline-block px-5 py-2 rounded border">
+
+            <Link
+              href={`/${lang}#projects`}
+              className="px-6 py-3 rounded-lg border font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            >
               {t.view_projects}
             </Link>
           </div>
 
-          <div className="mt-6 text-sm text-slate-500">
-            <span><strong>{t.skills_title}</strong>: </span>
-            <span className="font-medium">HTML5 · CSS · SCSS · Tailwind · JavaScript · TypeScript · React · Next.js</span>
+          <div className="mt-8 text-sm text-slate-500">
+            <strong>{t.skills_title}:</strong>{" "}
+            HTML5 · CSS · SCSS · Tailwind · JavaScript · TypeScript · React · Next.js
           </div>
         </div>
 
-        <div className="flex justify-center md:justify-end">
-          {/* <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="relative w-100 h-70 inset-0 object-cover cursor-pointer hover:opacity-80 rounded-xl"
-          >
-            <source src="/videos/coding.mp4" type="video/mp4" />
-          </video> */}
-          <div className="absolute rounded-xl overflow-hidden shadow-lg bg-white">
-            {/*  {avatarUrl ? (
-              // If you have a profile image in public/
-              // <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-              <Image src={avatarUrl} alt="profile" width={200} height={200} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-600">
-                <span className="text-4xl font-bold">RR</span>
-              </div>
-            )} */}
-          </div>
+        {/* RIGHT */}
+        <div className="relative flex justify-start md:justify-end order-1 md:order-2">
+          <div className="absolute -inset-4 rounded-3xl bg-indigo-100 dark:bg-indigo-950 blur-2xl opacity-60" />
+
+          <Image
+            src="/images/profile.jpg"
+            alt="Profile photo"
+            width={420}
+            height={520}
+            className="
+            relative
+            w-64 h-80 md:w-72 md:h-96
+            object-cover
+            object-[50%_10%]
+            rounded-3xl
+            shadow-xl
+                    "
+            priority
+          />
+
         </div>
+
       </div>
     </section>
   )

@@ -1,5 +1,5 @@
 "use client"
-import Image from "next/image"
+
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { GiHamburgerMenu } from "react-icons/gi"
@@ -42,14 +42,16 @@ export default function Header({
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* LOGO */}
-        <Image
+        {/*     <Image
           src="/images/profile.jpg"
           alt="Logo"
           width={40}
           height={40}
           className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shrink-0"
-        />
-
+        /> */}
+        <h1 className=" md:text-2xl leading-tight text-gray-700">
+          Mustafa Ibrahim
+        </h1>
 
         {/* DESKTOP MENU (>= 700px) */}
         <nav className="hidden min-[700px]:flex items-center gap-6">
