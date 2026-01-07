@@ -18,7 +18,7 @@ export default function Hero({ t, lang }: HeroProps) {
           bg-[url('/images/profile.jpg')]
           bg-cover
           bg-top
-          opacity-20
+          opacity-50
           md:hidden
         "
       />
