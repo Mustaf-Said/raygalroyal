@@ -28,7 +28,7 @@ export default async function LangPage({
 
   return (
     <>
-      <Hero t={t} lang={lang} avatarUrl="/images/profile.jpg" />
+      <Hero t={t} lang={lang} />
       <Skills t={t} />
       <Projects t={t} />
       <Services t={t} />
