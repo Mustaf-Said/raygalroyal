@@ -41,8 +41,9 @@ export default function Hero({ t, lang }: HeroProps) {
 
             <div className="mt-6 flex flex-col sm:flex-row gap-4">
               <Link
-                href={`/${lang}#contact`}
+                href={`https://www.fiverr.com/codeonline554/build-a-modern-responsive-website-using-react-or-nextjs?context_referrer=tailored_homepage_perseus&source=recently_viewed_gigs&ref_ctx_id=ebe6c3208cad44098d189ca7a638fb9e&context=recommendation&pckg_id=1&pos=1&context_alg=recently_viewed&seller_online=true&imp_id=d5d0f34d-234a-4e74-a76d-bc95d27a577d`}
                 className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                target="_blank"
               >
                 {t.hire_me}
               </Link>
