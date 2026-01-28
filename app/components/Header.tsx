@@ -35,7 +35,7 @@ export default function Header() {
         }
       `}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <div className="max-w-6xl mx-auto flex items-center justify-between " >
         {/* LOGO */}
         <h1 className=" md:text-2xl leading-tight text-gray-700">
           Mustafa Ibrahim
@@ -52,8 +52,8 @@ export default function Header() {
           <Link href="/#contact" className="font-medium hover:underline">
             Contact
           </Link>
+          <div id="weglot_here"></div>
         </nav>
-
         {/* HAMBURGER BUTTON (< 700px) */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}

@@ -5,21 +5,21 @@ const PROJECTS = [
     title: "Multilingual Portfolio",
     description: "Next.js portfolio with i18n, RTL support and modern UI.",
     tech: ["Next.js", "TypeScript", "Tailwind"],
-    live: "https://nextjs.org/docs/app/guides/tailwind-v3-css",
-    code: "https://github.com/Mustaf-Said/raygalroyal",
+    /* live: "https://nextjs.org/docs/app/guides/tailwind-v3-css", */
+    code: "https://github.com/Mustaf-Said/asha",
   },
   {
     title: "React Dashboard",
     description: "Admin dashboard built with React and API integration.",
     tech: ["React", "API", "CSS"],
-    live: "https://react.dev/reference/react/apis",
+    /*     live: "https://react.dev/reference/react/apis", */
     code: "https://github.com/Mustaf-Said/OpenLabrery-Project",
   },
   {
     title: "Fullstack App",
     description: "Fullstack app using Node.js, Express and MongoDB.",
     tech: ["Node.js", "Express", "MongoDB"],
-    live: "https://expressjs.com/",
+    /*    live: "https://expressjs.com/", */
     code: "https://github.com/Mustaf-Said/bokhandel-server",
   },
 ]
@@ -115,10 +115,10 @@ export default function Projects() {
                   </div>
 
                   {/* LINKS */}
-                  <div className="mt-4 flex gap-4 text-sm font-medium text-blue-600 group-hover:text-blue-300">
-                    <Link href={project.live} target="_blank" className="hover:underline">
+                  <div className="mt-4 flex flex-row gap-4 text-sm font-medium text-blue-600 group-hover:text-blue-300 justify-end">
+                    {/*    <Link href={project.live} target="_blank" className="hover:underline">
                       Live Demo
-                    </Link>
+                    </Link> */}
                     <Link href={project.code} target="_blank" className="hover:underline">
                       Source Code
                     </Link>
