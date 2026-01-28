@@ -2,12 +2,7 @@
 import Link from "next/link"
 import Image from "next/image"
 
-type HeroProps = {
-  t: Record<string, string>
-  lang: string
-}
-
-export default function Hero({ t, lang }: HeroProps) {
+export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gray-100 dark:bg-slate-950">
 
@@ -32,11 +27,11 @@ export default function Hero({ t, lang }: HeroProps) {
           {/* TEXT */}
           <div className="max-w-xl order-2 md:order-1">
             <h1 className="text-4xl md:text-5xl lg:text-5xl font-extrabold leading-tight">
-              {t.hero_title}
+              Front-End Developer — React & Next.js
             </h1>
 
             <p className="mt-6 text-lg text-slate-600 dark:text-slate-300">
-              {t.hero_sub}
+              I build fast, modern and user-friendly websites focused on clean UI and high performance.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-4">
@@ -45,19 +40,19 @@ export default function Hero({ t, lang }: HeroProps) {
                 className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
                 target="_blank"
               >
-                {t.hire_me}
+                Hire Me
               </Link>
 
               <Link
-                href={`/${lang}#projects`}
+                href="#projects"
                 className="px-6 py-3 rounded-lg border font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
-                {t.view_projects}
+                View Projects
               </Link>
             </div>
 
             <div className="mt-6 text-sm text-slate-500">
-              <strong>{t.skills_title}:</strong>{" "}
+              <strong>Technical Skills:</strong>{" "}
               HTML5 · CSS · SCSS · Tailwind · JavaScript · TypeScript · React · Next.js
             </div>
           </div>

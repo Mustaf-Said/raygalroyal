@@ -5,42 +5,38 @@ const SERVICES = [
   {
     key: "frontend",
     icon: FaCode,
-    titleKey: "service_frontend_title",
-    descKey: "service_frontend_desc",
+    title: "Frontend Development",
+    desc: "Modern, responsive and accessible user interfaces using React and Next.js.",
     image: "/images/service/1.avif"
   },
   {
     key: "fullstack",
     icon: FaGlobe,
-    titleKey: "service_fullstack_title",
-    descKey: "service_fullstack_desc",
+    title: "Full Website Development",
+    desc: "Complete websites from idea to deployment, including frontend and backend.",
     image: "/images/service/3.avif"
   },
   {
     key: "api",
     icon: FaPlug,
-    titleKey: "service_api_title",
-    descKey: "service_api_desc",
+    title: "API & Integration",
+    desc: "Integration of APIs, backend services and databases.",
     image: "/images/service/2.avif"
   },
 ]
 
-type ServicesProps = {
-  t: Record<string, string>
-}
-
-export default function Services({ t }: ServicesProps) {
+export default function Services() {
   const [activeKey, setActiveKey] = useState<string | null>(null)
 
 
   return (
     <section id="services" className="max-w-6xl mx-auto px-6 py-20">
       <h2 className="text-3xl md:text-4xl font-bold text-center">
-        {t.services_title}
+        Services
       </h2>
 
       <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-        {t.services_sub}
+        What I can help you build
       </p>
 
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
@@ -73,7 +69,7 @@ export default function Services({ t }: ServicesProps) {
                   <div className="absolute inset-0 bg-black/50 flex items-end p-6"
                   >
                     <h3 className="text-xl font-semibold text-white">
-                      {t[service.titleKey]}
+                      {service.title}
                     </h3>
                   </div>
                 </div>
@@ -86,11 +82,11 @@ export default function Services({ t }: ServicesProps) {
                   <Icon className="text-4xl mb-4 text-indigo-400" />
 
                   <h3 className="text-xl font-semibold">
-                    {t[service.titleKey]}
+                    {service.title}
                   </h3>
 
                   <p className="mt-3 text-sm text-gray-300">
-                    {t[service.descKey]}
+                    {service.desc}
                   </p>
                 </div>
               </div>

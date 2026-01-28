@@ -1,9 +1,19 @@
-/* import { redirect } from "next/navigation" */
-
-import LangPage from "./[lang]/page";
-
+import Hero from "@/app/components/Hero"
+import Skills from "./components/Skills"
+import Projects from "./components/Projects"
+import Services from "./components/Services"
+import Contact from "./components/Contact"
+import Footer from "./components/Footer"
 
 export default function RootPage() {
-  /* redirect("en") */
-  return <LangPage params={Promise.resolve({ lang: "en" })} />
+  return (
+    <>
+      <Hero />
+      <Skills />
+      <Projects />
+      <Services />
+      <Contact />
+      <Footer />
+    </>
+  )
 }

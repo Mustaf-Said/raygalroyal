@@ -1,7 +1,3 @@
-type SkillsProps = {
-  t: Record<string, string>
-}
-
 const SKILLS = [
   "HTML5",
   "CSS / SCSS",
@@ -17,7 +13,7 @@ const SKILLS = [
   "Figma / Canva"
 ]
 
-export default function Skills({ t }: SkillsProps) {
+export default function Skills() {
   return (
     <section
       id="skills"
@@ -25,12 +21,12 @@ export default function Skills({ t }: SkillsProps) {
     >
       {/* TITLE */}
       <h2 className="text-3xl md:text-4xl font-bold text-center">
-        {t.skills_title}
+        Technical Skills
       </h2>
 
       {/* SUBTITLE */}
       <p className="mt-4 text-center text-gray-600">
-        {t.skills_sub}
+        Technologies and tools I use to build modern web applications
       </p>
 
       {/* GRID */}

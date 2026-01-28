@@ -7,11 +7,7 @@ import {
   FaTwitter
 } from "react-icons/fa"
 
-type FooterProps = {
-  t: Record<string, string>
-}
-
-export default function Footer({ t }: FooterProps) {
+export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
@@ -22,7 +18,7 @@ export default function Footer({ t }: FooterProps) {
           {/* CONTACT */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              {t.footer_contact}
+              Contact
             </h3>
 
             <div className="flex items-center gap-3 text-gray-400 mb-3">
@@ -52,7 +48,7 @@ export default function Footer({ t }: FooterProps) {
           {/* SOCIAL MEDIA */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              {t.footer_follow}
+              Follow me
             </h3>
 
             <div className="flex gap-4 text-2xl text-gray-400">
@@ -94,7 +90,7 @@ export default function Footer({ t }: FooterProps) {
           {/* QUICK LINKS */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              {t.footer_links}
+              Quick links
             </h3>
 
             <ul className="text-gray-400 space-y-2">

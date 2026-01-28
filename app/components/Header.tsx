@@ -4,13 +4,8 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { IoClose } from "react-icons/io5"
-import LanguageSwitcher from "./LanguageSwitcher"
 
-export default function Header({
-  lang,
-}: {
-  lang: "ar" | "en" | "sv" | "so"
-}) {
+export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -42,29 +37,21 @@ export default function Header({
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* LOGO */}
-        {/*     <Image
-          src="/images/profile.jpg"
-          alt="Logo"
-          width={40}
-          height={40}
-          className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shrink-0"
-        /> */}
         <h1 className=" md:text-2xl leading-tight text-gray-700">
           Mustafa Ibrahim
         </h1>
 
         {/* DESKTOP MENU (>= 700px) */}
         <nav className="hidden min-[700px]:flex items-center gap-6">
-          <Link href={`/${lang}`} className="font-medium hover:underline">
+          <Link href="/" className="font-medium hover:underline">
             Home
           </Link>
-          <Link href={`/${lang}/about`} className="font-medium hover:underline">
+          <Link href="/about" className="font-medium hover:underline">
             About
           </Link>
-          <Link href={`/${lang}/#contact`} className="font-medium hover:underline">
+          <Link href="/#contact" className="font-medium hover:underline">
             Contact
           </Link>
-          {/*  <LanguageSwitcher currentLang={lang} /> */}
         </nav>
 
         {/* HAMBURGER BUTTON (< 700px) */}
@@ -82,7 +69,7 @@ export default function Header({
         <div className="min-[700px]:hidden mt-4 bg-transparent dark:bg-[#1f1f1f] ">
           <nav className="flex flex-col-reverse items-end gap-4">
             <Link
-              href={`/${lang}`}
+              href="/"
               onClick={() => setMenuOpen(false)}
               className="font-medium pr-4"
             >
@@ -90,7 +77,7 @@ export default function Header({
             </Link>
 
             <Link
-              href={`/${lang}/about`}
+              href="/about"
               onClick={() => setMenuOpen(false)}
               className="font-medium pr-4"
             >
@@ -98,14 +85,12 @@ export default function Header({
             </Link>
 
             <Link
-              href={`/${lang}/#contact`}
+              href="/#contact"
               onClick={() => setMenuOpen(false)}
               className="font-medium pr-4"
             >
               Contact
             </Link>
-
-            <LanguageSwitcher currentLang={lang} />
           </nav>
         </div>
       )}

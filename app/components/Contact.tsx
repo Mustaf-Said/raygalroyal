@@ -1,12 +1,6 @@
 /* import Link from "next/link" */
 
-
-
-type ContactProps = {
-  t: Record<string, string>,
-}
-
-export default function Contact({ t }: ContactProps) {
+export default function Contact() {
   return (
     <section
       id="contact"
@@ -23,12 +17,12 @@ export default function Contact({ t }: ContactProps) {
 
         {/* TITLE */}
         <h2 className="text-3xl md:text-4xl font-bold">
-          {t.contact_title}
+          Contact
         </h2>
 
         {/* SUBTITLE */}
         <p className="mt-4 text-gray-600 dark:text-gray-300">
-          {t.contact_sub}
+          Let's work together. Send me a message.
         </p>
 
         {/* CTA */}
@@ -38,7 +32,7 @@ export default function Contact({ t }: ContactProps) {
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
             aria-label="Email"
           >
-            {t.contact_email}
+            Email
           </a>
 
           <a
@@ -47,7 +41,7 @@ export default function Contact({ t }: ContactProps) {
             className="px-6 py-3 rounded-xl border font-medium hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
             aria-label="whatsApp"
           >
-            {t.contact_whatsapp}
+            WhatsApp
           </a>
         </div>
 

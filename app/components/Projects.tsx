@@ -1,9 +1,5 @@
 import Link from "next/link"
 
-type ProjectsProps = {
-  t: Record<string, string>
-}
-
 const PROJECTS = [
   {
     title: "Multilingual Portfolio",
@@ -28,7 +24,7 @@ const PROJECTS = [
   },
 ]
 
-export default function Projects({ t }: ProjectsProps) {
+export default function Projects() {
   return (
     <section
       id="projects"
@@ -52,11 +48,11 @@ export default function Projects({ t }: ProjectsProps) {
       <div className="relative z-20 max-w-6xl mx-auto px-6">
         {/* TITLE */}
         <h2 className="text-3xl md:text-4xl font-bold text-center md:text-white">
-          {t.projects_title}
+          Projects
         </h2>
 
         <p className="mt-4 text-center md:text-gray-300">
-          {t.projects_sub}
+          Some of the projects I have built using modern web technologies
         </p>
 
         {/* GRID */}
@@ -121,10 +117,10 @@ export default function Projects({ t }: ProjectsProps) {
                   {/* LINKS */}
                   <div className="mt-4 flex gap-4 text-sm font-medium text-blue-600 group-hover:text-blue-300">
                     <Link href={project.live} target="_blank" className="hover:underline">
-                      {t.project_live}
+                      Live Demo
                     </Link>
                     <Link href={project.code} target="_blank" className="hover:underline">
-                      {t.project_code}
+                      Source Code
                     </Link>
                   </div>
                 </div>
