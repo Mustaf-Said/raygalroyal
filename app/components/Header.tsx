@@ -64,7 +64,7 @@ export default function Header({
           <Link href={`/${lang}/#contact`} className="font-medium hover:underline">
             Contact
           </Link>
-          <LanguageSwitcher currentLang={lang} />
+          {/*  <LanguageSwitcher currentLang={lang} /> */}
         </nav>
 
         {/* HAMBURGER BUTTON (< 700px) */}
