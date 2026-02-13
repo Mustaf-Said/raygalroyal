@@ -5,22 +5,19 @@ const PROJECTS = [
     title: "Multilingual Portfolio",
     description: "Next.js portfolio with i18n, RTL support and modern UI.",
     tech: ["Next.js", "TypeScript", "Tailwind"],
-    /* live: "https://nextjs.org/docs/app/guides/tailwind-v3-css", */
-    code: "https://github.com/Mustaf-Said/asha",
+    code: "https://raygalroyal.com",
   },
   {
     title: "React Dashboard",
     description: "Admin dashboard built with React and API integration.",
     tech: ["React", "API", "CSS"],
-    /*     live: "https://react.dev/reference/react/apis", */
-    code: "https://github.com/Mustaf-Said/OpenLabrery-Project",
+    code: "https://react-slut-project.vercel.app/",
   },
   {
     title: "Fullstack App",
     description: "Fullstack app using Node.js, Express and MongoDB.",
     tech: ["Node.js", "Express", "MongoDB"],
-    /*    live: "https://expressjs.com/", */
-    code: "https://github.com/Mustaf-Said/bokhandel-server",
+    code: "https://asha-rust.vercel.app/",
   },
 ]
 
@@ -120,7 +117,7 @@ export default function Projects() {
                       Live Demo
                     </Link> */}
                     <Link href={project.code} target="_blank" className="hover:underline">
-                      Source Code
+                      🔵 Live Demo
                     </Link>
                   </div>
                 </div>
