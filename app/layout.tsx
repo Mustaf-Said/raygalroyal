@@ -1,7 +1,6 @@
 import "@/styles/globals.css"
 import type { Metadata } from "next"
 import Header from "./components/Header"
-import WeglotScript from "./components/WeglotScript"
 
 // Extend the Window interface to include Weglot
 declare global {
@@ -26,9 +25,6 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className="abril-fatface-regular">
-
-        {/* Weglot initialization component */}
-        <WeglotScript />
 
         <Header />
 

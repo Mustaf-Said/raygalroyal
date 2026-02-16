@@ -52,7 +52,7 @@ export default function Header() {
           <Link href="/#contact" className="font-medium hover:underline">
             Contact
           </Link>
-          <div id="weglot_here"></div>
+
         </nav>
         {/* HAMBURGER BUTTON (< 700px) */}
         <button
