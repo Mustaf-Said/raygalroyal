@@ -1,8 +1,12 @@
-// app/components/Hero.tsx
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { useLanguage } from "./LanguageProvider"
 
 export default function Hero() {
+  const { t } = useLanguage()
+
   return (
     <section className="relative overflow-hidden bg-gray-100 dark:bg-slate-950">
 
@@ -27,11 +31,11 @@ export default function Hero() {
           {/* TEXT */}
           <div className="max-w-xl order-2 md:order-1">
             <h1 className="text-4xl md:text-5xl lg:text-5xl font-extrabold leading-tight">
-              Front-End Developer — React & Next.js
+              {t.hero.title}
             </h1>
 
             <p className="mt-6 text-lg text-slate-600 dark:text-slate-300">
-              I build fast, modern and user-friendly websites focused on clean UI and high performance.
+              {t.hero.description}
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-4">
@@ -40,19 +44,19 @@ export default function Hero() {
                 className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
                 target="_blank"
               >
-                Hire Me
+                {t.hero.hire}
               </Link>
 
               <Link
                 href="#projects"
                 className="px-6 py-3 rounded-lg border font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
-                View Projects
+                {t.hero.viewProjects}
               </Link>
             </div>
 
             <div className="mt-6 text-sm text-slate-500">
-              <strong>Technical Skills:</strong>{" "}
+              <strong>{t.hero.techLabel}:</strong>{" "}
               HTML5 · CSS · SCSS · Tailwind · JavaScript · TypeScript · React · Next.js
             </div>
           </div>

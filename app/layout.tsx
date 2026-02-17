@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 import type { Metadata } from "next"
 import Header from "./components/Header"
+import { LanguageProvider } from "./components/LanguageProvider"
 
 // Extend the Window interface to include Weglot
 declare global {
@@ -25,12 +26,13 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className="abril-fatface-regular">
+        <LanguageProvider>
+          <Header />
 
-        <Header />
-
-        <main className="pt-20 bg-gray-200 min-h-screen">
-          {children}
-        </main>
+          <main className="pt-20 bg-gray-200 min-h-screen">
+            {children}
+          </main>
+        </LanguageProvider>
       </body>
     </html>
   )

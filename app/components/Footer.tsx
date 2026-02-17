@@ -1,3 +1,5 @@
+"use client"
+
 import {
   FaGithub,
   FaLinkedin,
@@ -6,8 +8,10 @@ import {
   FaFacebook,
   FaTwitter
 } from "react-icons/fa"
+import { useLanguage } from "./LanguageProvider"
 
 export default function Footer() {
+  const { t } = useLanguage()
   const year = new Date().getFullYear()
 
   return (
@@ -18,7 +22,7 @@ export default function Footer() {
           {/* CONTACT */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              Contact
+              {t.footer.contact}
             </h3>
 
             <div className="flex items-center gap-3 text-gray-400 mb-3">
@@ -48,7 +52,7 @@ export default function Footer() {
           {/* SOCIAL MEDIA */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              Follow me
+              {t.footer.follow}
             </h3>
 
             <div className="flex gap-4 text-2xl text-gray-400">
@@ -90,28 +94,28 @@ export default function Footer() {
           {/* QUICK LINKS */}
           <div>
             <h3 className="text-lg font-bold mb-4">
-              Quick links
+              {t.footer.quickLinks}
             </h3>
 
             <ul className="text-gray-400 space-y-2">
               <li>
                 <a href="#skills" className="hover:text-white">
-                  Skills
+                  {t.footer.skills}
                 </a>
               </li>
               <li>
                 <a href="#projects" className="hover:text-white">
-                  Projects
+                  {t.footer.projects}
                 </a>
               </li>
               <li>
                 <a href="#services" className="hover:text-white">
-                  Services
+                  {t.footer.services}
                 </a>
               </li>
               <li>
                 <a href="#contact" className="hover:text-white">
-                  Contact
+                  {t.footer.contactLink}
                 </a>
               </li>
             </ul>

@@ -1,48 +1,46 @@
 "use client"
 import { useState } from "react"
 import { FaCode, FaGlobe, FaPlug } from "react-icons/fa"
+import { useLanguage } from "./LanguageProvider"
+
 const SERVICES = [
   {
     key: "frontend",
     icon: FaCode,
-    title: "Frontend Development",
-    desc: "Modern, responsive and accessible user interfaces using React and Next.js.",
     image: "/images/service/1.avif"
   },
   {
     key: "fullstack",
     icon: FaGlobe,
-    title: "Full Website Development",
-    desc: "Complete websites from idea to deployment, including frontend and backend.",
     image: "/images/service/3.avif"
   },
   {
     key: "api",
     icon: FaPlug,
-    title: "API & Integration",
-    desc: "Integration of APIs, backend services and databases.",
     image: "/images/service/2.avif"
   },
-]
+] as const
 
 export default function Services() {
   const [activeKey, setActiveKey] = useState<string | null>(null)
+  const { t } = useLanguage()
 
 
   return (
     <section id="services" className="max-w-6xl mx-auto px-6 py-20">
       <h2 className="text-3xl md:text-4xl font-bold text-center">
-        Services
+        {t.services.title}
       </h2>
 
       <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-        What I can help you build
+        {t.services.subtitle}
       </p>
 
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
       >
         {SERVICES.map((service) => {
           const Icon = service.icon
+          const serviceText = t.services.items[service.key]
 
           return (
             <div
@@ -69,7 +67,7 @@ export default function Services() {
                   <div className="absolute inset-0 bg-black/50 flex items-end p-6"
                   >
                     <h3 className="text-xl font-semibold text-white">
-                      {service.title}
+                      {serviceText.title}
                     </h3>
                   </div>
                 </div>
@@ -82,11 +80,11 @@ export default function Services() {
                   <Icon className="text-4xl mb-4 text-indigo-400" />
 
                   <h3 className="text-xl font-semibold">
-                    {service.title}
+                    {serviceText.title}
                   </h3>
 
                   <p className="mt-3 text-sm text-gray-300">
-                    {service.desc}
+                    {serviceText.desc}
                   </p>
                 </div>
               </div>

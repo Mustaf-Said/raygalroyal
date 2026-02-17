@@ -1,6 +1,11 @@
+"use client"
+
 /* import Link from "next/link" */
+import { useLanguage } from "./LanguageProvider"
 
 export default function Contact() {
+  const { t } = useLanguage()
+
   return (
     <section
       id="contact"
@@ -17,12 +22,12 @@ export default function Contact() {
 
         {/* TITLE */}
         <h2 className="text-3xl md:text-4xl font-bold">
-          Contact
+          {t.contact.title}
         </h2>
 
         {/* SUBTITLE */}
         <p className="mt-4 text-gray-600 dark:text-gray-300">
-          Let's work together. Send me a message.
+          {t.contact.subtitle}
         </p>
 
         {/* CTA */}
@@ -32,7 +37,7 @@ export default function Contact() {
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
             aria-label="Email"
           >
-            Email
+            {t.contact.email}
           </a>
 
           <a
@@ -41,7 +46,7 @@ export default function Contact() {
             className="px-6 py-3 rounded-xl border font-medium hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
             aria-label="whatsApp"
           >
-            WhatsApp
+            {t.contact.whatsapp}
           </a>
         </div>
 

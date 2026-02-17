@@ -1,3 +1,7 @@
+"use client"
+
+import { useLanguage } from "./LanguageProvider"
+
 const SKILLS = [
   "HTML5",
   "CSS / SCSS",
@@ -14,6 +18,8 @@ const SKILLS = [
 ]
 
 export default function Skills() {
+  const { t } = useLanguage()
+
   return (
     <section
       id="skills"
@@ -21,12 +27,12 @@ export default function Skills() {
     >
       {/* TITLE */}
       <h2 className="text-3xl md:text-4xl font-bold text-center">
-        Technical Skills
+        {t.skills.title}
       </h2>
 
       {/* SUBTITLE */}
       <p className="mt-4 text-center text-gray-600">
-        Technologies and tools I use to build modern web applications
+        {t.skills.subtitle}
       </p>
 
       {/* GRID */}
