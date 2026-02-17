@@ -1,4 +1,4 @@
-export const translations = {
+const translationData = {
   en: {
     nav: {
       home: "Home",
@@ -172,5 +172,15 @@ export const translations = {
   },
 } as const
 
-export type Language = keyof typeof translations
-export type TranslationStrings = (typeof translations)["en"]
+export type Language = keyof typeof translationData
+
+type DeepStringify<T> = T extends string
+  ? string
+  : T extends readonly (infer U)[]
+  ? readonly DeepStringify<U>[]
+  : T extends object
+  ? { [K in keyof T]: DeepStringify<T[K]> }
+  : T
+
+export type TranslationStrings = DeepStringify<(typeof translationData)["en"]>
+export const translations: Record<Language, TranslationStrings> = translationData
