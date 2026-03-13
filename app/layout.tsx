@@ -1,21 +1,14 @@
 import "@/styles/globals.css"
 import type { Metadata } from "next"
 import Header from "./components/Header"
+import Footer from "./components/Footer"
 import { LanguageProvider } from "./components/LanguageProvider"
-
-// Extend the Window interface to include Weglot
-declare global {
-  interface Window {
-    Weglot?: {
-      initialize: (options: { api_key: string }) => void
-    }
-  }
-}
+import { ThemeProvider } from "./components/ThemeProvider"
 
 export const metadata: Metadata = {
-  title: "RaygalRoyal NextTech | Frontend Developer",
+  title: "Raygal Royal | Digital Solutions Agency",
   description:
-    "Frontend developer building modern, fast and multilingual websites with React and Next.js.",
+    "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
 }
 
 export default function RootLayout({
@@ -25,13 +18,15 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning>
-      <body className="abril-fatface-regular">
+      <body className="font-sans antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
         <LanguageProvider>
-          <Header />
-
-          <main className="pt-20 bg-gray-200 min-h-screen">
-            {children}
-          </main>
+          <ThemeProvider>
+            <Header />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </ThemeProvider>
         </LanguageProvider>
       </body>
     </html>

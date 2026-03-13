@@ -2,172 +2,349 @@ const translationData = {
   en: {
     nav: {
       home: "Home",
-      about: "About",
+      services: "Services",
+      projects: "Projects",
+      team: "Team",
+      pricing: "Pricing",
+      faq: "FAQ",
       contact: "Contact",
+      startProject: "Start a Project",
     },
     toggle: {
       label: "Toggle language",
+      theme: "Toggle theme",
       en: "EN",
       so: "SO",
     },
     hero: {
-      title: "Front-End Developer — React & Next.js",
-      description:
-        "I build fast, modern and user-friendly websites focused on clean UI and high performance.",
-      hire: "Hire Me",
-      viewProjects: "View Projects",
-      techLabel: "Technical Skills",
-    },
-    skills: {
-      title: "Technical Skills",
-      subtitle: "Technologies and tools I use to build modern web applications",
-    },
-    projects: {
-      title: "Projects",
-      subtitle: "Some of the projects I have built using modern web technologies",
-      liveDemo: "Live Demo",
-      items: {
-        multilingual: {
-          title: "Multilingual Portfolio",
-          description: "Next.js portfolio with i18n, RTL support and modern UI.",
-        },
-        dashboard: {
-          title: "React Dashboard",
-          description: "Admin dashboard built with React and API integration.",
-        },
-        fullstack: {
-          title: "Fullstack App",
-          description: "Fullstack app using Node.js, Express and MongoDB.",
-        },
-      },
+      badge: "Digital Excellence Delivered",
+      title: "Building the Future of Digital Innovation",
+      description: "Raygal Royal is a premier digital agency crafting high-performance, scalable, and visually stunning web & mobile solutions for global businesses.",
+      ctaPrimary: "Start Your Project",
+      ctaSecondary: "View Portfolio",
     },
     services: {
-      title: "Services",
-      subtitle: "What I can help you build",
+      title: "Our Services",
+      subtitle: "Comprehensive digital solutions tailored to your business needs.",
       items: {
-        frontend: {
-          title: "Frontend Development",
-          desc: "Modern, responsive and accessible user interfaces using React and Next.js.",
+        web: {
+          title: "Web Development",
+          desc: "High-performance websites built with Next.js, React, and modern tech stacks.",
         },
-        fullstack: {
-          title: "Full Website Development",
-          desc: "Complete websites from idea to deployment, including frontend and backend.",
+        mobile: {
+          title: "Mobile Apps",
+          desc: "Native and cross-platform mobile applications for iOS and Android.",
         },
-        api: {
-          title: "API & Integration",
-          desc: "Integration of APIs, backend services and databases.",
+        design: {
+          title: "UI/UX Design",
+          desc: "User-centric design focused on conversion, accessibility, and aesthetics.",
+        },
+        cloud: {
+          title: "Cloud Solutions",
+          desc: "Scalable infrastructure and deployment using AWS, Vercel, and modern CI/CD.",
+        },
+        ai: {
+          title: "AI Integration",
+          desc: "Custom AI solutions and automation to streamline your business workflows.",
+        },
+        security: {
+          title: "Security & Audit",
+          desc: "Rigorous security testing and performance optimization for your platforms.",
         },
       },
     },
+    projects: {
+      title: "Featured Projects",
+      subtitle: "Discover how we help businesses transform their digital presence.",
+      viewLive: "View Live",
+      details: "Project Details",
+      items: {
+        ecommerce: {
+          title: "Global E-Commerce",
+          description: "A multi-vendor marketplace with seamless payment integration.",
+        },
+        fintech: {
+          title: "FinTech Dashboard",
+          description: "Real-time financial analytics platform with secure data processing.",
+        },
+        healthcare: {
+          title: "Health Portal",
+          description: "Comprehensive patient management system with tele-health features.",
+        },
+      },
+    },
+    pricing: {
+      title: "Transparent Pricing",
+      subtitle: "Choose a package that fits your business scale.",
+      currency: "$",
+      perProject: "Starting from",
+      basic: {
+        name: "Standard",
+        price: "1,499",
+        features: ["5 Custom Pages", "Responsive Design", "Basic SEO", "Contact Form", "1 Month Support"],
+      },
+      pro: {
+        name: "Professional",
+        price: "2,999",
+        features: ["Unlimited Pages", "E-Commerce Ready", "Advanced SEO", "Payment Integration", "3 Months Support"],
+      },
+      enterprise: {
+        name: "Enterprise",
+        price: "Custom",
+        features: ["Custom Web App", "AI Integration", "Cloud Infrastructure", "Security Audit", "12 Months Support"],
+      },
+      choose: "Select Package",
+    },
+    team: {
+      title: "Meet the Experts",
+      subtitle: "We collaborate with the world's best freelance professionals.",
+      joinTitle: "Join the Raygal Royal Team",
+      joinDesc: "Are you a top-tier freelancer? Join our elite network of developers and designers.",
+      applyNow: "Apply Now",
+      roles: {
+        frontend: "Frontend Developer",
+        backend: "Backend Developer",
+        fullstack: "Fullstack Developer",
+        uiux: "UI/UX Designer",
+      },
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Everything you need to know about working with us.",
+      items: [
+        {
+          q: "How long does it take to build a website?",
+          a: "Typically, a standard project takes 2-4 weeks, while complex applications can take 2-3 months depending on the requirements.",
+        },
+        {
+          q: "What technologies do you use?",
+          a: "We specialize in Next.js, React, TypeScript, Tailwind CSS, Node.js, and modern cloud platforms like AWS and Vercel.",
+        },
+        {
+          q: "Do you offer support after launch?",
+          a: "Yes, we provide ongoing maintenance and support packages to ensure your platform stays secure and up-to-date.",
+        },
+        {
+          q: "How secure are the platforms you build?",
+          a: "Security is our priority. We follow industry best practices, implement SSL, data encryption, and regular security audits.",
+        },
+      ],
+    },
     contact: {
-      title: "Contact",
-      subtitle: "Let's work together. Send me a message.",
-      email: "Email",
-      whatsapp: "WhatsApp",
+      title: "Get in Touch",
+      subtitle: "Ready to start your digital transformation? Let's talk.",
+      name: "Your Name",
+      email: "Email Address",
+      message: "Project Details",
+      send: "Send Message",
+      success: "Message sent successfully!",
+      error: "Something went wrong. Please try again.",
+      whatsapp: "Chat on WhatsApp",
+    },
+    guarantee: {
+      title: "Our Quality Guarantee",
+      desc: "Raygal Royal guarantees that all projects are built using modern technologies and industry best practices to deliver secure, scalable, and high-performance web applications that meet client expectations.",
+      points: [
+        "Modern Technology Stack",
+        "Secure & Scalable Architecture",
+        "Responsive & Accessible Design",
+        "Fast Performance",
+        "Professional Development Process",
+      ],
+    },
+    terms: {
+      title: "Terms and Conditions",
+      subtitle: "Our working agreement and policies.",
+      sections: {
+        scope: "Project Scope",
+        payment: "Payment Terms",
+        client: "Client Responsibilities",
+        delivery: "Delivery Expectations",
+        refund: "Refund Policy",
+        ip: "Intellectual Property",
+      },
+      content: "All projects require a 50% upfront deposit. Final delivery is made upon full payment. We guarantee 100% satisfaction or revisions as per the initial agreement.",
     },
     footer: {
-      contact: "Contact",
-      follow: "Follow me",
-      quickLinks: "Quick links",
-      skills: "Skills",
-      projects: "Projects",
-      services: "Services",
-      contactLink: "Contact",
-    },
-    about: {
-      title: "About Me",
-      paragraphs: [
-        "I am a Frontend Developer based in Sweden with a strong passion for building modern, responsive, and user-focused web applications.",
-        "I have completed my professional studies in Frontend Development in Boras, Sweden, where I built a solid foundation in HTML5, CSS, SCSS, Tailwind, JavaScript, TypeScript, React and Next.js.",
-        "Over the past two years, I have gained hands-on experience building websites and web applications using React, Next.js, Tailwind CSS, and API integrations.",
-        "I enjoy transforming complex ideas into simple, elegant, and functional digital solutions, with a strong focus on performance and user experience.",
-      ],
+      about: "About Raygal Royal",
+      aboutDesc: "Empowering businesses with cutting-edge digital solutions and professional craftsmanship.",
+      links: "Quick Links",
+      contact: "Contact Info",
+      rights: "All rights reserved.",
     },
   },
   so: {
     nav: {
       home: "Bogga Hore",
-      about: "Ku Saabsan",
-      contact: "Nala Soo Xiriir",
+      services: "Adeegyada",
+      projects: "Mashaariic",
+      team: "Kooxda",
+      pricing: "Qiimaha",
+      faq: "Su'aalaha",
+      contact: "Xiriir",
+      startProject: "Bilow Mashruuc",
     },
     toggle: {
       label: "Beddel luqadda",
+      theme: "Beddel habka",
       en: "EN",
       so: "SO",
     },
     hero: {
-      title: "Horumariye Front-End — React & Next.js",
-      description:
-        "Waxaan dhisaa mareegaha degdeg ah, casri ah, oo sahlan in la isticmaalo, anigoo diirada saaraya UI nadiif ah iyo waxqabad sare.",
-      hire: "I Shaqaaleysi",
-      viewProjects: "Eeg Mashaariicda",
-      techLabel: "Xirfadaha Farsamo",
-    },
-    skills: {
-      title: "Xirfadaha Farsamo",
-      subtitle: "Tignoolajiyada iyo qalabka aan u adeegsado dhisida web apps casri ah",
-    },
-    projects: {
-      title: "Mashaariic",
-      subtitle:
-        "Qaar ka mid ah mashaariicda aan ku dhisay tignoolajiyada web-ka casriga ah",
-      liveDemo: "Daawo Muuqaal",
-      items: {
-        multilingual: {
-          title: "Portfolio Luuqado Badan",
-          description: "Portfolio Next.js ah oo leh i18n, taageero RTL, iyo UI casri ah.",
-        },
-        dashboard: {
-          title: "Dashboard React",
-          description: "Dashboard maamul oo lagu dhisay React iyo isku-darka API.",
-        },
-        fullstack: {
-          title: "App Fullstack",
-          description: "App fullstack ah oo leh Node.js, Express iyo MongoDB.",
-        },
-      },
+      badge: "Tayada Dijitaalka ah oo La Hubiyo",
+      title: "Dhisidda Mustaqbalka Hal-abuurka Dijitaalka ah",
+      description: "Raygal Royal waa hay'ad dijitaal ah oo dhisaysa xalal web iyo mobile oo heer sare ah, lehna waxqabad sare iyo qurux aad u saraysa.",
+      ctaPrimary: "Bilow Mashruucaaga",
+      ctaSecondary: "Eeg Mashaariicda",
     },
     services: {
-      title: "Adeegyada",
-      subtitle: "Waxa aan kaa caawin karo inaad dhisto",
+      title: "Adeegyadayada",
+      subtitle: "Xalal dijitaal ah oo dhamaystiran oo ku haboon baahida ganacsigaaga.",
       items: {
-        frontend: {
-          title: "Horumarinta Frontend",
-          desc: "UI casri ah, la jaanqaadaya qalabka, oo la heli karo, iyadoo la adeegsanayo React iyo Next.js.",
+        web: {
+          title: "Dhismaha Websaytka",
+          desc: "Websaytyo waxqabad sare leh oo lagu dhisay Next.js, React, iyo teknoolajiyada casriga ah.",
         },
-        fullstack: {
-          title: "Dhismaha Websayt Buuxa",
-          desc: "Websayt dhamaystiran laga bilaabo fikrad ilaa daabacaad, oo ay ku jiraan frontend iyo backend.",
+        mobile: {
+          title: "Apps-ka Mobilka",
+          desc: "Codsiyada mobilada ee iOS iyo Android oo leh tayo sare.",
         },
-        api: {
-          title: "API & Isku-darka",
-          desc: "Isku-darka API-yada, adeegyada backend, iyo kaydka xogta.",
+        design: {
+          title: "Naqshadaynta UI/UX",
+          desc: "Naqshad diirada saaraysa isticmaalaha, quruxda, iyo sahlanaanta isticmaalka.",
+        },
+        cloud: {
+          title: "Xalalka Cloud-ka",
+          desc: "Kaabayaal la miisaami karo iyadoo la adeegsanayo AWS, Vercel, iyo CI/CD casri ah.",
+        },
+        ai: {
+          title: "Isku-darka AI",
+          desc: "Xalal AI oo gaar ah iyo otomaatig si loo habeeyo hab-shaqeedka ganacsigaaga.",
+        },
+        security: {
+          title: "Amniga & Hantidhowrka",
+          desc: "Tijaabada amniga iyo hagaajinta waxqabadka ee dhuftindaada.",
         },
       },
     },
+    projects: {
+      title: "Mashaariicda aan ku Faano",
+      subtitle: "Ogaaw sida aan uga caawino ganacsiyada inay beddelaan joogitaankooda dijitaalka ah.",
+      viewLive: "Daawo Live",
+      details: "Faahfaahinta Mashruuca",
+      items: {
+        ecommerce: {
+          title: "E-Commerce Caalami ah",
+          description: "Suuq internet oo leh nidaam lacag bixineed oo hufan.",
+        },
+        fintech: {
+          title: "FinTech Dashboard",
+          description: "Madal falanqaynta maaliyadda oo leh habayn xog ammaan ah.",
+        },
+        healthcare: {
+          title: "Health Portal",
+          description: "Nidaam maareyn bukaan oo dhamaystiran lehna astaamaha caafimaadka fog.",
+        },
+      },
+    },
+    pricing: {
+      title: "Qiimo hufan",
+      subtitle: "Dooro xirmo ku haboon baaxadda ganacsigaaga.",
+      currency: "$",
+      perProject: "Laga bilaabo",
+      basic: {
+        name: "Standard",
+        price: "1,499",
+        features: ["5 Bog oo gaar ah", "Naqshad u jawaabta qalabka", "SEO aasaasi ah", "Foomka Xiriirka", "1 Bil oo Taageero ah"],
+      },
+      pro: {
+        name: "Professional",
+        price: "2,999",
+        features: ["Bogag aan xadidnayn", "E-Commerce Diyaar ah", "SEO horumarsan", "Isku-darka Lacag-bixinta", "3 Bilood oo Taageero ah"],
+      },
+      enterprise: {
+        name: "Enterprise",
+        price: "Gaar ah",
+        features: ["Web App gaar ah", "Isku-darka AI", "Kaabayaasha Cloud", "Hantidhowrka Amniga", "12 Bilood oo Taageero ah"],
+      },
+      choose: "Dooro Xirmada",
+    },
+    team: {
+      title: "La Kulma Khubarada",
+      subtitle: "Waxaan la shaqeynaa xirfadlayaasha freelance-ka ugu fiican aduunka.",
+      joinTitle: "Ku biir Kooxda Raygal Royal",
+      joinDesc: "Ma tahay freelance heer sare ah? Ku biir shabakadayada elite-ka ah ee horumariyayaasha iyo naqshadeeyayaasha.",
+      applyNow: "Codso Hadda",
+      roles: {
+        frontend: "Horumariye Frontend",
+        backend: "Horumariye Backend",
+        fullstack: "Horumariye Fullstack",
+        uiux: "Naqshadeeye UI/UX",
+      },
+    },
+    faq: {
+      title: "Su'aalaha Badanaa la Isweydiiyo",
+      subtitle: "Wax walba oo aad u baahan tahay inaad ka ogaato la shaqeynta annaga.",
+      items: [
+        {
+          q: "Intee in le'eg ayay qaadataa dhisidda websaytka?",
+          a: "Sida caadiga ah, mashruuca caadiga ah wuxuu qaataa 2-4 toddobaad, halka apps-ka adag ay qaadan karaan 2-3 bilood iyadoo ku xiran shuruudaha.",
+        },
+        {
+          q: "Waa maxay tignoolajiyada aad isticmaashaan?",
+          a: "Waxaan ku takhasunnay Next.js, React, TypeScript, Tailwind CSS, Node.js, iyo dhuftinda cloud-ka casriga ah sida AWS iyo Vercel.",
+        },
+        {
+          q: "Ma bixisaan taageero ka dib marka la bilaabo?",
+          a: "Haa, waxaan bixinaa dayactir joogto ah iyo xirmooyin taageero si loo hubiyo in madashaadu ay ahaato mid ammaan ah oo casri ah.",
+        },
+        {
+          q: "Intee in le'eg ayay ammaan yihiin mashaariicda aad dhistaan?",
+          a: "Amniga waa mudnaantayada. Waxaan raacnaa hab-shaqeedka ugu fiican ee warshadaha, waxaan hirgelinaa SSL, sireynta xogta, iyo hantidhowrka amniga joogtada ah.",
+        },
+      ],
+    },
     contact: {
-      title: "Xiriir",
-      subtitle: "Aan wada shaqeyno. Ii soo dir fariin.",
-      email: "Iimeyl",
-      whatsapp: "WhatsApp",
+      title: "Nala Soo Xiriir",
+      subtitle: "Ma diyaar u tahay inaad bilowdo isbeddelkaaga dijitaalka ah? Aan hadalno.",
+      name: "Magacaaga",
+      email: "Iimaylkaaga",
+      message: "Faahfaahinta Mashruuca",
+      send: "Dir Fariinta",
+      success: "Fariinta si guul leh ayaa loo diray!",
+      error: "Wax baa khaldamay. Fadlan isku day markale.",
+      whatsapp: "Nagala hadal WhatsApp",
+    },
+    guarantee: {
+      title: "Dammaanadda Tayada",
+      desc: "Raygal Royal waxay dammaanad qaadaysaa in dhammaan mashaariicda lagu dhisay tignoolajiyada casriga ah iyo hab-dhaqannada ugu fiican ee warshadaha si loo bixiyo apps ammaan ah, la miisaami karo, oo waxqabad sare leh.",
+      points: [
+        "Tiknoolajiyada ugu dambeysay",
+        "Amniga iyo Tayada dhismaha",
+        "Naqshadaynta u jawaabta qalabka",
+        "Waxqabad aad u degdeg ah",
+        "Hab-shaqeed xirfadeed",
+      ],
+    },
+    terms: {
+      title: "Shuruudaha iyo Xaaladaha",
+      subtitle: "Heshiiska shaqada iyo siyaasadeena.",
+      sections: {
+        scope: "Baaxadda Mashruuca",
+        payment: "Shuruudaha Lacag-bixinta",
+        client: "Mas'uuliyadda Macmiilka",
+        delivery: "Rajada Keenista",
+        refund: "Siyaasadda Lacag-celinta",
+        ip: "Lahaanshaha Aqooneed",
+      },
+      content: "Dhammaan mashaariicdu waxay u baahan yihiin 50% deebaaji hore ah. Keenista ugu dambaysa waxaa la sameeyaa ka dib lacag-bixinta buuxda. Waxaan dammaanad qaadaynaa 100% qanacsanaanta.",
     },
     footer: {
-      contact: "Xiriir",
-      follow: "I Raac",
-      quickLinks: "Xiriirro Degdeg ah",
-      skills: "Xirfadaha",
-      projects: "Mashaariic",
-      services: "Adeegyada",
-      contactLink: "Xiriir",
-    },
-    about: {
-      title: "Aniga Igu Saabsan",
-      paragraphs: [
-        "Waxaan ahay Horumariye Frontend oo ku sugan Sweden, waxaanan leeyahay xiise weyn oo aan ku dhiso web apps casri ah, u jawaaba qalabka, oo diirada saaraya isticmaalaha.",
-        "Waxaan dhameeyay waxbarashadayda xirfadeed ee Horumarinta Frontend ee Boras, Sweden, halkaas oo aan ka dhistay aasaas adag oo ku saabsan HTML5, CSS, SCSS, Tailwind, JavaScript, TypeScript, React iyo Next.js.",
-        "Labadii sano ee la soo dhaafay, waxaan helay khibrad toos ah oo aan ku dhisay websaytyo iyo web apps anigoo adeegsanaya React, Next.js, Tailwind CSS, iyo isku-darka API.",
-        "Waxaan ku raaxaystaa inaan fikradaha adag u beddelo xalal dijitaal ah oo fudud, qurux badan, kana shaqeeya si fiican, anigoo si gaar ah diirada u saaraya waxqabadka iyo waayo-aragnimada isticmaalaha.",
-      ],
+      about: "Ku saabsan Raygal Royal",
+      aboutDesc: "Siinta ganacsiyada xalal dijitaal ah oo heer sare ah iyo farsamo xirfadeed.",
+      links: "Xiriirro Degdeg ah",
+      contact: "Macluumaadka Xiriirka",
+      rights: "Dhammaan xuquuqaha waa dhowran yihiin.",
     },
   },
 } as const
