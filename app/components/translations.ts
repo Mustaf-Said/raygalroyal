@@ -165,6 +165,10 @@ const translationData = {
       },
       content: "All projects require a 50% upfront deposit. Final delivery is made upon full payment. We guarantee 100% satisfaction or revisions as per the initial agreement.",
     },
+    skills: {
+      title: "Our Skills",
+      subtitle: "Technologies and expertise we use"
+    },
     footer: {
       about: "About Raygal Royal",
       aboutDesc: "Empowering businesses with cutting-edge digital solutions and professional craftsmanship.",
@@ -338,6 +342,10 @@ const translationData = {
         ip: "Lahaanshaha Aqooneed",
       },
       content: "Dhammaan mashaariicdu waxay u baahan yihiin 50% deebaaji hore ah. Keenista ugu dambaysa waxaa la sameeyaa ka dib lacag-bixinta buuxda. Waxaan dammaanad qaadaynaa 100% qanacsanaanta.",
+    },
+    skills: {
+      title: "Xirfadaheena",
+      subtitle: "Tiknoolajiyada iyo khibradaha aan isticmaalno"
     },
     footer: {
       about: "Ku saabsan Raygal Royal",
