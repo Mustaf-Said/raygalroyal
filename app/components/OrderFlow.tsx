@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart, Upload, File, Loader2 } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
+import { supabase } from "@/lib/supabase"
 
 type Step = "service" | "details" | "package" | "payment"
 
@@ -33,6 +34,8 @@ export default function OrderFlow({
   const [selectedService, setSelectedService] = useState<string | null>(preselectedService)
   const [projectDetails, setProjectDetails] = useState("")
   const [selectedPackage, setSelectedPackage] = useState<string | null>(preselectedPackage)
+  const [file, setFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (preselectedService) {
@@ -47,10 +50,51 @@ export default function OrderFlow({
   const steps: Step[] = ["service", "details", "package", "payment"]
   const currentStepIndex = steps.indexOf(step)
 
-  const handleNext = () => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0])
+    }
+  }
+
+  const handleNext = async () => {
     if (step === "service" && selectedService) setStep("details")
     else if (step === "details" && projectDetails.length > 10) setStep("package")
-    else if (step === "package" && selectedPackage) setStep("payment")
+    else if (step === "package" && selectedPackage) {
+      // START UPLOAD AND DB SAVE BEFORE GOING TO PAYMENT STEP
+      setIsUploading(true)
+      try {
+        let fileUrl = null
+        
+        if (file) {
+          const fileName = `${Date.now()}-${file.name}`
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from("project-files")
+            .upload(fileName, file)
+
+          if (uploadError) throw uploadError
+          fileUrl = uploadData.path
+        }
+
+        const { error: dbError } = await supabase
+          .from("project_orders")
+          .insert({
+            description: projectDetails,
+            file_url: fileUrl,
+            service: selectedService,
+            package: selectedPackage,
+            language: language
+          })
+
+        if (dbError) throw dbError
+        
+        setStep("payment")
+      } catch (error) {
+        console.error("Error processing order:", error)
+        alert("Failed to process order. Please try again.")
+      } finally {
+        setIsUploading(false)
+      }
+    }
   }
 
   const handleBack = () => {
@@ -64,6 +108,7 @@ export default function OrderFlow({
     setSelectedService(null)
     setProjectDetails("")
     setSelectedPackage(null)
+    setFile(null)
   }
 
   if (!isOpen) return null
@@ -154,7 +199,7 @@ export default function OrderFlow({
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.order.steps.details}</label>
@@ -162,12 +207,54 @@ export default function OrderFlow({
                       value={projectDetails}
                       onChange={(e) => setProjectDetails(e.target.value)}
                       placeholder={t.order.placeholders.details}
-                      rows={8}
+                      rows={6}
                       className="w-full p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
                     />
                     <div className="text-right text-xs text-gray-400">
                       {projectDetails.length} characters (min 10)
                     </div>
+                  </div>
+
+                  {/* FILE UPLOAD */}
+                  <div className="space-y-4">
+                    <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.order.fileUpload.label}</label>
+                    {!file ? (
+                      <div className="relative">
+                        <input
+                          type="file"
+                          onChange={handleFileChange}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          accept=".pdf,.docx,.png,.jpg,.jpeg"
+                        />
+                        <div className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600">
+                            <Upload className="w-6 h-6" />
+                          </div>
+                          <div className="text-center">
+                            <p className="font-bold text-gray-900 dark:text-white">Click or drag to upload</p>
+                            <p className="text-sm text-gray-500">{t.order.fileUpload.hint}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center text-blue-600">
+                            <File className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[200px]">{file.name}</p>
+                            <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => setFile(null)}
+                          className="p-2 hover:bg-white dark:hover:bg-gray-900 rounded-lg text-red-500 transition-colors"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -258,9 +345,9 @@ export default function OrderFlow({
           <div className="px-8 py-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between">
             <button
               onClick={handleBack}
-              disabled={step === "service"}
+              disabled={step === "service" || isUploading}
               className={cn(
-                "flex items-center gap-2 font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors",
+                "flex items-center gap-2 font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-50",
                 step === "service" && "opacity-0 pointer-events-none"
               )}
             >
@@ -272,14 +359,21 @@ export default function OrderFlow({
               <button
                 onClick={handleNext}
                 disabled={
+                  isUploading ||
                   (step === "service" && !selectedService) ||
                   (step === "details" && projectDetails.length < 10) ||
                   (step === "package" && !selectedPackage)
                 }
-                className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20"
+                className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-[140px] justify-center"
               >
-                {t.order.next}
-                <ChevronRight className="w-5 h-5" />
+                {isUploading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    {t.order.next}
+                    <ChevronRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
             )}
           </div>

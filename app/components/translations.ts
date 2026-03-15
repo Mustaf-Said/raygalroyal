@@ -204,6 +204,11 @@ const translationData = {
       placeholders: {
         details: "Describe your project vision, goals, and any specific requirements...",
       },
+      fileUpload: {
+        label: "Upload Project Brief (Optional)",
+        hint: "PDF, DOCX, or Image (Max 5MB)",
+        remove: "Remove file",
+      },
     },
     footer: {
       about: "About Raygal Royal",
@@ -417,6 +422,11 @@ const translationData = {
       finish: "Dhamaystir Dalabka",
       placeholders: {
         details: "Sharax aragtidaada mashruuca, hadafyada, iyo shuruudaha gaarka ah...",
+      },
+      fileUpload: {
+        label: "Soo geli Macluumaadka Mashruuca (Ikhtiyaari)",
+        hint: "PDF, DOCX, ama Sawir (Ugu badnaan 5MB)",
+        remove: "Ka saar faylka",
       },
     },
     footer: {
