@@ -1,219 +1,96 @@
-You are a senior UI/UX designer and senior full-stack developer.
+I need you to update the **Start Your Project modal form** in my Next.js project.
 
-I have a website built with **Next.js, TypeScript and TailwindCSS**.
+Tech stack:
 
-Currently it is a portfolio, but I want to transform it into a **professional digital agency website**.
+- Next.js (App Router)
+- TypeScript
+- TailwindCSS
+- Framer Motion
+- Supabase
 
-Company name: Raygal Royal.
+Current behavior:
+The form only allows users to **write a project description in a textarea**.
 
----
+What I want:
+Add a **file upload option** so users can upload a project document instead of typing everything manually.
 
-MULTI-LANGUAGE REQUIREMENT
+Examples of files users may upload:
 
-The website supports two languages:
-
-English (default)
-Somali (secondary)
-
-Every section, text, title, button, and form must include both languages.
-
-Do not remove the multilingual system.
-
----
-
-GOAL
-
-Create a **modern tech company website** that convinces businesses to order services.
-
-The UI should be high-quality and trustworthy so users feel confident starting a project.
-
----
-
-SECTION BACKGROUNDS
-
-Use different backgrounds across sections:
-
-Video backgrounds
-Image backgrounds
-Gradient backgrounds
-Minimal clean sections
-
-Example:
-
-Hero → video background
-Services → gradient background
-Projects → image cards
-Testimonials → soft gradient
-CTA → strong highlight section
-
----
-
-ANIMATIONS
-
-Use modern animations with **Framer Motion**.
-
-Examples:
-
-fade-in on scroll
-animated hero text
-hover effects on service cards
-smooth transitions between sections
-
----
-
-THEME SYSTEM
-
-Add Dark Mode and Light Mode.
+- PDF
+- DOCX
+- ZIP
+- Images
+- Project specification files
 
 Requirements:
 
-theme toggle button in navbar
-Tailwind dark mode support
-save preference in localStorage
-default follows system preference
+1. Add a **file input field below the textarea**.
 
----
+Example UI:
 
-NAVIGATION
+```
+Project Details
+[ textarea ]
 
-Modern navbar with dropdown menu.
+Upload project file (optional)
+[ Choose File ]
+```
 
-Menu structure:
-
-Home
-Services (dropdown)
-Projects
-Team
-Pricing
-FAQ
-Contact
-
----
-
-SERVICES ORDER FLOW
-
-Make it easy for customers to order services.
-
-Flow:
-
-Choose service
-Fill project details form
-Select package
-Secure payment
-
----
-
-PAYMENT SYSTEM
-
-Integrate payment options:
-
-Stripe (credit / debit cards)
-
-PayPal
-
----
-
-TEAM / FREELANCERS
-
-Show that Raygal Royal works with freelance professionals.
-
-Roles:
-
-Frontend Developer
-Backend Developer
-Fullstack Developer
-UI/UX Designer
-
-Add section:
-
-Join the Raygal Royal Team
-
-Freelancers can apply.
-
----
-
-FAQ SECTION
-
-Create a Frequently Asked Questions section.
-
-Example questions:
-
-How long does it take to build a website?
-
-What technologies do you use?
-
-Do you offer support after launch?
-
-Can I request custom features?
-
-How secure are the platforms you build?
-
-Provide answers that highlight modern technologies, performance, and reliability.
-
-All questions and answers must exist in both English and Somali.
-
----
-
-TERMS AND CONDITIONS
-
-Create a Terms and Conditions section/page.
-
-Explain:
-
-Project scope
-Payment terms
-Client responsibilities
-Development timeline
-Delivery expectations
-Refund policies
-Intellectual property
-Confidentiality
-
-Also include a **quality guarantee statement**.
+2. Use React state to store the selected file.
 
 Example:
 
-Raygal Royal guarantees that all projects are built using modern technologies and industry best practices to deliver secure, scalable, and high-performance web applications that meet client expectations.
+```
+const [file, setFile] = useState<File | null>(null)
+```
 
-Provide both English and Somali versions.
+3. Add a handler function:
 
----
+```
+const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files) return
+  setFile(e.target.files[0])
+}
+```
 
-CLIENT GUARANTEE
+4. Upload the file to **Supabase Storage** when the user submits the form.
 
-Add a section that explains the quality promise.
+Use a storage bucket called:
 
-Example:
+```
+project-files
+```
 
-Modern Technology Stack
-Secure and scalable architecture
-Responsive design
-Fast performance
-Clean UI/UX
-Professional development process
+Example upload logic:
 
-Explain that Raygal Royal is committed to delivering high-quality digital products.
+```
+const { data, error } = await supabase.storage
+  .from("project-files")
+  .upload(fileName, file)
+```
 
----
+5. Save the uploaded file path together with the project order in the database.
 
-CONTACT
+Example table:
 
-Contact form
+```
+project_orders
+```
 
-Email
-WhatsApp
-Start a Project button
+Fields:
 
----
+```
+description
+file_url
+created_at
+```
 
-EXTRA REQUIREMENTS
+Important:
 
-Suggest:
+- The file upload should be **optional**.
+- Users should still be able to submit the form with only text.
+- Do not remove the existing UI or animations.
+- Keep the code compatible with **Next.js, TypeScript, TailwindCSS and Supabase**.
 
-logo concept for Raygal Royal
-color palette
-Next.js folder structure
-Tailwind configuration
-Stripe integration example
-PayPal integration example
-multilingual system structure
+Goal:
+Allow users to either **describe their project in text or upload a project file** to make submitting project requests easier.

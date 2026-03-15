@@ -3,10 +3,12 @@
 import { motion } from "framer-motion"
 import { Check, Sparkles, Zap, Rocket } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
+import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
 
 export default function Pricing() {
   const { t } = useLanguage()
+  const { openOrderModal } = useModals()
 
   const plans = [
     {
@@ -103,12 +105,15 @@ export default function Pricing() {
                   ))}
                 </div>
 
-                <button className={cn(
-                  "w-full py-4 rounded-2xl font-black transition-all active:scale-95",
-                  plan.popular
-                    ? "bg-white text-gray-950 hover:bg-gray-100"
-                    : "bg-gray-950 dark:bg-blue-600 text-white hover:opacity-90 shadow-xl shadow-blue-500/20"
-                )}>
+                <button 
+                  onClick={() => openOrderModal(null, plan.key)}
+                  className={cn(
+                    "w-full py-4 rounded-2xl font-black transition-all active:scale-95",
+                    plan.popular
+                      ? "bg-white text-gray-950 hover:bg-gray-100"
+                      : "bg-gray-950 dark:bg-blue-600 text-white hover:opacity-90 shadow-xl shadow-blue-500/20"
+                  )}
+                >
                   {t.pricing.choose}
                 </button>
               </motion.div>

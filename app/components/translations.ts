@@ -169,6 +169,42 @@ const translationData = {
       title: "Our Skills",
       subtitle: "Technologies and expertise we use"
     },
+    testimonials: {
+      title: "Client Testimonials",
+      subtitle: "What our clients say about Raygal Royal.",
+      items: [
+        {
+          name: "Ahmed Ali",
+          role: "CEO of TechMove",
+          text: "Raygal Royal transformed our digital presence. Their attention to detail and modern tech stack made all the difference.",
+        },
+        {
+          name: "Idil Warsame",
+          role: "Founder of SomStyle",
+          text: "The best digital agency I've worked with. They delivered our e-commerce platform ahead of schedule and with perfect quality.",
+        },
+        {
+          name: "Mohamed Hassan",
+          role: "Director at NordVibe",
+          text: "Professional, reliable, and highly skilled. Their team is truly world-class.",
+        },
+      ],
+    },
+    order: {
+      title: "Start Your Project",
+      steps: {
+        service: "Select Service",
+        details: "Project Details",
+        package: "Choose Package",
+        payment: "Secure Payment",
+      },
+      next: "Continue",
+      back: "Go Back",
+      finish: "Complete Order",
+      placeholders: {
+        details: "Describe your project vision, goals, and any specific requirements...",
+      },
+    },
     footer: {
       about: "About Raygal Royal",
       aboutDesc: "Empowering businesses with cutting-edge digital solutions and professional craftsmanship.",
@@ -346,6 +382,42 @@ const translationData = {
     skills: {
       title: "Xirfadaheena",
       subtitle: "Tiknoolajiyada iyo khibradaha aan isticmaalno"
+    },
+    testimonials: {
+      title: "Markhaatiyada Macmiilka",
+      subtitle: "Waxa ay macaamiisheena ka yiraahdeen Raygal Royal.",
+      items: [
+        {
+          name: "Ahmed Ali",
+          role: "CEO of TechMove",
+          text: "Raygal Royal waxay gabi ahaanba beddeshay joogitaankayaga dijitaalka ah. Feejignaantooda faahfaahinta iyo tignoolajiyada casriga ah ayaa isbeddel weyn sameeyay.",
+        },
+        {
+          name: "Idil Warsame",
+          role: "Aasaasaha SomStyle",
+          text: "Hay'adda dijitaalka ah ee ugu fiican ee aan la shaqeeyay. Waxay na soo gaarsiiyeen madashayada e-commerce waqtigii loogu talagalay iyo tayo qumman.",
+        },
+        {
+          name: "Mohamed Hassan",
+          role: "Agaasimaha NordVibe",
+          text: "Xirfadle, lagu kalsoonaan karo, oo aad u aqoon badan. Kooxdoodu runtii waa heer caalami.",
+        },
+      ],
+    },
+    order: {
+      title: "Bilow Mashruucaaga",
+      steps: {
+        service: "Dooro Adeegga",
+        details: "Faahfaahinta Mashruuca",
+        package: "Dooro Xirmada",
+        payment: "Lacag Bixin Sugan",
+      },
+      next: "Sii wad",
+      back: "Dib u laabo",
+      finish: "Dhamaystir Dalabka",
+      placeholders: {
+        details: "Sharax aragtidaada mashruuca, hadafyada, iyo shuruudaha gaarka ah...",
+      },
     },
     footer: {
       about: "Ku saabsan Raygal Royal",
