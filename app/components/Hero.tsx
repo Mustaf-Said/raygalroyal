@@ -21,7 +21,7 @@ export default function Hero() {
         >
           <source src="/videos/coding.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-white dark:from-gray-950 dark:via-gray-950/80 dark:to-gray-950" />
+        <div className="absolute inset-0 bg-linear-to-b from-white via-white/80 to-white dark:from-gray-950 dark:via-gray-950/80 dark:to-gray-950" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
@@ -33,7 +33,7 @@ export default function Hero() {
           <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-wider text-blue-600 uppercase bg-blue-50 dark:bg-blue-900/30 rounded-full">
             {t.hero.badge}
           </span>
-          
+
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-900 dark:text-white mb-8">
             {t.hero.title.split(" ").map((word, i) => (
               <motion.span

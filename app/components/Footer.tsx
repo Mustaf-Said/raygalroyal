@@ -11,10 +11,10 @@ export default function Footer() {
   return (
     <footer className="bg-gray-950 text-white pt-24 pb-12 overflow-hidden relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
-      
+
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
-          
+
           {/* BRAND */}
           <div className="space-y-8">
             <Link href="/" className="flex items-center gap-2 group">
@@ -72,7 +72,7 @@ export default function Footer() {
             <ul className="space-y-6">
               <li className="flex items-start gap-4 text-gray-400">
                 <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                <span>Stockholm, Sweden</span>
+                <span>Gothenborg, Sweden</span>
               </li>
               <li className="flex items-center gap-4 text-gray-400">
                 <Phone className="w-6 h-6 text-blue-600 flex-shrink-0" />

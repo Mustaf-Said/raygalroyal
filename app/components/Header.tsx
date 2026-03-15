@@ -23,14 +23,16 @@ export default function Header() {
 
   const navLinks = [
     { name: t.nav.home, href: "/" },
-    { 
-      name: t.nav.services, 
+    {
+      name: t.nav.services,
       href: "#services",
       dropdown: [
         { name: t.services.items.web.title, href: "#services" },
         { name: t.services.items.mobile.title, href: "#services" },
         { name: t.services.items.design.title, href: "#services" },
         { name: t.services.items.ai.title, href: "#services" },
+        { name: t.services.items.cloud.title, href: "#services" },
+        { name: t.services.items.security.title, href: "#services" },
       ]
     },
     { name: t.nav.projects, href: "#projects" },
@@ -63,10 +65,10 @@ export default function Header() {
           {navLinks.map((link) => (
             <div key={link.name} className="relative group">
               {link.dropdown ? (
-                <button 
+                <button
                   onMouseEnter={() => setServicesOpen(true)}
                   onMouseLeave={() => setServicesOpen(false)}
-                  className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="flex text-start items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   {link.name} <ChevronDown className="w-4 h-4" />
                   <AnimatePresence>
