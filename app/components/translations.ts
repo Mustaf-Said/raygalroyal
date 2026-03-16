@@ -206,7 +206,7 @@ const translationData = {
       },
       fileUpload: {
         label: "Upload Project Brief (Optional)",
-        hint: "PDF, DOCX, or Image (Max 5MB)",
+        hint: "PDF, DOCX, ZIP, or Image (Max 5MB)",
         remove: "Remove file",
       },
     },
@@ -425,7 +425,7 @@ const translationData = {
       },
       fileUpload: {
         label: "Soo geli Macluumaadka Mashruuca (Ikhtiyaari)",
-        hint: "PDF, DOCX, ama Sawir (Ugu badnaan 5MB)",
+        hint: "PDF, DOCX, ZIP, ama Sawir (Ugu badnaan 5MB)",
         remove: "Ka saar faylka",
       },
     },

@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart, Upload, File, Loader2 } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart, Upload, File as FileIcon, Loader2 } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase"
 
 type Step = "service" | "details" | "package" | "payment"
+const STORAGE_BUCKET = "project-files"
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -18,13 +19,13 @@ const SERVICES_ICONS = {
   security: ShieldCheck,
 }
 
-export default function OrderFlow({ 
-  isOpen, 
-  onClose, 
-  preselectedService = null, 
-  preselectedPackage = null 
-}: { 
-  isOpen: boolean; 
+export default function OrderFlow({
+  isOpen,
+  onClose,
+  preselectedService = null,
+  preselectedPackage = null
+}: {
+  isOpen: boolean;
   onClose: () => void;
   preselectedService?: string | null;
   preselectedPackage?: string | null;
@@ -33,9 +34,13 @@ export default function OrderFlow({
   const [step, setStep] = useState<Step>(preselectedService ? "details" : "service")
   const [selectedService, setSelectedService] = useState<string | null>(preselectedService)
   const [projectDetails, setProjectDetails] = useState("")
+  const [customerEmail, setCustomerEmail] = useState("")
   const [selectedPackage, setSelectedPackage] = useState<string | null>(preselectedPackage)
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadWarning, setUploadWarning] = useState<string | null>(null)
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
 
   useEffect(() => {
     if (preselectedService) {
@@ -50,7 +55,7 @@ export default function OrderFlow({
   const steps: Step[] = ["service", "details", "package", "payment"]
   const currentStepIndex = steps.indexOf(step)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0])
     }
@@ -58,42 +63,95 @@ export default function OrderFlow({
 
   const handleNext = async () => {
     if (step === "service" && selectedService) setStep("details")
-    else if (step === "details" && projectDetails.length > 10) setStep("package")
+    else if (step === "details" && projectDetails.length > 10 && customerEmail.includes("@")) setStep("package")
     else if (step === "package" && selectedPackage) {
-      // START UPLOAD AND DB SAVE BEFORE GOING TO PAYMENT STEP
+      // Upload + save are best effort and should not block payment progression.
       setIsUploading(true)
+      setUploadWarning(null)
       try {
         let fileUrl = null
-        
-        if (file) {
-          const fileName = `${Date.now()}-${file.name}`
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from("project-files")
-            .upload(fileName, file)
 
-          if (uploadError) throw uploadError
-          fileUrl = uploadData.path
+        if (file) {
+          try {
+            await fetch("/api/supabase/ensure-storage-bucket", { method: "POST" })
+            const fileName = `${Date.now()}-${file.name}`
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from(STORAGE_BUCKET)
+              .upload(fileName, file)
+
+            if (uploadError) throw uploadError
+            fileUrl = uploadData.path
+          } catch (error) {
+            console.error("Upload failed:", JSON.stringify(error, null, 2))
+            setUploadWarning("Your file could not be uploaded, but you can continue to payment.")
+          }
         }
 
-        const { error: dbError } = await supabase
-          .from("project_orders")
-          .insert({
-            description: projectDetails,
-            file_url: fileUrl,
-            service: selectedService,
-            package: selectedPackage,
-            language: language
-          })
+        try {
+          const { error: dbError } = await supabase
+            .from("project_orders")
+            .insert({
+              description: projectDetails,
+              file_url: fileUrl,
+              plan: selectedPackage,
+              customer_email: customerEmail,
+              service: selectedService,
+              language: language,
+              created_at: new Date().toISOString()
+            })
 
-        if (dbError) throw dbError
-        
+          if (dbError) throw dbError
+        } catch (error) {
+          console.error("Saving order failed:", JSON.stringify(error, null, 2))
+          if (!uploadWarning) {
+            setUploadWarning("We could not save your project details right now, but you can continue to payment.")
+          }
+        }
+
         setStep("payment")
       } catch (error) {
-        console.error("Error processing order:", error)
-        alert("Failed to process order. Please try again.")
+        console.error("Error processing order:", JSON.stringify(error, null, 2))
+        setStep("payment")
       } finally {
         setIsUploading(false)
       }
+    }
+  }
+
+  const handleCheckout = async (provider: "stripe" | "paypal") => {
+    if (!selectedPackage) {
+      setPaymentError("Please select a package before continuing.")
+      return
+    }
+
+    setIsCreatingCheckout(true)
+    setPaymentError(null)
+
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider,
+          plan: selectedPackage,
+          service: selectedService,
+          details: projectDetails,
+          email: customerEmail,
+          language,
+        }),
+      })
+
+      const payload = await response.json()
+      if (!response.ok || !payload?.url) {
+        throw new Error(payload?.error || "Failed to start checkout")
+      }
+
+      window.location.href = payload.url as string
+    } catch (error) {
+      console.error("Checkout failed:", JSON.stringify(error, null, 2))
+      setPaymentError("Unable to start checkout. Please try again.")
+    } finally {
+      setIsCreatingCheckout(false)
     }
   }
 
@@ -107,8 +165,12 @@ export default function OrderFlow({
     setStep("service")
     setSelectedService(null)
     setProjectDetails("")
+    setCustomerEmail("")
     setSelectedPackage(null)
     setFile(null)
+    setUploadWarning(null)
+    setPaymentError(null)
+    setIsCreatingCheckout(false)
   }
 
   if (!isOpen) return null
@@ -123,7 +185,7 @@ export default function OrderFlow({
           onClick={() => { onClose(); reset(); }}
           className="absolute inset-0 bg-gray-950/60 backdrop-blur-sm"
         />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -146,7 +208,7 @@ export default function OrderFlow({
                 ))}
               </div>
             </div>
-            <button 
+            <button
               onClick={() => { onClose(); reset(); }}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             >
@@ -174,8 +236,8 @@ export default function OrderFlow({
                         onClick={() => setSelectedService(key)}
                         className={cn(
                           "p-6 rounded-2xl border-2 text-left transition-all group",
-                          isSelected 
-                            ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20" 
+                          isSelected
+                            ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20"
                             : "border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800"
                         )}
                       >
@@ -199,19 +261,32 @@ export default function OrderFlow({
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
+                  className="space-y-6"
                 >
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.order.steps.details}</label>
-                    <textarea
-                      value={projectDetails}
-                      onChange={(e) => setProjectDetails(e.target.value)}
-                      placeholder={t.order.placeholders.details}
-                      rows={6}
-                      className="w-full p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
-                    />
-                    <div className="text-right text-xs text-gray-400">
-                      {projectDetails.length} characters (min 10)
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.contact.email}</label>
+                      <input
+                        type="email"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.order.steps.details}</label>
+                      <textarea
+                        value={projectDetails}
+                        onChange={(e) => setProjectDetails(e.target.value)}
+                        placeholder={t.order.placeholders.details}
+                        rows={5}
+                        className="w-full p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
+                      />
+                      <div className="text-right text-xs text-gray-400">
+                        {projectDetails.length} characters (min 10)
+                      </div>
                     </div>
                   </div>
 
@@ -222,9 +297,9 @@ export default function OrderFlow({
                       <div className="relative">
                         <input
                           type="file"
-                          onChange={handleFileChange}
+                          onChange={handleFileUpload}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          accept=".pdf,.docx,.png,.jpg,.jpeg"
+                          accept=".pdf,.docx,.zip,.png,.jpg,.jpeg"
                         />
                         <div className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/30">
                           <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600">
@@ -240,14 +315,14 @@ export default function OrderFlow({
                       <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center text-blue-600">
-                            <File className="w-5 h-5" />
+                            <FileIcon className="w-5 h-5" />
                           </div>
                           <div>
                             <p className="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[200px]">{file.name}</p>
                             <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                           </div>
                         </div>
-                        <button 
+                        <button
                           onClick={() => setFile(null)}
                           className="p-2 hover:bg-white dark:hover:bg-gray-900 rounded-lg text-red-500 transition-colors"
                         >
@@ -276,8 +351,8 @@ export default function OrderFlow({
                         onClick={() => setSelectedPackage(pkg)}
                         className={cn(
                           "p-8 rounded-3xl border-2 text-left transition-all relative overflow-hidden",
-                          isSelected 
-                            ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20 shadow-xl" 
+                          isSelected
+                            ? "border-blue-600 bg-blue-50/50 dark:bg-blue-900/20 shadow-xl"
                             : "border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800"
                         )}
                       >
@@ -304,6 +379,10 @@ export default function OrderFlow({
                 </motion.div>
               )}
 
+              {step === "package" && uploadWarning && (
+                <p className="mt-4 text-sm text-amber-700 dark:text-amber-300">{uploadWarning}</p>
+              )}
+
               {step === "payment" && (
                 <motion.div
                   key="payment"
@@ -321,20 +400,31 @@ export default function OrderFlow({
                   </div>
 
                   <div className="space-y-4">
-                    <button className="w-full p-6 bg-indigo-600 text-white font-bold rounded-2xl flex items-center justify-between hover:bg-indigo-700 transition-colors">
+                    <button
+                      onClick={() => handleCheckout("stripe")}
+                      disabled={isCreatingCheckout || !selectedPackage}
+                      className="w-full p-6 bg-indigo-600 text-white font-bold rounded-2xl flex items-center justify-between hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                    >
                       <div className="flex items-center gap-4">
                         <CreditCard className="w-6 h-6" />
-                        Pay with Stripe
+                        {isCreatingCheckout ? "Redirecting..." : "Pay with Stripe"}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <button className="w-full p-6 bg-[#FFC439] text-gray-900 font-bold rounded-2xl flex items-center justify-between hover:bg-[#E1AD2A] transition-colors">
+                    <button
+                      onClick={() => handleCheckout("paypal")}
+                      disabled={isCreatingCheckout || !selectedPackage}
+                      className="w-full p-6 bg-[#FFC439] text-gray-900 font-bold rounded-2xl flex items-center justify-between hover:bg-[#E1AD2A] transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                    >
                       <div className="flex items-center gap-4">
                         <ShoppingCart className="w-6 h-6" />
-                        Pay with PayPal
+                        {isCreatingCheckout ? "Redirecting..." : "Pay with PayPal"}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
+                    {paymentError && (
+                      <p className="text-sm text-red-600 dark:text-red-400">{paymentError}</p>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -361,7 +451,7 @@ export default function OrderFlow({
                 disabled={
                   isUploading ||
                   (step === "service" && !selectedService) ||
-                  (step === "details" && projectDetails.length < 10) ||
+                  (step === "details" && (projectDetails.length < 10 || !customerEmail.includes("@"))) ||
                   (step === "package" && !selectedPackage)
                 }
                 className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-[140px] justify-center"

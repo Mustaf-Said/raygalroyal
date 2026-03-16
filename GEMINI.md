@@ -1,96 +1,102 @@
-I need you to update the **Start Your Project modal form** in my Next.js project.
+We have a new issue in the project order flow.
 
-Tech stack:
+Error:
 
-- Next.js (App Router)
+Saving order failed: {}
+at handleNext (app/components/OrderFlow.tsx:102)
+
+Stack:
+
+- Next.js App Router
 - TypeScript
-- TailwindCSS
-- Framer Motion
 - Supabase
+- Stripe checkout
+- Storage bucket already working
 
-Current behavior:
-The form only allows users to **write a project description in a textarea**.
+The file upload step now works correctly, but saving the order to Supabase fails.
 
-What I want:
-Add a **file upload option** so users can upload a project document instead of typing everything manually.
+Investigation shows the Supabase database currently has **no tables created**, so the insert operation fails.
 
-Examples of files users may upload:
+The code currently does something like:
 
-- PDF
-- DOCX
-- ZIP
-- Images
-- Project specification files
+await supabase
+.from("project_orders")
+.insert({
+plan: selectedPlan,
+description: projectText,
+file_url: filePath
+})
 
-Requirements:
+Tasks to fix:
 
-1. Add a **file input field below the textarea**.
+1. Create the required Supabase database table.
 
-Example UI:
+Table name:
+project_orders
 
-```
-Project Details
-[ textarea ]
+Columns required:
 
-Upload project file (optional)
-[ Choose File ]
-```
+id
+uuid primary key
+default uuid_generate_v4()
 
-2. Use React state to store the selected file.
+plan
+text
+
+description
+text
+
+file_url
+text
+
+customer_email
+text
+
+created_at
+timestamp
+default now()
+
+2. Enable Row Level Security for the table.
+
+3. Add a policy that allows inserts from the frontend (anon role).
 
 Example:
 
-```
-const [file, setFile] = useState<File | null>(null)
-```
+create policy "Allow public order insert"
+on project_orders
+for insert
+to anon
+with check (true);
 
-3. Add a handler function:
+4. Update the insert code if needed to match the column names exactly.
 
-```
-const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (!e.target.files) return
-  setFile(e.target.files[0])
-}
-```
+Example:
 
-4. Upload the file to **Supabase Storage** when the user submits the form.
+await supabase.from("project_orders").insert({
+plan: selectedPlan,
+description: projectText,
+file_url: filePath,
+created_at: new Date()
+})
 
-Use a storage bucket called:
+5. Improve the error logging so the actual Supabase error is visible.
 
-```
-project-files
-```
+Replace:
 
-Example upload logic:
+console.error("Saving order failed:", error)
 
-```
-const { data, error } = await supabase.storage
-  .from("project-files")
-  .upload(fileName, file)
-```
+with:
 
-5. Save the uploaded file path together with the project order in the database.
+console.error("Saving order failed:", JSON.stringify(error, null, 2))
 
-Example table:
+6. Return the SQL needed to create the table so it can be pasted directly into the Supabase SQL Editor.
 
-```
-project_orders
-```
+Expected result:
 
-Fields:
+User flow should be:
 
-```
-description
-file_url
-created_at
-```
-
-Important:
-
-- The file upload should be **optional**.
-- Users should still be able to submit the form with only text.
-- Do not remove the existing UI or animations.
-- Keep the code compatible with **Next.js, TypeScript, TailwindCSS and Supabase**.
-
-Goal:
-Allow users to either **describe their project in text or upload a project file** to make submitting project requests easier.
+Select service
+→ Choose package
+→ Upload project file
+→ Save order to Supabase
+→ Continue to payment
