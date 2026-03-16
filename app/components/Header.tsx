@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { useTheme } from "./ThemeProvider"
+import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
 
 export default function Header() {
@@ -14,6 +15,7 @@ export default function Header() {
   const [servicesOpen, setServicesOpen] = useState(false)
   const { language, toggleLanguage, t } = useLanguage()
   const { toggleTheme, isDark } = useTheme()
+  const { openOrderModal } = useModals()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -27,12 +29,12 @@ export default function Header() {
       name: t.nav.services,
       href: "#services",
       dropdown: [
-        { name: t.services.items.web.title, href: "#services" },
-        { name: t.services.items.mobile.title, href: "#services" },
-        { name: t.services.items.design.title, href: "#services" },
-        { name: t.services.items.ai.title, href: "#services" },
-        { name: t.services.items.cloud.title, href: "#services" },
-        { name: t.services.items.security.title, href: "#services" },
+        { name: t.services.items.web.title, key: "web" },
+        { name: t.services.items.mobile.title, key: "mobile" },
+        { name: t.services.items.design.title, key: "design" },
+        { name: t.services.items.ai.title, key: "ai" },
+        { name: t.services.items.cloud.title, key: "cloud" },
+        { name: t.services.items.security.title, key: "security" },
       ]
     },
     { name: t.nav.projects, href: "#projects" },
@@ -63,39 +65,44 @@ export default function Header() {
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
-            <div key={link.name} className="relative group">
+            <div 
+              key={link.name} 
+              className="relative group"
+              onMouseEnter={() => link.dropdown && setServicesOpen(true)}
+              onMouseLeave={() => link.dropdown && setServicesOpen(false)}
+            >
               {link.dropdown ? (
-                <button
-                  onMouseEnter={() => setServicesOpen(true)}
-                  onMouseLeave={() => setServicesOpen(false)}
-                  className="flex text-start items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  {link.name} <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer py-2">
+                  {link.name} <ChevronDown className={cn("w-4 h-4 transition-transform", servicesOpen && "rotate-180")} />
                   <AnimatePresence>
                     {servicesOpen && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-2"
+                        className="absolute top-full left-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl p-2 z-[60]"
                       >
                         {link.dropdown.map((item) => (
-                          <Link
+                          <button
                             key={item.name}
-                            href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openOrderModal(item.key);
+                              setServicesOpen(false);
+                            }}
+                            className="w-full text-left block px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors cursor-pointer font-bold"
                           >
                             {item.name}
-                          </Link>
+                          </button>
                         ))}
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </button>
+                </div>
               ) : (
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 block"
                 >
                   {link.name}
                 </Link>
@@ -126,12 +133,12 @@ export default function Header() {
           </button>
 
           {/* START PROJECT CTA */}
-          <Link
-            href="#contact"
+          <button
+            onClick={() => openOrderModal()}
             className="hidden sm:block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full transition-all hover:shadow-lg hover:shadow-blue-500/25 active:scale-95"
           >
             {t.nav.startProject}
-          </Link>
+          </button>
 
           {/* MOBILE MENU TOGGLE */}
           <button
@@ -163,13 +170,15 @@ export default function Header() {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                href="#contact"
-                onClick={() => setMenuOpen(false)}
+              <button
+                onClick={() => {
+                  openOrderModal();
+                  setMenuOpen(false);
+                }}
                 className="mt-2 px-4 py-4 bg-blue-600 text-white text-center font-bold rounded-xl"
               >
                 {t.nav.startProject}
-              </Link>
+              </button>
             </nav>
           </motion.div>
         )}

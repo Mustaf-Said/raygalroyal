@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Globe, Code, Layout, Cloud, Cpu, ShieldCheck, ArrowRight } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
+import { useModals } from "./ModalProvider"
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -15,6 +16,7 @@ const SERVICES_ICONS = {
 
 export default function Services() {
   const { t } = useLanguage()
+  const { openOrderModal } = useModals()
 
   const serviceKeys = Object.keys(t.services.items) as Array<keyof typeof t.services.items>
 
@@ -74,7 +76,10 @@ export default function Services() {
                   {service.desc}
                 </p>
 
-                <button className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 group/btn">
+                <button 
+                  onClick={() => openOrderModal(key)}
+                  className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 group/btn"
+                >
                   LEARN MORE 
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </button>
@@ -92,7 +97,10 @@ export default function Services() {
         >
           <h3 className="text-3xl font-bold mb-4">Ready to build something amazing?</h3>
           <p className="text-blue-100 mb-8 text-lg">Select a service and let&apos;s get started on your digital journey.</p>
-          <button className="px-10 py-4 bg-white text-blue-600 font-black rounded-2xl hover:bg-gray-100 transition-colors shadow-lg shadow-black/10 active:scale-95">
+          <button 
+            onClick={() => openOrderModal()}
+            className="px-10 py-4 bg-white text-blue-600 font-black rounded-2xl hover:bg-gray-100 transition-colors shadow-lg shadow-black/10 active:scale-95"
+          >
             START YOUR ORDER
           </button>
         </motion.div>

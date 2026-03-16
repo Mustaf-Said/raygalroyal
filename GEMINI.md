@@ -1,219 +1,102 @@
-You are a senior UI/UX designer and senior full-stack developer.
+We have a new issue in the project order flow.
 
-I have a website built with **Next.js, TypeScript and TailwindCSS**.
+Error:
 
-Currently it is a portfolio, but I want to transform it into a **professional digital agency website**.
+Saving order failed: {}
+at handleNext (app/components/OrderFlow.tsx:102)
 
-Company name: Raygal Royal.
+Stack:
 
----
+- Next.js App Router
+- TypeScript
+- Supabase
+- Stripe checkout
+- Storage bucket already working
 
-MULTI-LANGUAGE REQUIREMENT
+The file upload step now works correctly, but saving the order to Supabase fails.
 
-The website supports two languages:
+Investigation shows the Supabase database currently has **no tables created**, so the insert operation fails.
 
-English (default)
-Somali (secondary)
+The code currently does something like:
 
-Every section, text, title, button, and form must include both languages.
+await supabase
+.from("project_orders")
+.insert({
+plan: selectedPlan,
+description: projectText,
+file_url: filePath
+})
 
-Do not remove the multilingual system.
+Tasks to fix:
 
----
+1. Create the required Supabase database table.
 
-GOAL
+Table name:
+project_orders
 
-Create a **modern tech company website** that convinces businesses to order services.
+Columns required:
 
-The UI should be high-quality and trustworthy so users feel confident starting a project.
+id
+uuid primary key
+default uuid_generate_v4()
 
----
+plan
+text
 
-SECTION BACKGROUNDS
+description
+text
 
-Use different backgrounds across sections:
+file_url
+text
 
-Video backgrounds
-Image backgrounds
-Gradient backgrounds
-Minimal clean sections
+customer_email
+text
+
+created_at
+timestamp
+default now()
+
+2. Enable Row Level Security for the table.
+
+3. Add a policy that allows inserts from the frontend (anon role).
 
 Example:
 
-Hero → video background
-Services → gradient background
-Projects → image cards
-Testimonials → soft gradient
-CTA → strong highlight section
+create policy "Allow public order insert"
+on project_orders
+for insert
+to anon
+with check (true);
 
----
-
-ANIMATIONS
-
-Use modern animations with **Framer Motion**.
-
-Examples:
-
-fade-in on scroll
-animated hero text
-hover effects on service cards
-smooth transitions between sections
-
----
-
-THEME SYSTEM
-
-Add Dark Mode and Light Mode.
-
-Requirements:
-
-theme toggle button in navbar
-Tailwind dark mode support
-save preference in localStorage
-default follows system preference
-
----
-
-NAVIGATION
-
-Modern navbar with dropdown menu.
-
-Menu structure:
-
-Home
-Services (dropdown)
-Projects
-Team
-Pricing
-FAQ
-Contact
-
----
-
-SERVICES ORDER FLOW
-
-Make it easy for customers to order services.
-
-Flow:
-
-Choose service
-Fill project details form
-Select package
-Secure payment
-
----
-
-PAYMENT SYSTEM
-
-Integrate payment options:
-
-Stripe (credit / debit cards)
-
-PayPal
-
----
-
-TEAM / FREELANCERS
-
-Show that Raygal Royal works with freelance professionals.
-
-Roles:
-
-Frontend Developer
-Backend Developer
-Fullstack Developer
-UI/UX Designer
-
-Add section:
-
-Join the Raygal Royal Team
-
-Freelancers can apply.
-
----
-
-FAQ SECTION
-
-Create a Frequently Asked Questions section.
-
-Example questions:
-
-How long does it take to build a website?
-
-What technologies do you use?
-
-Do you offer support after launch?
-
-Can I request custom features?
-
-How secure are the platforms you build?
-
-Provide answers that highlight modern technologies, performance, and reliability.
-
-All questions and answers must exist in both English and Somali.
-
----
-
-TERMS AND CONDITIONS
-
-Create a Terms and Conditions section/page.
-
-Explain:
-
-Project scope
-Payment terms
-Client responsibilities
-Development timeline
-Delivery expectations
-Refund policies
-Intellectual property
-Confidentiality
-
-Also include a **quality guarantee statement**.
+4. Update the insert code if needed to match the column names exactly.
 
 Example:
 
-Raygal Royal guarantees that all projects are built using modern technologies and industry best practices to deliver secure, scalable, and high-performance web applications that meet client expectations.
+await supabase.from("project_orders").insert({
+plan: selectedPlan,
+description: projectText,
+file_url: filePath,
+created_at: new Date()
+})
 
-Provide both English and Somali versions.
+5. Improve the error logging so the actual Supabase error is visible.
 
----
+Replace:
 
-CLIENT GUARANTEE
+console.error("Saving order failed:", error)
 
-Add a section that explains the quality promise.
+with:
 
-Example:
+console.error("Saving order failed:", JSON.stringify(error, null, 2))
 
-Modern Technology Stack
-Secure and scalable architecture
-Responsive design
-Fast performance
-Clean UI/UX
-Professional development process
+6. Return the SQL needed to create the table so it can be pasted directly into the Supabase SQL Editor.
 
-Explain that Raygal Royal is committed to delivering high-quality digital products.
+Expected result:
 
----
+User flow should be:
 
-CONTACT
-
-Contact form
-
-Email
-WhatsApp
-Start a Project button
-
----
-
-EXTRA REQUIREMENTS
-
-Suggest:
-
-logo concept for Raygal Royal
-color palette
-Next.js folder structure
-Tailwind configuration
-Stripe integration example
-PayPal integration example
-multilingual system structure
+Select service
+→ Choose package
+→ Upload project file
+→ Save order to Supabase
+→ Continue to payment

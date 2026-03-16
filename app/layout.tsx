@@ -4,6 +4,7 @@ import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { LanguageProvider } from "./components/LanguageProvider"
 import { ThemeProvider } from "./components/ThemeProvider"
+import { ModalProvider } from "./components/ModalProvider"
 
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
@@ -21,11 +22,13 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
         <LanguageProvider>
           <ThemeProvider>
-            <Header />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
+            <ModalProvider>
+              <Header />
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <Footer />
+            </ModalProvider>
           </ThemeProvider>
         </LanguageProvider>
       </body>
