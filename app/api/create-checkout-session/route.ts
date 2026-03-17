@@ -8,7 +8,12 @@ const PLAN_TO_PRICE_ENV: Record<string, string> = {
   pro: "STRIPE_PRICE_PRO",
   enterprise: "STRIPE_PRICE_ENTERPRISE",
 }
-
+/* Paybal betalning */
+const PLAN_TO_PAYPAL_PRICE: Record<string, string> = {
+  basic: "1499",
+  pro: "2999",
+  enterprise: "5000",
+}
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
@@ -25,13 +30,65 @@ export async function POST(req: NextRequest) {
     if (!plan || !PLAN_TO_PRICE_ENV[plan]) {
       return NextResponse.json({ error: "Invalid plan selected" }, { status: 400 })
     }
+    const origin = req.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
 
     if (provider === "paypal") {
-      const paypalCheckoutUrl = process.env.NEXT_PUBLIC_PAYPAL_CHECKOUT_URL
-      if (!paypalCheckoutUrl) {
-        return NextResponse.json({ error: "PayPal checkout is not configured" }, { status: 501 })
+      const price = PLAN_TO_PAYPAL_PRICE[plan]
+
+      if (!price) {
+        return NextResponse.json({ error: "Invalid PayPal plan" }, { status: 400 })
       }
-      return NextResponse.json({ url: paypalCheckoutUrl }, { status: 200 })
+
+      // 1. Get access token
+      const auth = await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`
+          ).toString("base64")}`,
+        },
+        body: "grant_type=client_credentials",
+      })
+
+      const authData = await auth.json()
+      const accessToken = authData.access_token
+
+      // 2. Create PayPal order
+      const orderRes = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: price,
+              },
+            },
+          ],
+          application_context: {
+            return_url: `${origin}/paypal-success`,
+            cancel_url: `${origin}/paypal-cancel`,
+          },
+        })
+      })
+
+      const orderData = await orderRes.json()
+
+      if (!orderData.id) {
+        console.error(orderData)
+        return NextResponse.json({ error: "PayPal order failed" }, { status: 500 })
+      }
+
+      return NextResponse.json({
+        /* url: `https://www.paypal.com/checkoutnow?token=${orderData.id}`, */
+        url: `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`,
+      })
     }
 
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY
@@ -45,7 +102,6 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = new Stripe(stripeSecretKey)
-    const origin = req.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
