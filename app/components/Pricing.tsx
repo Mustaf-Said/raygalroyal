@@ -7,7 +7,7 @@ import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
 
 export default function Pricing() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { openOrderModal } = useModals()
 
   const plans = [
@@ -66,8 +66,8 @@ export default function Pricing() {
                 transition={{ delay: index * 0.1 }}
                 className={cn(
                   "relative flex flex-col p-8 rounded-[40px] border transition-all duration-500",
-                  plan.popular 
-                    ? "bg-gray-900 dark:bg-blue-600 border-gray-900 dark:border-blue-600 shadow-2xl scale-105 z-10 text-white" 
+                  plan.popular
+                    ? "bg-gray-900 dark:bg-blue-600 border-gray-900 dark:border-blue-600 shadow-2xl scale-105 z-10 text-white"
                     : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 text-gray-900 dark:text-white hover:border-blue-500/50"
                 )}
               >
@@ -85,10 +85,22 @@ export default function Pricing() {
                 </div>
 
                 <h3 className="text-2xl font-bold mb-2">{planText.name}</h3>
-                
-                <div className="flex items-baseline gap-1 mb-8">
-                  <span className="text-sm font-bold opacity-70">{t.pricing.perProject}</span>
-                  <span className="text-4xl font-black">{t.pricing.currency}{planText.price}</span>
+
+                <div className="flex flex-col mb-8">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm font-bold opacity-70">{t.pricing.perProject}</span>
+                    <span className="text-4xl font-black">
+                      {plan.key === "enterprise"
+                        ? (language === "so" ? "Qiimo go'an" : "Custom")
+                        : `${t.pricing.currency}${planText.price}`
+                      }
+                    </span>
+                  </div>
+                  <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+                    {plan.key === "basic"}
+                    {plan.key === "pro"}
+                    {plan.key === "enterprise"}
+                  </div>
                 </div>
 
                 <div className="space-y-4 mb-10 flex-1">
@@ -105,7 +117,7 @@ export default function Pricing() {
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => openOrderModal(null, plan.key)}
                   className={cn(
                     "w-full py-4 rounded-2xl font-black transition-all active:scale-95",

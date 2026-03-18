@@ -1,7 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, Suspense } from "react"
 import OrderFlow from "./OrderFlow"
+import SuccessModal from "./SuccessModal"
 
 type ModalContextType = {
   isOrderModalOpen: boolean
@@ -37,6 +38,9 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
         preselectedService={preselectedService}
         preselectedPackage={preselectedPackage}
       />
+      <Suspense>
+        <SuccessModal />
+      </Suspense>
     </ModalContext.Provider>
   )
 }

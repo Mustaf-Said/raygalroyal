@@ -41,6 +41,7 @@ export default function OrderFlow({
   const [uploadWarning, setUploadWarning] = useState<string | null>(null)
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [orderId, setOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     if (preselectedService) {
@@ -65,7 +66,6 @@ export default function OrderFlow({
     if (step === "service" && selectedService) setStep("details")
     else if (step === "details" && projectDetails.length > 10 && customerEmail.includes("@")) setStep("package")
     else if (step === "package" && selectedPackage) {
-      // Upload + save are best effort and should not block payment progression.
       setIsUploading(true)
       setUploadWarning(null)
       try {
@@ -88,21 +88,49 @@ export default function OrderFlow({
         }
 
         try {
-          const { error: dbError } = await supabase
-            .from("project_orders")
-            .insert({
-              description: projectDetails,
-              file_url: fileUrl,
-              plan: selectedPackage,
-              customer_email: customerEmail,
-              service: selectedService,
-              language: language,
-              created_at: new Date().toISOString()
-            })
+          const orderData = {
+            description: projectDetails,
+            file_url: fileUrl,
+            plan: selectedPackage,
+            customer_email: customerEmail,
+            service: selectedService,
+            language: language,
+            status: "pending"
+          }
 
-          if (dbError) throw dbError
-        } catch (error) {
-          console.error("Saving order failed:", JSON.stringify(error, null, 2))
+          let res;
+          if (orderId) {
+            res = await supabase
+              .from("project_orders")
+              .update(orderData)
+              .eq("id", orderId)
+              .select()
+              .single()
+          } else {
+            res = await supabase
+              .from("project_orders")
+              .insert(orderData)
+              .select()
+              .single()
+          }
+
+          if (res.error) {
+            console.error("Supabase error detail:", JSON.stringify(res.error, null, 2))
+            throw res.error
+          }
+          if (res.data) setOrderId(res.data.id)
+        } catch (error: any) {
+          console.error("Saving order failed full error:", error)
+          console.error("Saving order failed (JSON):", JSON.stringify(error, null, 2))
+          if (error?.message) {
+            console.error("Error message:", error.message)
+          }
+          if (error?.details) {
+            console.error("Error details:", error.details)
+          }
+          if (error?.hint) {
+            console.error("Error hint:", error.hint)
+          }
           if (!uploadWarning) {
             setUploadWarning("We could not save your project details right now, but you can continue to payment.")
           }
@@ -119,7 +147,7 @@ export default function OrderFlow({
   }
 
   const handleCheckout = async (provider: "stripe" | "paypal") => {
-    if (!selectedPackage) {
+    if (!selectedPackage || !orderId) {
       setPaymentError("Please select a package before continuing.")
       return
     }
@@ -133,6 +161,7 @@ export default function OrderFlow({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           provider,
+          orderId,
           plan: selectedPackage,
           service: selectedService,
           details: projectDetails,

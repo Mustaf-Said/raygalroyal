@@ -1,102 +1,192 @@
-We have a new issue in the project order flow.
+I need a full audit and fix of my payment system. The stack is Next.js (App Router), TypeScript, TailwindCSS, Supabase (database), and Stripe + PayPal for payments. The app also supports multilingual content (English ↔ Somali).
 
-Error:
+---
 
-Saving order failed: {}
-at handleNext (app/components/OrderFlow.tsx:102)
+### 🔴 Current Critical Issues
 
-Stack:
+1. **Amount is always 0 or null**
+   - Stripe/PayPal checkout shows correct price
+   - But Supabase stores `amount = null` or `0`
+   - UI shows `$0.00`
 
-- Next.js App Router
-- TypeScript
-- Supabase
-- Stripe checkout
-- Storage bucket already working
+2. **Currency inconsistency**
+   - Some plans use USD, others SEK incorrectly
+   - Currency is not consistent between UI, Stripe, and database
 
-The file upload step now works correctly, but saving the order to Supabase fails.
+3. **Customer email issue**
+   - User enters email at the beginning
+   - But Stripe checkout shows my own email (likely hardcoded or reused)
+   - Correct customer email is not passed or saved
 
-Investigation shows the Supabase database currently has **no tables created**, so the insert operation fails.
+4. **Database not updating**
+   - Orders remain:
+     - status: "pending"
+     - amount: null
+     - currency: null
 
-The code currently does something like:
+   - No update after successful payment
 
-await supabase
-.from("project_orders")
-.insert({
-plan: selectedPlan,
-description: projectText,
-file_url: filePath
-})
+5. **No confirmation email**
+   - Customer does NOT receive email after successful payment
 
-Tasks to fix:
+6. **PayPal vs Stripe inconsistency**
+   - Different logic between providers
+   - Amount handling is inconsistent
 
-1. Create the required Supabase database table.
+7. **Possible hardcoded values**
+   - Email and/or currency might be hardcoded
 
-Table name:
-project_orders
+---
 
-Columns required:
+### 🟡 Pricing Logic (IMPORTANT REQUIREMENT)
 
-id
-uuid primary key
-default uuid_generate_v4()
+#### UI (Frontend display)
 
-plan
-text
+- Basic → `$1499`
+- Professional → `$2999`
+- Enterprise → **"Custom"**
 
-description
-text
+👉 “Custom” is ONLY for display — not for payment logic
 
-file_url
-text
+---
 
-customer_email
-text
+### 💳 Payment Logic (CRITICAL)
 
-created_at
-timestamp
-default now()
+When user clicks **Enterprise (Custom)**:
 
-2. Enable Row Level Security for the table.
+- If language = **Somali (so)**:
+  - Amount = **5000**
+  - Currency = **USD**
 
-3. Add a policy that allows inserts from the frontend (anon role).
+- If language = **English (en)**:
+  - Amount = **50000**
+  - Currency = **SEK**
 
-Example:
+👉 This must be handled dynamically in backend
+👉 DO NOT send "Custom" as price
 
-create policy "Allow public order insert"
-on project_orders
-for insert
-to anon
-with check (true);
+---
 
-4. Update the insert code if needed to match the column names exactly.
+### 🟢 Additional UI Requirement (Dual Currency Display)
 
-Example:
+Show both currencies in UI for clarity:
 
-await supabase.from("project_orders").insert({
-plan: selectedPlan,
-description: projectText,
-file_url: filePath,
-created_at: new Date()
-})
+Examples:
 
-5. Improve the error logging so the actual Supabase error is visible.
+- Basic → `$1499 (~16,000 SEK)`
+- Pro → `$2999 (~32,000 SEK)`
+- Enterprise → `Custom (from $5000 / ~50,000 SEK)`
 
-Replace:
+Rules:
 
-console.error("Saving order failed:", error)
+- USD is base price
+- SEK is approximate conversion
+- Conversion is frontend-only (not used in Stripe)
 
-with:
+---
 
-console.error("Saving order failed:", JSON.stringify(error, null, 2))
+### 🟢 What I Need You To Do
 
-6. Return the SQL needed to create the table so it can be pasted directly into the Supabase SQL Editor.
+Perform a full end-to-end audit and fix:
 
-Expected result:
+---
 
-User flow should be:
+#### 1. Backend (API routes)
 
-Select service
-→ Choose package
-→ Upload project file
-→ Save order to Supabase
-→ Continue to payment
+- Fix checkout logic for Stripe & PayPal
+- Ensure:
+  - Correct `amount` and `currency`
+  - Correct `customer_email`
+  - No hardcoded values
+
+- Handle Enterprise pricing dynamically based on language
+
+---
+
+#### 2. Stripe Integration
+
+- Remove dependency on static `priceId` for Enterprise
+- Use dynamic `price_data` instead
+- Pass correct `customer_email`
+- Add/fix webhook:
+  - On `checkout.session.completed`:
+    - Update Supabase:
+      - amount = session.amount_total / 100
+      - currency = session.currency
+      - status = "paid"
+
+---
+
+#### 3. PayPal Integration
+
+- Ensure amount matches backend logic
+- Sync success response with Supabase
+
+---
+
+#### 4. Supabase Database
+
+- Audit `project_orders` table
+- Ensure correct updates:
+  - amount
+  - currency
+  - status
+  - payment_id
+
+- Fix issue where data is not saved
+
+---
+
+#### 5. Frontend (UI / Success Modal)
+
+- Display correct:
+  - amount
+  - currency
+
+- Fix `$0.00` issue
+- Implement dual currency display
+- Ensure "Custom" is never used as real price
+
+---
+
+#### 6. Currency Conversion (Frontend)
+
+- Implement simple conversion:
+  - Example: 1 USD ≈ 10.5 SEK
+
+- Use only for display
+
+---
+
+#### 7. Email System
+
+- Send confirmation email after successful payment
+- Use `customer_email` from database
+- Trigger after successful payment (prefer webhook)
+
+---
+
+### ⚠️ Important Rules
+
+- NEVER trust frontend for payment data
+- All final payment data must come from Stripe/PayPal or webhook
+- DO NOT hardcode email or currency
+- Keep Stripe, PayPal, database, and UI fully consistent
+
+---
+
+### 🎯 Goal
+
+A fully working production-ready payment system where:
+
+- Payments work correctly
+- Database updates correctly
+- No `amount = 0` issues
+- Customer email is correct
+- Confirmation email is sent
+- Enterprise plan works as "Custom" in UI but correct price in backend
+- Dual currency display works cleanly
+
+---
+
+Please review all relevant files (API routes, components, Supabase queries, Stripe/PayPal logic) and fix everything systematically.

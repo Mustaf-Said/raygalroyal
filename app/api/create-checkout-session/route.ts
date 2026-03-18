@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
+import { createClient } from "@supabase/supabase-js"
 
 type Provider = "stripe" | "paypal"
 
@@ -8,16 +9,23 @@ const PLAN_TO_PRICE_ENV: Record<string, string> = {
   pro: "STRIPE_PRICE_PRO",
   enterprise: "STRIPE_PRICE_ENTERPRISE",
 }
-/* Paybal betalning */
+
 const PLAN_TO_PAYPAL_PRICE: Record<string, string> = {
   basic: "1499",
   pro: "2999",
   enterprise: "5000",
 }
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
       provider?: Provider
+      orderId?: string
       plan?: string
       service?: string | null
       details?: string
@@ -26,21 +34,54 @@ export async function POST(req: NextRequest) {
 
     const provider = body.provider ?? "stripe"
     const plan = body.plan
+    const orderId = body.orderId
+    const language = body.language || "en"
+    const customerEmail = body.email
+
+    if (!orderId) {
+      return NextResponse.json({ error: "Missing orderId" }, { status: 400 })
+    }
 
     if (!plan || !PLAN_TO_PRICE_ENV[plan]) {
       return NextResponse.json({ error: "Invalid plan selected" }, { status: 400 })
     }
+
+    // Dynamic pricing for Enterprise
+    let amount: number;
+    let currency = "USD";
+
+    if (plan === "enterprise") {
+      if (language === "so") {
+        amount = 5000;
+        currency = "USD";
+      } else {
+        amount = 50000;
+        currency = "SEK";
+      }
+    } else {
+      amount = parseFloat(PLAN_TO_PAYPAL_PRICE[plan]);
+      currency = "USD";
+    }
+
     const origin = req.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
 
-    if (provider === "paypal") {
-      const price = PLAN_TO_PAYPAL_PRICE[plan]
+    // Update order with provider, amount, and currency
+    await supabase
+      .from("project_orders")
+      .update({
+        provider,
+        amount,
+        currency,
+        status: "pending"
+      })
+      .eq("id", orderId)
 
-      if (!price) {
-        return NextResponse.json({ error: "Invalid PayPal plan" }, { status: 400 })
-      }
+    if (provider === "paypal") {
+      const paypalBaseUrl = process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com"
+      const paypalCheckoutUrl = process.env.PAYPAL_CHECKOUT_URL || "https://www.sandbox.paypal.com/checkoutnow"
 
       // 1. Get access token
-      const auth = await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
+      const auth = await fetch(`${paypalBaseUrl}/v1/oauth2/token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -54,8 +95,13 @@ export async function POST(req: NextRequest) {
       const authData = await auth.json()
       const accessToken = authData.access_token
 
+      if (!accessToken) {
+        console.error("PayPal Auth failed:", authData)
+        return NextResponse.json({ error: "PayPal authentication failed" }, { status: 500 })
+      }
+
       // 2. Create PayPal order
-      const orderRes = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
+      const orderRes = await fetch(`${paypalBaseUrl}/v2/checkout/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,14 +111,15 @@ export async function POST(req: NextRequest) {
           intent: "CAPTURE",
           purchase_units: [
             {
+              custom_id: orderId,
               amount: {
-                currency_code: "USD",
-                value: price,
+                currency_code: currency,
+                value: amount.toString(),
               },
             },
           ],
           application_context: {
-            return_url: `${origin}/paypal-success`,
+            return_url: `${origin}/paypal-success?orderId=${orderId}`,
             cancel_url: `${origin}/paypal-cancel`,
           },
         })
@@ -81,43 +128,75 @@ export async function POST(req: NextRequest) {
       const orderData = await orderRes.json()
 
       if (!orderData.id) {
-        console.error(orderData)
-        return NextResponse.json({ error: "PayPal order failed" }, { status: 500 })
+        console.error("PayPal order creation failed:", orderData)
+        return NextResponse.json({ error: "PayPal order creation failed" }, { status: 500 })
       }
 
+      // Update order with payment_id (paypal order id)
+      await supabase
+        .from("project_orders")
+        .update({ payment_id: orderData.id })
+        .eq("id", orderId)
+
       return NextResponse.json({
-        /* url: `https://www.paypal.com/checkoutnow?token=${orderData.id}`, */
-        url: `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`,
+        url: `${paypalCheckoutUrl}?token=${orderData.id}`,
       })
     }
 
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY
-    const priceId = process.env[PLAN_TO_PRICE_ENV[plan]]
+    const stripe = new Stripe(stripeSecretKey!)
 
-    if (!stripeSecretKey || !priceId) {
-      return NextResponse.json(
-        { error: "Stripe checkout is not configured (missing key or price id)" },
-        { status: 501 }
-      )
-    }
-
-    const stripe = new Stripe(stripeSecretKey)
-
-    const session = await stripe.checkout.sessions.create({
+    let sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/?checkout=success`,
+      success_url: `${origin}/?checkout=success&orderId=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?checkout=cancelled`,
       metadata: {
+        orderId,
         plan,
         service: body.service ?? "",
         language: body.language ?? "",
       },
-      client_reference_id: `${Date.now()}`,
-    })
+      client_reference_id: orderId,
+      customer_email: customerEmail || undefined,
+    }
+
+    if (plan === "enterprise") {
+      // Use dynamic price_data for Enterprise
+      sessionParams.line_items = [
+        {
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: {
+              name: "Enterprise Plan",
+              description: "Custom Web App + AI Integration + Cloud Infrastructure",
+            },
+            unit_amount: amount * 100, // Stripe uses cents
+          },
+          quantity: 1,
+        },
+      ]
+    } else {
+      const priceId = process.env[PLAN_TO_PRICE_ENV[plan]]
+      if (!priceId) {
+        return NextResponse.json(
+          { error: `Stripe price ID for ${plan} is not configured` },
+          { status: 501 }
+        )
+      }
+      sessionParams.line_items = [{ price: priceId, quantity: 1 }]
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
+
+    // Update order with payment_id (stripe session id)
+    await supabase
+      .from("project_orders")
+      .update({ payment_id: session.id })
+      .eq("id", orderId)
 
     return NextResponse.json({ url: session.url }, { status: 200 })
   } catch (error) {
+    console.error("Checkout session error:", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unable to create checkout session" },
       { status: 500 }
