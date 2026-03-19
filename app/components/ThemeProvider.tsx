@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
-type Theme = "light" | "dark" | "system"
+type Theme = "light" | "dark"
 
 type ThemeContextValue = {
   theme: Theme
@@ -12,53 +12,51 @@ type ThemeContextValue = {
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
-
 const STORAGE_KEY = "raygalroyal-theme"
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "system"
-    const saved = window.localStorage.getItem(STORAGE_KEY)
-    return (saved as Theme) || "system"
-  })
+function getSavedTheme(): Theme {
+  if (typeof window === "undefined") return "light"
+  const saved = localStorage.getItem(STORAGE_KEY)
+  if (saved === "dark" || saved === "light") return saved
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+}
 
-  const [isDark, setIsDark] = useState(false)
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // ✅ "light" on server (SSR safe), corrected on client after mount
+  const [theme, setThemeState] = useState<Theme>("light")
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const root = window.document.documentElement
-    
-    const applyTheme = (t: Theme) => {
-      let effectiveTheme = t
-      if (t === "system") {
-        effectiveTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-      }
-      
-      if (effectiveTheme === "dark") {
-        root.classList.add("dark")
-        setIsDark(true)
-      } else {
-        root.classList.remove("dark")
-        setIsDark(false)
-      }
+    // ✅ Read saved theme once after hydration — runs only on client
+    setThemeState(getSavedTheme())
+    setMounted(true)
+  }, [])
+
+  // ✅ Apply dark class + save to localStorage whenever theme changes
+  useEffect(() => {
+    if (!mounted) return
+    const root = document.documentElement
+    if (theme === "dark") {
+      root.classList.add("dark")
+    } else {
+      root.classList.remove("dark")
     }
+    localStorage.setItem(STORAGE_KEY, theme)
+  }, [theme, mounted])
 
-    applyTheme(theme)
-    window.localStorage.setItem(STORAGE_KEY, theme)
+  const setTheme = (t: Theme) => setThemeState(t)
+  const toggleTheme = () => setThemeState((current) => current === "dark" ? "light" : "dark")
+  const isDark = theme === "dark"
 
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-      const handleChange = () => applyTheme("system")
-      mediaQuery.addEventListener("change", handleChange)
-      return () => mediaQuery.removeEventListener("change", handleChange)
-    }
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark")
-  }
+  const value = useMemo<ThemeContextValue>(() => ({
+    theme,
+    setTheme,
+    toggleTheme,
+    isDark,
+  }), [theme, isDark])
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isDark }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )
@@ -66,8 +64,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider")
-  }
+  if (!context) throw new Error("useTheme must be used within ThemeProvider")
   return context
 }

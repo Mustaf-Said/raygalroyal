@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
 @import 'tailwindcss';
+/* ✅ This replaces tailwind.config.ts for dark mode in v4 */
+@variant dark (&:where(.dark, .dark *));
+
+/* Your existing styles below... */
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
 
 html,
 body,

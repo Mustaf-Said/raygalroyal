@@ -250,7 +250,7 @@ const translationData = {
     },
     toggle: {
       label: "Beddel luqadda",
-      theme: "Beddel habka",
+      theme: "Bedel kalarka",
       en: "EN",
       so: "SO",
     },

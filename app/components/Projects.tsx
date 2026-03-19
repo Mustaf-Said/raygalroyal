@@ -53,7 +53,7 @@ export default function Projects() {
               {t.projects.subtitle}
             </motion.p>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -82,15 +82,17 @@ export default function Projects() {
                 transition={{ delay: index * 0.1 }}
                 className="group relative"
               >
-                <div className="relative h-[400px] w-full overflow-hidden rounded-[32px] mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                <div className="relative h-[400px] w-full overflow-hidden rounded-4xl mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-500">
                   <Image
                     src={project.image}
                     alt={projectText.title}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     fill
+                    priority={index === 0}  // ✅ only first image needs eager loading
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                  
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+
                   <div className="absolute bottom-8 left-8 right-8">
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.tech.map((tech) => (
@@ -111,7 +113,7 @@ export default function Projects() {
                     <ExternalLink className="w-6 h-6" />
                   </Link>
                 </div>
-                
+
                 <div className="px-4">
                   <span className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2 block">
                     {project.category}
