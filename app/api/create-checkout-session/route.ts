@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       service?: string | null
       details?: string
       language?: string
+      email?: string
     }
 
     const provider = body.provider ?? "stripe"
