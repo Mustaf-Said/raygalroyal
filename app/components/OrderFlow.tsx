@@ -107,11 +107,22 @@ export default function OrderFlow({
               .select()
               .single()
           } else {
-            res = await supabase
-              .from("project_orders")
-              .insert(orderData)
-              .select()
-              .single()
+            const createOrderResponse = await fetch("/api/create-order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(orderData)
+            })
+
+            const result = await createOrderResponse.json()
+
+            if (!createOrderResponse.ok) {
+              console.error(result.error)
+              throw new Error("Failed to create order")
+            }
+
+            res = { data: result.data, error: null }
           }
 
           if (res.error) {
