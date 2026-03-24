@@ -44,7 +44,7 @@ export default function AdminOrders() {
   const [actionApplicationId, setActionApplicationId] = useState<number | null>(null)
   const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const router = useRouter()
-  
+
   // Refs for scroll navigation
   const paymentsRef = useRef<HTMLDivElement>(null)
   const applicationsRef = useRef<HTMLDivElement>(null)
