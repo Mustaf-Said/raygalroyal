@@ -26,10 +26,10 @@ function useLocalStorageLanguage(): [Language, (lang: Language) => void] {
     // 2. getSnapshot: what the CLIENT reads right now
     () => {
       const saved = localStorage.getItem(STORAGE_KEY)
-      return (saved === "en" ? "en" : "so") as Language
+      return (saved === "so" ? "so" : "en") as Language
     },
-    // 3. getServerSnapshot: what the SERVER always renders — must be "so"
-    () => "so" as Language
+    // 3. getServerSnapshot: what the SERVER always renders — must be "en"
+    () => "en" as Language
   )
 
   const setLanguage = (lang: Language) => {

@@ -1,9 +1,36 @@
-/* Your existing styles below... */
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
 
 @import 'tailwindcss';
-/* ✅ This replaces tailwind.config.ts for dark mode in v4 */
+/* ✅ Custom variants for dark/light mode */
 @variant dark (&:where(.dark, .dark *));
+@variant light (&:where(.light, .light *));
+
+/* ✅ Dark theme is the DEFAULT for the entire document */
+:root,
+html {
+  color-scheme: dark !important;
+  background-color: rgb(3, 7, 18) !important; /* gray-950 */
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+body {
+  background-color: rgb(3, 7, 18) !important; /* gray-950 */
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* ✅ Light theme when .light class is added */
+:root.light,
+html.light {
+  color-scheme: light !important;
+  background-color: rgb(255, 255, 255) !important; /* white */
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+body.light,
+:root.light body {
+  background-color: rgb(255, 255, 255) !important; /* white */
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
 
 html,
 body,

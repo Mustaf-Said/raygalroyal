@@ -15,30 +15,50 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 const STORAGE_KEY = "raygalroyal-theme"
 
 function getSavedTheme(): Theme {
-  if (typeof window === "undefined") return "light"
-  const saved = localStorage.getItem(STORAGE_KEY)
-  if (saved === "dark" || saved === "light") return saved
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  if (typeof window === "undefined") return "dark"
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    // ✅ Only return if explicitly set to 'light', otherwise default to 'dark'
+    if (saved === "light") return "light"
+    return "dark"
+  } catch (e) {
+    // ✅ Fallback to dark if localStorage fails
+    return "dark"
+  }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // ✅ "light" on server (SSR safe), corrected on client after mount
-  const [theme, setThemeState] = useState<Theme>("light")
+  // ✅ "dark" on server (SSR safe), corrected on client after mount
+  const [theme, setThemeState] = useState<Theme>("dark")
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // ✅ Read saved theme once after hydration — runs only on client
-    setThemeState(getSavedTheme())
+    // ✅ On mount, ensure the theme is correctly set from localStorage
+    const savedTheme = getSavedTheme()
+    const root = document.documentElement
+
+    // ✅ Always ensure correct classes are applied before state update
+    if (savedTheme === "dark") {
+      root.classList.add("dark")
+      root.classList.remove("light")
+    } else {
+      root.classList.add("light")
+      root.classList.remove("dark")
+    }
+
+    setThemeState(savedTheme)
     setMounted(true)
   }, [])
 
-  // ✅ Apply dark class + save to localStorage whenever theme changes
+  // ✅ Apply dark/light class + save to localStorage whenever theme changes
   useEffect(() => {
     if (!mounted) return
     const root = document.documentElement
     if (theme === "dark") {
       root.classList.add("dark")
+      root.classList.remove("light")
     } else {
+      root.classList.add("light")
       root.classList.remove("dark")
     }
     localStorage.setItem(STORAGE_KEY, theme)

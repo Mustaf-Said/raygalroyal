@@ -23,14 +23,23 @@ export default function RootLayout({
           __html: `
       (function() {
         try {
+          var root = document.documentElement;
           var s = localStorage.getItem('raygalroyal-theme');
-          var p = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          if ((s || p) === 'dark') document.documentElement.classList.add('dark');
-        } catch(e) {}
+          // ✅ Light theme ONLY if explicitly stored, default to DARK
+          if (s === 'light') {
+            root.classList.remove('dark');
+            root.classList.add('light');
+          } else {
+            root.classList.add('dark');
+            root.classList.remove('light');
+          }
+        } catch(e) {
+          document.documentElement.classList.add('dark');
+        }
       })()
     `}} />
       </head>
-      <body className="font-sans antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+      <body className="font-sans antialiased transition-colors duration-300">
         <LanguageProvider>
           <ThemeProvider>
             <ModalProvider>
