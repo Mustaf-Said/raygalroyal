@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, ChevronDown, Sun, Moon, Globe } from "lucide-react"
+import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { useTheme } from "./ThemeProvider"
 import { useModals } from "./ModalProvider"
@@ -65,8 +65,8 @@ export default function Header() {
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
-            <div 
-              key={link.name} 
+            <div
+              key={link.name}
               className="relative group"
               onMouseEnter={() => link.dropdown && setServicesOpen(true)}
               onMouseLeave={() => link.dropdown && setServicesOpen(false)}
@@ -113,6 +113,15 @@ export default function Header() {
 
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
+          {/* ADMIN BUTTON */}
+          <Link
+            href="/admin/orders"
+            className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            title="Admin Dashboard"
+          >
+            <Lock className="w-5 h-5" />
+          </Link>
+
           {/* THEME TOGGLE */}
           <button
             onClick={toggleTheme}
@@ -170,6 +179,14 @@ export default function Header() {
                   {link.name}
                 </Link>
               ))}
+              <Link
+                href="/admin/orders"
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4" />
+                Admin
+              </Link>
               <button
                 onClick={() => {
                   openOrderModal();

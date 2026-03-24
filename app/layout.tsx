@@ -1,10 +1,9 @@
 import "@/styles/globals.css"
 import type { Metadata } from "next"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
 import { LanguageProvider } from "./components/LanguageProvider"
 import { ThemeProvider } from "./components/ThemeProvider"
 import { ModalProvider } from "./components/ModalProvider"
+import LayoutWrapper from "./components/LayoutWrapper"
 
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
@@ -18,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="so" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `
@@ -35,11 +34,9 @@ export default function RootLayout({
         <LanguageProvider>
           <ThemeProvider>
             <ModalProvider>
-              <Header />
-              <main className="min-h-screen">
+              <LayoutWrapper>
                 {children}
-              </main>
-              <Footer />
+              </LayoutWrapper>
             </ModalProvider>
           </ThemeProvider>
         </LanguageProvider>
