@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS project_orders (
 ALTER TABLE project_orders ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow inserts from anyone (public/anon)
+DROP POLICY IF EXISTS "Allow public order insert" ON project_orders;
 CREATE POLICY "Allow public order insert"
 ON project_orders
 FOR INSERT
@@ -29,6 +30,7 @@ TO anon
 WITH CHECK (true);
 
 -- Policy: Allow updates from anyone (needed to update payment info)
+DROP POLICY IF EXISTS "Allow public order update" ON project_orders;
 CREATE POLICY "Allow public order update"
 ON project_orders
 FOR UPDATE
@@ -37,6 +39,7 @@ USING (true)
 WITH CHECK (true);
 
 -- Policy: Allow selects from anyone (needed for success page)
+DROP POLICY IF EXISTS "Allow public order select" ON project_orders;
 CREATE POLICY "Allow public order select"
 ON project_orders
 FOR SELECT
@@ -60,3 +63,44 @@ CREATE TRIGGER trg_project_orders_updated_at
 BEFORE UPDATE ON project_orders
 FOR EACH ROW
 EXECUTE FUNCTION set_project_orders_updated_at();
+
+-- Tables for freelancer application approval workflow.
+CREATE TABLE IF NOT EXISTS freelancer_applications (
+  id bigserial PRIMARY KEY,
+  name text NOT NULL,
+  email text NOT NULL,
+  role text NOT NULL,
+  message text NOT NULL,
+  linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com',
+  image_url text,
+  status text NOT NULL DEFAULT 'pending',
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS freelancers (
+  id bigserial PRIMARY KEY,
+  name text NOT NULL,
+  role text NOT NULL,
+  image_url text,
+  email text NOT NULL,
+  linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com',
+  message text NOT NULL DEFAULT ''
+);
+
+ALTER TABLE freelancer_applications
+ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com';
+
+ALTER TABLE freelancer_applications
+ADD COLUMN IF NOT EXISTS image_url text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS image_url text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com';
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS message text NOT NULL DEFAULT '';
+
+ALTER TABLE freelancer_applications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;

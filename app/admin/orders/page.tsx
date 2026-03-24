@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { Loader2, Filter, CreditCard, ShoppingCart } from "lucide-react"
 
+type ApplicationStatus = "pending" | "approved" | "rejected"
+
 type Order = {
   id: string
   plan: string
@@ -20,12 +22,40 @@ type Order = {
   payment_id: string
 }
 
+type FreelancerApplication = {
+  id: number
+  name: string
+  email: string
+  role: string
+  message: string
+  status: ApplicationStatus
+  created_at: string
+}
+
 export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState("all")
   const [providerFilter, setProviderFilter] = useState("all")
+  const [applications, setApplications] = useState<FreelancerApplication[]>([])
+  const [applicationsLoading, setApplicationsLoading] = useState(true)
+  const [applicationFilter, setApplicationFilter] = useState<"all" | ApplicationStatus>("all")
+  const [actionApplicationId, setActionApplicationId] = useState<number | null>(null)
+  const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const router = useRouter()
+
+  async function getAuthHeaders(): Promise<Record<string, string>> {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    const headers: Record<string, string> = {}
+    if (session?.access_token) {
+      headers.Authorization = `Bearer ${session.access_token}`
+    }
+
+    return headers
+  }
 
   async function fetchOrders() {
     setLoading(true)
@@ -45,6 +75,70 @@ export default function AdminOrders() {
     setLoading(false)
   }
 
+  async function fetchApplications() {
+    setApplicationsLoading(true)
+    setActionStatus(null)
+
+    try {
+      const authHeaders = await getAuthHeaders()
+      const response = await fetch("/api/freelancer-applications", {
+        cache: "no-store",
+        headers: authHeaders,
+      })
+      const json = await response.json()
+
+      if (!response.ok) {
+        throw new Error(json?.error || "Failed to load freelancer applications")
+      }
+
+      setApplications((json?.data ?? []) as FreelancerApplication[])
+    } catch (error) {
+      setApplications([])
+      setActionStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to load freelancer applications",
+      })
+    } finally {
+      setApplicationsLoading(false)
+    }
+  }
+
+  async function handleApplicationAction(id: number, action: "approve" | "reject") {
+    setActionApplicationId(id)
+    setActionStatus(null)
+
+    try {
+      const authHeaders = await getAuthHeaders()
+      const response = await fetch(`/api/freelancer-applications/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders,
+        },
+        body: JSON.stringify({ id }),
+      })
+
+      const json = await response.json()
+      if (!response.ok) {
+        throw new Error(json?.error || `Failed to ${action} application`)
+      }
+
+      setActionStatus({
+        type: "success",
+        message: action === "approve" ? "Application approved successfully." : "Application rejected successfully.",
+      })
+
+      await fetchApplications()
+    } catch (error) {
+      setActionStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : `Failed to ${action} application`,
+      })
+    } finally {
+      setActionApplicationId(null)
+    }
+  }
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -52,6 +146,7 @@ export default function AdminOrders() {
         router.push("/admin/login")
       } else {
         fetchOrders()
+        fetchApplications()
       }
     }
     checkUser()
@@ -60,6 +155,17 @@ export default function AdminOrders() {
   useEffect(() => {
     fetchOrders()
   }, [statusFilter, providerFilter])
+
+  const filteredApplications =
+    applicationFilter === "all"
+      ? applications
+      : applications.filter((application) => application.status === applicationFilter)
+
+  const badgeClassName = (status: ApplicationStatus) => {
+    if (status === "approved") return "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+    if (status === "pending") return "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+    return "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -148,7 +254,7 @@ export default function AdminOrders() {
                             <div className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">
                               {order.provider}
                             </div>
-                            <div className="text-xs text-gray-400 truncate max-w-[100px]">
+                            <div className="text-xs text-gray-400 truncate max-w-25">
                               {order.payment_id || order.id.slice(0, 8)}
                             </div>
                           </div>
@@ -170,16 +276,108 @@ export default function AdminOrders() {
                       </td>
                       <td className="px-6 py-5">
                         <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${order.status === "completed" || order.status === "paid"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                            : order.status === "pending"
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
-                              : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                          : order.status === "pending"
+                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                            : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
                           }`}>
                           {order.status}
                         </span>
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* FREELANCER APPLICATIONS */}
+        <div className="mt-10 bg-white dark:bg-gray-900 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Freelancer Applications</h2>
+              <p className="text-sm text-gray-500 mt-1">Review pending applications and approve or reject them.</p>
+            </div>
+
+            <select
+              value={applicationFilter}
+              onChange={(event) => setApplicationFilter(event.target.value as "all" | ApplicationStatus)}
+              className="bg-gray-50 dark:bg-gray-800 border-none rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-600 outline-none"
+            >
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
+          {actionStatus ? (
+            <div className={`mx-6 mt-6 rounded-xl px-4 py-3 text-sm font-semibold ${actionStatus.type === "success"
+              ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+              : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+              }`}>
+              {actionStatus.message}
+            </div>
+          ) : null}
+
+          {applicationsLoading ? (
+            <div className="p-20 flex flex-col items-center justify-center gap-4 text-gray-400">
+              <Loader2 className="w-10 h-10 animate-spin" />
+              <p>Loading applications...</p>
+            </div>
+          ) : filteredApplications.length === 0 ? (
+            <div className="p-20 text-center text-gray-500">No freelancer applications found.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100 dark:border-gray-800">
+                    <th className="px-6 py-5 font-bold text-gray-500 text-sm uppercase">Name</th>
+                    <th className="px-6 py-5 font-bold text-gray-500 text-sm uppercase">Email</th>
+                    <th className="px-6 py-5 font-bold text-gray-500 text-sm uppercase">Role</th>
+                    <th className="px-6 py-5 font-bold text-gray-500 text-sm uppercase">Status</th>
+                    <th className="px-6 py-5 font-bold text-gray-500 text-sm uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                  {filteredApplications.map((application) => {
+                    const isPending = application.status === "pending"
+                    const isBusy = actionApplicationId === application.id
+
+                    return (
+                      <tr key={application.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                        <td className="px-6 py-5 font-bold text-gray-900 dark:text-white">{application.name}</td>
+                        <td className="px-6 py-5 text-gray-600 dark:text-gray-400">{application.email}</td>
+                        <td className="px-6 py-5 text-gray-600 dark:text-gray-400 capitalize">{application.role}</td>
+                        <td className="px-6 py-5">
+                          <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${badgeClassName(application.status)}`}>
+                            {application.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => handleApplicationAction(application.id, "approve")}
+                              disabled={!isPending || isBusy}
+                              className="px-4 py-2 rounded-xl bg-green-600 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {isBusy ? "Working..." : "Approve"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleApplicationAction(application.id, "reject")}
+                              disabled={!isPending || isBusy}
+                              className="px-4 py-2 rounded-xl bg-red-600 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
