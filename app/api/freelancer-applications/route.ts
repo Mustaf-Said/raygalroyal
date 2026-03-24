@@ -132,6 +132,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 })
     }
 
+    const { data: existingFreelancer, error: existingFreelancerError } = await supabase
+      .from("freelancers")
+      .select("id")
+      .eq("email", email)
+      .limit(1)
+      .maybeSingle()
+
+    if (existingFreelancerError) {
+      return NextResponse.json({ error: existingFreelancerError.message }, { status: 500 })
+    }
+
+    if (existingFreelancer) {
+      return NextResponse.json(
+        { error: "This email already exists. Use another email." },
+        { status: 409 }
+      )
+    }
+
+    const { data: existingApplication, error: existingApplicationError } = await supabase
+      .from("freelancer_applications")
+      .select("id, status")
+      .eq("email", email)
+      .in("status", ["pending", "approved"])
+      .limit(1)
+      .maybeSingle()
+
+    if (existingApplicationError) {
+      return NextResponse.json({ error: existingApplicationError.message }, { status: 500 })
+    }
+
+    if (existingApplication) {
+      return NextResponse.json(
+        { error: "This email already exists. Use another email." },
+        { status: 409 }
+      )
+    }
+
     let imageUrl: string | null = DEFAULT_APPLICATION_IMAGE_URL
     if (isNonEmptyString(body.image_data_url)) {
       imageUrl = await uploadApplicationImage(body.image_data_url, body.image_name ?? "avatar")

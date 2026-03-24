@@ -89,6 +89,7 @@ export default function Team() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [showSuccessToast, setShowSuccessToast] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [emailError, setEmailError] = useState("")
   const [formData, setFormData] = useState<ApplyFormState>({
     name: "",
     email: "",
@@ -166,6 +167,9 @@ export default function Team() {
     event.preventDefault()
     setIsSubmitting(true)
     setSubmitStatus("idle")
+    setEmailError("")
+
+    let hasEmailConflict = false
 
     try {
       const imageDataUrl = imageFile ? await fileToDataUrl(imageFile) : ""
@@ -187,6 +191,11 @@ export default function Team() {
       })
 
       if (!response.ok) {
+        const errorResponse = (await response.json().catch(() => null)) as { error?: string } | null
+        if (response.status === 409) {
+          hasEmailConflict = true
+          setEmailError(errorResponse?.error ?? "This email already exists. Use another email.")
+        }
         throw new Error("Failed to submit application")
       }
 
@@ -196,7 +205,9 @@ export default function Team() {
       setShowApplyModal(false)
       setShowSuccessToast(true)
     } catch {
-      setSubmitStatus("error")
+      if (!hasEmailConflict) {
+        setSubmitStatus("error")
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -470,9 +481,17 @@ export default function Team() {
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
+                    onChange={(event) => {
+                      setFormData((prev) => ({ ...prev, email: event.target.value }))
+                      if (emailError) {
+                        setEmailError("")
+                      }
+                    }}
                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 outline-none focus:border-blue-500"
                   />
+                  {emailError ? (
+                    <p className="mt-2 text-sm font-medium text-red-600 dark:text-red-400">{emailError}</p>
+                  ) : null}
                 </div>
 
                 <div>
