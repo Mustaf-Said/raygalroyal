@@ -40,7 +40,7 @@ export default function OrderFlow({
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadWarning, setUploadWarning] = useState<string | null>(null)
-  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
+  const [loadingProvider, setLoadingProvider] = useState<"stripe" | "paypal" | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [orderId, setOrderId] = useState<string | null>(null)
 
@@ -163,7 +163,7 @@ export default function OrderFlow({
       return
     }
 
-    setIsCreatingCheckout(true)
+    setLoadingProvider(provider)
     setPaymentError(null)
 
     try {
@@ -182,16 +182,16 @@ export default function OrderFlow({
       })
 
       const payload = await response.json()
+
       if (!response.ok || !payload?.url) {
         throw new Error(payload?.error || "Failed to start checkout")
       }
 
-      window.location.href = payload.url as string
+      window.location.href = payload.url
     } catch (error) {
-      console.error("Checkout failed:", JSON.stringify(error, null, 2))
+      console.error(error)
       setPaymentError("Unable to start checkout. Please try again.")
-    } finally {
-      setIsCreatingCheckout(false)
+      setLoadingProvider(null) // reset on error
     }
   }
 
@@ -210,7 +210,7 @@ export default function OrderFlow({
     setFile(null)
     setUploadWarning(null)
     setPaymentError(null)
-    setIsCreatingCheckout(false)
+    /*  setIsCreatingCheckout(false) */
   }
 
   if (!isOpen) return null
@@ -442,23 +442,23 @@ export default function OrderFlow({
                   <div className="space-y-4">
                     <button
                       onClick={() => handleCheckout("stripe")}
-                      disabled={isCreatingCheckout || !selectedPackage}
+                      disabled={loadingProvider !== null || !selectedPackage}
                       className="w-full p-6 bg-indigo-600 text-white font-bold rounded-2xl flex items-center justify-between hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                     >
                       <div className="flex items-center gap-4">
                         <CreditCard className="w-6 h-6" />
-                        {isCreatingCheckout ? "Redirecting..." : "Pay with Stripe"}
+                        {loadingProvider === "stripe" ? "Redirecting..." : "Pay with Stripe"}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleCheckout("paypal")}
-                      disabled={isCreatingCheckout || !selectedPackage}
+                      disabled={loadingProvider !== null || !selectedPackage}
                       className="w-full p-6 bg-[#FFC439] text-gray-900 font-bold rounded-2xl flex items-center justify-between hover:bg-[#E1AD2A] transition-colors disabled:opacity-50 disabled:pointer-events-none"
                     >
                       <div className="flex items-center gap-4">
                         <ShoppingCart className="w-6 h-6" />
-                        {isCreatingCheckout ? "Redirecting..." : "Pay with PayPal"}
+                        {loadingProvider === "paypal" ? "Redirecting..." : "Pay with PayPal"}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
