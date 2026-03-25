@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-
+import plugin from "tailwindcss/plugin"
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,9 +9,9 @@ const config: Config = {
   },
   plugins: [
     // ✅ Support light: variant for light mode
-    function ({ addVariant }) {
-      addVariant('light', '&:where(.light, .light *)');
-    }
+    plugin(({ addVariant }) => {
+      addVariant("light", "&:where(.light, .light *)")
+    }),
   ],
   darkMode: "class",
 };

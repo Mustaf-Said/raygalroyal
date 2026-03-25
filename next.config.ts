@@ -1,22 +1,22 @@
 import type { NextConfig } from "next";
+import plugin from "tailwindcss/plugin"
 
 const nextConfig: NextConfig = {
   turbopack: {},
-
   /*   async redirects() {
-      return [
-        {
-          source: "/en",
-          destination: "/",
-          permanent: true,
-        },
-        {
-          source: "/en/:path*",
-          destination: "/:path*",
-          permanent: true,
-        },
-      ];
-    }, */
+     return [
+       {
+         source: "/en",
+         destination: "/",
+         permanent: true,
+       },
+       {
+         source: "/en/:path*",
+         destination: "/:path*",
+         permanent: true,
+       },
+     ];
+   }, */
   images: {
     remotePatterns: [
       {
