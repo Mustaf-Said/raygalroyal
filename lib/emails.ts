@@ -8,6 +8,14 @@ const isDomainNotVerifiedError = (errorText: string) => {
   return normalized.includes("domain is not verified")
 }
 
+const isTestingRecipientRestrictionError = (errorText: string) => {
+  const normalized = errorText.toLowerCase()
+  return (
+    normalized.includes("you can only send testing emails") ||
+    normalized.includes("verify a domain")
+  )
+}
+
 export async function sendOrderConfirmationEmail({
   email,
   orderId,
@@ -51,41 +59,75 @@ export async function sendOrderConfirmationEmail({
   `
 
   const configuredFromEmail = process.env.CONTACT_FROM_EMAIL?.trim()
+  const fallbackTestRecipient =
+    process.env.RESEND_TEST_EMAIL?.trim() || process.env.CONTACT_RECEIVER_EMAIL?.trim()
   const fromCandidates = configuredFromEmail
     ? [configuredFromEmail, RESEND_FALLBACK_FROM]
     : [RESEND_FALLBACK_FROM]
 
-  for (const from of fromCandidates) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [email],
-        subject: t.subject,
-        html: html,
-      }),
-    })
+  const recipientCandidates = [email]
 
-    if (res.ok) {
-      console.log(`✅ Confirmation email sent to ${email} (${language})`)
+  if (
+    fallbackTestRecipient &&
+    fallbackTestRecipient.toLowerCase() !== email.toLowerCase()
+  ) {
+    recipientCandidates.push(fallbackTestRecipient)
+  }
+
+  for (const recipient of recipientCandidates) {
+    for (const from of fromCandidates) {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from,
+          to: [recipient],
+          subject: t.subject,
+          html: html,
+        }),
+      })
+
+      if (res.ok) {
+        if (recipient !== email) {
+          console.warn(
+            `Order confirmation could not be sent to ${email} in current Resend mode. Sent to fallback inbox ${recipient} instead.`
+          )
+        } else {
+          console.log(`✅ Confirmation email sent to ${email} (${language})`)
+        }
+        return
+      }
+
+      const errorBody = await res.text()
+      const hasFallback = fromCandidates.length > 1
+      const isLastAttempt = from === fromCandidates[fromCandidates.length - 1]
+      const canRetryWithFallback = hasFallback && !isLastAttempt && isDomainNotVerifiedError(errorBody)
+      const testingRecipientBlocked = isTestingRecipientRestrictionError(errorBody)
+
+      if (canRetryWithFallback) {
+        console.warn("Resend sender domain is not verified, retrying with onboarding sender.")
+        continue
+      }
+
+      if (testingRecipientBlocked && recipient === email && recipientCandidates.length > 1) {
+        console.warn(
+          "Resend account is in testing mode for this recipient. Retrying with fallback test recipient."
+        )
+        break
+      }
+
+      if (testingRecipientBlocked && recipient === email) {
+        console.warn(
+          "Order confirmation email was blocked by Resend testing-mode recipient restrictions. Verify a domain in Resend to send to customer emails."
+        )
+        return
+      }
+
+      console.error("Failed to send email via Resend:", errorBody)
       return
     }
-
-    const errorBody = await res.text()
-    const hasFallback = fromCandidates.length > 1
-    const isLastAttempt = from === fromCandidates[fromCandidates.length - 1]
-    const canRetryWithFallback = hasFallback && !isLastAttempt && isDomainNotVerifiedError(errorBody)
-
-    if (canRetryWithFallback) {
-      console.warn("Resend sender domain is not verified, retrying with onboarding sender.")
-      continue
-    }
-
-    console.error("Failed to send email via Resend:", errorBody)
-    return
   }
 }
