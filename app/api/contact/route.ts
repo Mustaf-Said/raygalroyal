@@ -18,7 +18,9 @@ export async function POST(req: Request) {
     }
 
     const toEmail = "raygal99@gmail.com"
-    const fromEmail = process.env.CONTACT_FROM_EMAIL || "Raygal Royal <onboarding@resend.dev>"
+    const fallbackFromEmail = "Raygal Royal <onboarding@resend.dev>"
+    const configuredFromEmail = process.env.CONTACT_FROM_EMAIL?.trim()
+    const fromEmail = configuredFromEmail || fallbackFromEmail
     const hasAtSign = fromEmail.includes("@")
 
     if (!hasAtSign) {
@@ -40,28 +42,45 @@ export async function POST(req: Request) {
       </div>
     `
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        reply_to: String(email),
-        subject: `New contact form message from ${String(name)}`,
-        html,
-      }),
-    })
+    const fromCandidates = configuredFromEmail
+      ? [configuredFromEmail, fallbackFromEmail]
+      : [fallbackFromEmail]
 
-    if (!resendResponse.ok) {
+    for (const from of fromCandidates) {
+      const resendResponse = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from,
+          to: [toEmail],
+          reply_to: String(email),
+          subject: `New contact form message from ${String(name)}`,
+          html,
+        }),
+      })
+
+      if (resendResponse.ok) {
+        return Response.json({ success: true })
+      }
+
       const errorBody = await resendResponse.text()
+      const normalizedError = errorBody.toLowerCase()
+      const canRetryWithFallback =
+        fromCandidates.length > 1 &&
+        from === configuredFromEmail &&
+        normalizedError.includes("domain is not verified")
+
+      if (canRetryWithFallback) {
+        console.warn("Custom sender domain is not verified, retrying with onboarding sender.")
+        continue
+      }
+
       console.error("Resend contact email error:", errorBody)
       return Response.json({ error: "Failed to send email" }, { status: 502 })
     }
-
-    return Response.json({ success: true })
   } catch (error) {
     console.error("Contact route error:", error)
     return Response.json({ error: "Unexpected server error" }, { status: 500 })

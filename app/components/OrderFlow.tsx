@@ -5,10 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart, Upload, File as FileIcon, Loader2 } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase"
 
 type Step = "service" | "details" | "package" | "payment"
-const STORAGE_BUCKET = "project-files"
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -73,14 +71,20 @@ export default function OrderFlow({
 
         if (file) {
           try {
-            await fetch("/api/supabase/ensure-storage-bucket", { method: "POST" })
-            const fileName = `${Date.now()}-${file.name}`
-            const { data: uploadData, error: uploadError } = await supabase.storage
-              .from(STORAGE_BUCKET)
-              .upload(fileName, file)
+            const formData = new FormData()
+            formData.append("file", file)
 
-            if (uploadError) throw uploadError
-            fileUrl = uploadData.path
+            const uploadResponse = await fetch("/api/upload-file", {
+              method: "POST",
+              body: formData,
+            })
+            const uploadPayload = await uploadResponse.json()
+
+            if (!uploadResponse.ok) {
+              throw new Error(uploadPayload?.error || "File upload failed")
+            }
+
+            fileUrl = uploadPayload?.filePath || null
           } catch (error) {
             console.error("Upload failed:", JSON.stringify(error, null, 2))
             setUploadWarning("Your file could not be uploaded, but you can continue to payment.")
@@ -98,49 +102,42 @@ export default function OrderFlow({
             status: "pending"
           }
 
-          let res;
-          if (orderId) {
-            res = await supabase
-              .from("project_orders")
-              .update(orderData)
-              .eq("id", orderId)
-              .select()
-              .single()
-          } else {
-            const createOrderResponse = await fetch("/api/create-order", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(orderData)
+          const createOrderResponse = await fetch("/api/create-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              ...orderData,
+              id: orderId ?? undefined,
             })
+          })
 
-            const result = await createOrderResponse.json()
+          const result = await createOrderResponse.json()
 
-            if (!createOrderResponse.ok) {
-              console.error(result.error)
-              throw new Error("Failed to create order")
-            }
-
-            res = { data: result.data, error: null }
+          if (!createOrderResponse.ok) {
+            console.error(result.error)
+            throw new Error("Failed to create order")
           }
+
+          const res = { data: result.data, error: null }
 
           if (res.error) {
             console.error("Supabase error detail:", JSON.stringify(res.error, null, 2))
             throw res.error
           }
           if (res.data) setOrderId(res.data.id)
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error("Saving order failed full error:", error)
           console.error("Saving order failed (JSON):", JSON.stringify(error, null, 2))
-          if (error?.message) {
+          if (error instanceof Error && error.message) {
             console.error("Error message:", error.message)
           }
-          if (error?.details) {
-            console.error("Error details:", error.details)
+          if (typeof error === "object" && error !== null && "details" in error) {
+            console.error("Error details:", (error as Record<string, unknown>).details)
           }
-          if (error?.hint) {
-            console.error("Error hint:", error.hint)
+          if (typeof error === "object" && error !== null && "hint" in error) {
+            console.error("Error hint:", (error as Record<string, unknown>).hint)
           }
           if (!uploadWarning) {
             setUploadWarning("We could not save your project details right now, but you can continue to payment.")

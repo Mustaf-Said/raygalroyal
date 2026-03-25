@@ -1,6 +1,12 @@
 import { translations, Language } from "@/app/components/translations"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
+const RESEND_FALLBACK_FROM = "Raygal Royal <onboarding@resend.dev>"
+
+const isDomainNotVerifiedError = (errorText: string) => {
+  const normalized = errorText.toLowerCase()
+  return normalized.includes("domain is not verified")
+}
 
 export async function sendOrderConfirmationEmail({
   email,
@@ -44,7 +50,12 @@ export async function sendOrderConfirmationEmail({
     </div>
   `
 
-  try {
+  const configuredFromEmail = process.env.CONTACT_FROM_EMAIL?.trim()
+  const fromCandidates = configuredFromEmail
+    ? [configuredFromEmail, RESEND_FALLBACK_FROM]
+    : [RESEND_FALLBACK_FROM]
+
+  for (const from of fromCandidates) {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -52,20 +63,29 @@ export async function sendOrderConfirmationEmail({
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Raygal Royal <orders@raygalroyal.com>", // Replace with your verified domain
+        from,
         to: [email],
         subject: t.subject,
         html: html,
       }),
     })
 
-    if (!res.ok) {
-      const error = await res.json()
-      console.error("Failed to send email via Resend:", error)
-    } else {
+    if (res.ok) {
       console.log(`✅ Confirmation email sent to ${email} (${language})`)
+      return
     }
-  } catch (error) {
-    console.error("Error sending email:", error)
+
+    const errorBody = await res.text()
+    const hasFallback = fromCandidates.length > 1
+    const isLastAttempt = from === fromCandidates[fromCandidates.length - 1]
+    const canRetryWithFallback = hasFallback && !isLastAttempt && isDomainNotVerifiedError(errorBody)
+
+    if (canRetryWithFallback) {
+      console.warn("Resend sender domain is not verified, retrying with onboarding sender.")
+      continue
+    }
+
+    console.error("Failed to send email via Resend:", errorBody)
+    return
   }
 }
