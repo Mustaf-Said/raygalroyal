@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import plugin from "tailwindcss/plugin"
+
 
 const nextConfig: NextConfig = {
   turbopack: {},
