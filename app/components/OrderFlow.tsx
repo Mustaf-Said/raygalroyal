@@ -7,6 +7,9 @@ import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
 
 type Step = "service" | "details" | "package" | "payment"
+type PackageKey = "basic" | "pro" | "enterprise"
+
+const PACKAGE_KEYS: PackageKey[] = ["basic", "pro", "enterprise"]
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -379,8 +382,8 @@ export default function OrderFlow({
                   exit={{ opacity: 0, x: -20 }}
                   className="grid grid-cols-1 md:grid-cols-3 gap-6"
                 >
-                  {["basic", "pro", "enterprise"].map((pkg) => {
-                    const p = t.pricing[pkg as keyof typeof t.pricing] as any
+                  {PACKAGE_KEYS.map((pkg) => {
+                    const p = t.pricing[pkg]
                     const isSelected = selectedPackage === pkg
                     return (
                       <button

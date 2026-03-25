@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY
     const stripe = new Stripe(stripeSecretKey!)
 
-    let sessionParams: Stripe.Checkout.SessionCreateParams = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       success_url: `${origin}/?checkout=success&orderId=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?checkout=cancelled`,

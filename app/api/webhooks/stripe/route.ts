@@ -3,9 +3,7 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 import { sendOrderConfirmationEmail } from "@/lib/emails"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27-acacia" as any,
-})
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,9 +20,10 @@ export async function POST(req: NextRequest) {
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
-  } catch (err: any) {
-    console.error(`❌ Webhook Error: ${err.message}`)
-    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown webhook error"
+    console.error(`Webhook Error: ${message}`)
+    return NextResponse.json({ error: `Webhook Error: ${message}` }, { status: 400 })
   }
 
   // Handle the event
@@ -44,10 +43,10 @@ export async function POST(req: NextRequest) {
         .eq("id", orderId)
         .select()
         .single()
-      
+
       if (order && !error) {
         console.log(`✅ Order ${orderId} marked as paid`)
-        
+
         // Send confirmation email
         await sendOrderConfirmationEmail({
           email: order.customer_email,
