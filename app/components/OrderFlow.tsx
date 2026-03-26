@@ -7,9 +7,10 @@ import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
 
 type Step = "service" | "details" | "package" | "payment"
-type PackageKey = "basic" | "pro" | "enterprise"
+type PackageKey = "support" | "basic" | "pro" | "enterprise"
 
-const PACKAGE_KEYS: PackageKey[] = ["basic", "pro", "enterprise"]
+const PACKAGE_KEYS: PackageKey[] = ["support", "basic", "pro", "enterprise"]
+const MIN_SUPPORT_AMOUNT = 10
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -24,12 +25,14 @@ export default function OrderFlow({
   isOpen,
   onClose,
   preselectedService = null,
-  preselectedPackage = null
+  preselectedPackage = null,
+  preselectedCustomAmount = null,
 }: {
   isOpen: boolean;
   onClose: () => void;
   preselectedService?: string | null;
   preselectedPackage?: string | null;
+  preselectedCustomAmount?: number | null;
 }) {
   const { t, language } = useLanguage()
   const [step, setStep] = useState<Step>(preselectedService ? "details" : "service")
@@ -43,6 +46,8 @@ export default function OrderFlow({
   const [loadingProvider, setLoadingProvider] = useState<"stripe" | "paypal" | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [orderId, setOrderId] = useState<string | null>(null)
+  const [customAmount, setCustomAmount] = useState("")
+  const [customAmountError, setCustomAmountError] = useState<string | null>(null)
 
   useEffect(() => {
     if (preselectedService) {
@@ -52,7 +57,11 @@ export default function OrderFlow({
     if (preselectedPackage) {
       setSelectedPackage(preselectedPackage)
     }
-  }, [preselectedService, preselectedPackage, isOpen])
+    if (typeof preselectedCustomAmount === "number" && Number.isFinite(preselectedCustomAmount)) {
+      setCustomAmount(preselectedCustomAmount.toString())
+      setCustomAmountError(null)
+    }
+  }, [preselectedService, preselectedPackage, preselectedCustomAmount, isOpen])
 
   const steps: Step[] = ["service", "details", "package", "payment"]
   const currentStepIndex = steps.indexOf(step)
@@ -67,6 +76,17 @@ export default function OrderFlow({
     if (step === "service" && selectedService) setStep("details")
     else if (step === "details" && projectDetails.length > 10 && customerEmail.includes("@")) setStep("package")
     else if (step === "package" && selectedPackage) {
+      if (selectedPackage === "support") {
+        const parsedCustomAmount = Number(customAmount)
+
+        if (!Number.isFinite(parsedCustomAmount) || parsedCustomAmount < MIN_SUPPORT_AMOUNT) {
+          setCustomAmountError(t.pricing.invalidAmount)
+          return
+        }
+
+        setCustomAmountError(null)
+      }
+
       setIsUploading(true)
       setUploadWarning(null)
       try {
@@ -95,6 +115,9 @@ export default function OrderFlow({
         }
 
         try {
+          const parsedCustomAmount = Number(customAmount)
+          const isSupportPackage = selectedPackage === "support"
+
           const orderData = {
             description: projectDetails,
             file_url: fileUrl,
@@ -102,7 +125,8 @@ export default function OrderFlow({
             customer_email: customerEmail,
             service: selectedService,
             language: language,
-            status: "pending"
+            status: "pending",
+            custom_amount: isSupportPackage && Number.isFinite(parsedCustomAmount) ? parsedCustomAmount : null,
           }
 
           const createOrderResponse = await fetch("/api/create-order", {
@@ -167,6 +191,15 @@ export default function OrderFlow({
     setPaymentError(null)
 
     try {
+      const parsedCustomAmount = Number(customAmount)
+      const isSupportPackage = selectedPackage === "support"
+
+      if (isSupportPackage && (!Number.isFinite(parsedCustomAmount) || parsedCustomAmount < MIN_SUPPORT_AMOUNT)) {
+        setPaymentError(t.pricing.invalidAmount)
+        setLoadingProvider(null)
+        return
+      }
+
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -174,6 +207,8 @@ export default function OrderFlow({
           provider,
           orderId,
           plan: selectedPackage,
+          isCustom: isSupportPackage,
+          customAmount: isSupportPackage ? parsedCustomAmount : undefined,
           service: selectedService,
           details: projectDetails,
           email: customerEmail,
@@ -210,6 +245,8 @@ export default function OrderFlow({
     setFile(null)
     setUploadWarning(null)
     setPaymentError(null)
+    setCustomAmount("")
+    setCustomAmountError(null)
     /*  setIsCreatingCheckout(false) */
   }
 
@@ -217,7 +254,7 @@ export default function OrderFlow({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+      <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -230,7 +267,7 @@ export default function OrderFlow({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         >
           {/* HEADER */}
           <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
@@ -243,7 +280,7 @@ export default function OrderFlow({
                       "w-2 h-2 rounded-full transition-colors",
                       steps.indexOf(s) <= currentStepIndex ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-800"
                     )} />
-                    {i < steps.length - 1 && <div className="w-4 h-[1px] bg-gray-100 dark:border-gray-800" />}
+                    {i < steps.length - 1 && <div className="w-4 h-px bg-gray-100 dark:border-gray-800" />}
                   </div>
                 ))}
               </div>
@@ -358,7 +395,7 @@ export default function OrderFlow({
                             <FileIcon className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[200px]">{file.name}</p>
+                            <p className="font-bold text-gray-900 dark:text-white text-sm truncate max-w-50">{file.name}</p>
                             <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                           </div>
                         </div>
@@ -380,11 +417,12 @@ export default function OrderFlow({
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
                 >
                   {PACKAGE_KEYS.map((pkg) => {
                     const p = t.pricing[pkg]
                     const isSelected = selectedPackage === pkg
+                    const isSupportPackage = pkg === "support"
                     return (
                       <button
                         key={pkg}
@@ -403,8 +441,30 @@ export default function OrderFlow({
                         )}
                         <div className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-2">{p.name}</div>
                         <div className="flex items-baseline gap-1 mb-6">
-                          <span className="text-3xl font-black text-gray-900 dark:text-white">{t.pricing.currency}{p.price}</span>
+                          {isSupportPackage ? (
+                            <span className="text-lg font-black text-gray-900 dark:text-white">{t.pricing.payNow}</span>
+                          ) : (
+                            <span className="text-3xl font-black text-gray-900 dark:text-white">{t.pricing.currency}{p.price}</span>
+                          )}
                         </div>
+                        {isSupportPackage && (
+                          <div className="mb-6 space-y-2">
+                            <input
+                              type="number"
+                              min={MIN_SUPPORT_AMOUNT}
+                              inputMode="decimal"
+                              value={customAmount}
+                              onChange={(e) => {
+                                setCustomAmount(e.target.value)
+                                if (customAmountError) setCustomAmountError(null)
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              placeholder={t.pricing.enterAmount}
+                              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            />
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{t.pricing.supportHelper}</p>
+                          </div>
+                        )}
                         <ul className="space-y-3">
                           {p.features.slice(0, 3).map((f: string) => (
                             <li key={f} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -417,6 +477,10 @@ export default function OrderFlow({
                     )
                   })}
                 </motion.div>
+              )}
+
+              {step === "package" && customAmountError && (
+                <p className="mt-4 text-sm text-red-600 dark:text-red-400">{customAmountError}</p>
               )}
 
               {step === "package" && uploadWarning && (
@@ -440,6 +504,11 @@ export default function OrderFlow({
                   </div>
 
                   <div className="space-y-4">
+                    {selectedPackage === "support" && (
+                      <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm font-semibold text-amber-800 dark:text-amber-300">
+                        {t.pricing.agreementMessage}
+                      </div>
+                    )}
                     <button
                       onClick={() => handleCheckout("stripe")}
                       disabled={loadingProvider !== null || !selectedPackage}
@@ -494,7 +563,7 @@ export default function OrderFlow({
                   (step === "details" && (projectDetails.length < 10 || !customerEmail.includes("@"))) ||
                   (step === "package" && !selectedPackage)
                 }
-                className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-[140px] justify-center"
+                className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-35 justify-center"
               >
                 {isUploading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

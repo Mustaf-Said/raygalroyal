@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS project_orders (
   language text,
   status text DEFAULT 'pending',
   amount numeric,
+  custom_amount numeric,
   currency text DEFAULT 'USD',
   provider text,
   payment_id text,
@@ -49,6 +50,9 @@ USING (true);
 -- Migration safety block for existing databases that were created without updated_at.
 ALTER TABLE project_orders
 ADD COLUMN IF NOT EXISTS updated_at timestamp WITH TIME ZONE DEFAULT now();
+
+ALTER TABLE project_orders
+ADD COLUMN IF NOT EXISTS custom_amount numeric;
 
 CREATE OR REPLACE FUNCTION set_project_orders_updated_at()
 RETURNS TRIGGER AS $$

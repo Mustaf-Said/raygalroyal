@@ -3,6 +3,7 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 
 type Provider = "stripe" | "paypal"
+const MIN_CUSTOM_AMOUNT = 10
 
 const PLAN_TO_PRICE_ENV: Record<string, string> = {
   basic: "STRIPE_PRICE_BASIC",
@@ -27,6 +28,8 @@ export async function POST(req: NextRequest) {
       provider?: Provider
       orderId?: string
       plan?: string
+      isCustom?: boolean
+      customAmount?: number | string
       service?: string | null
       details?: string
       language?: string
@@ -38,20 +41,40 @@ export async function POST(req: NextRequest) {
     const orderId = body.orderId
     const language = body.language || "en"
     const customerEmail = body.email
+    const isCustom = body.isCustom === true || plan === "support"
+    const parsedCustomAmount = Number(body.customAmount)
 
     if (!orderId) {
       return NextResponse.json({ error: "Missing orderId" }, { status: 400 })
     }
 
-    if (!plan || !PLAN_TO_PRICE_ENV[plan]) {
+    if (!plan) {
       return NextResponse.json({ error: "Invalid plan selected" }, { status: 400 })
+    }
+
+    const isKnownStaticPlan = Boolean(PLAN_TO_PRICE_ENV[plan])
+
+    if (!isCustom && !isKnownStaticPlan) {
+      return NextResponse.json({ error: "Invalid plan selected" }, { status: 400 })
+    }
+
+    if (isCustom) {
+      if (!Number.isFinite(parsedCustomAmount) || parsedCustomAmount < MIN_CUSTOM_AMOUNT) {
+        return NextResponse.json(
+          { error: `Invalid amount. Minimum is ${MIN_CUSTOM_AMOUNT}` },
+          { status: 400 }
+        )
+      }
     }
 
     // Dynamic pricing for Enterprise
     let amount: number;
     let currency = "USD";
 
-    if (plan === "enterprise") {
+    if (isCustom) {
+      amount = parsedCustomAmount
+      currency = "SEK"
+    } else if (plan === "enterprise") {
       if (language === "so") {
         amount = 5000;
         currency = "USD";
@@ -70,9 +93,11 @@ export async function POST(req: NextRequest) {
     await supabase
       .from("project_orders")
       .update({
+        plan: isCustom ? "support" : plan,
         provider,
         amount,
         currency,
+        custom_amount: isCustom ? amount : null,
         status: "pending"
       })
       .eq("id", orderId)
@@ -114,8 +139,8 @@ export async function POST(req: NextRequest) {
             {
               custom_id: orderId,
               amount: {
-                currency_code: currency,
-                value: amount.toString(),
+                currency_code: isCustom ? "SEK" : currency,
+                value: isCustom ? amount.toFixed(2) : amount.toString(),
               },
             },
           ],
@@ -153,7 +178,9 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/?checkout=cancelled`,
       metadata: {
         orderId,
-        plan,
+        plan: isCustom ? "support" : plan,
+        isCustom: isCustom ? "true" : "false",
+        customAmount: isCustom ? amount.toString() : "",
         service: body.service ?? "",
         language: body.language ?? "",
       },
@@ -161,7 +188,20 @@ export async function POST(req: NextRequest) {
       customer_email: customerEmail || undefined,
     }
 
-    if (plan === "enterprise") {
+    if (isCustom) {
+      sessionParams.line_items = [
+        {
+          price_data: {
+            currency: "sek",
+            product_data: {
+              name: "Support Payment",
+            },
+            unit_amount: Math.round(amount * 100),
+          },
+          quantity: 1,
+        },
+      ]
+    } else if (plan === "enterprise") {
       // Use dynamic price_data for Enterprise
       sessionParams.line_items = [
         {

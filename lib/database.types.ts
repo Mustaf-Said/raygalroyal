@@ -88,6 +88,7 @@ export type Database = {
           language: string | null
           status: string | null
           amount: number | null
+          custom_amount: number | null
           currency: string | null
           provider: string | null
           payment_id: string | null
@@ -104,6 +105,7 @@ export type Database = {
           language?: string | null
           status?: string | null
           amount?: number | null
+          custom_amount?: number | null
           currency?: string | null
           provider?: string | null
           payment_id?: string | null
@@ -120,6 +122,7 @@ export type Database = {
           language?: string | null
           status?: string | null
           amount?: number | null
+          custom_amount?: number | null
           currency?: string | null
           provider?: string | null
           payment_id?: string | null

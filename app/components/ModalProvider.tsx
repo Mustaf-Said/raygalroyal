@@ -6,7 +6,7 @@ import SuccessModal from "./SuccessModal"
 
 type ModalContextType = {
   isOrderModalOpen: boolean
-  openOrderModal: (service?: string | null, pkg?: string | null) => void
+  openOrderModal: (service?: string | null, pkg?: string | null, customAmount?: number | null) => void
   closeOrderModal: () => void
 }
 
@@ -16,27 +16,35 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
   const [preselectedService, setPreselectedService] = useState<string | null>(null)
   const [preselectedPackage, setPreselectedPackage] = useState<string | null>(null)
+  const [preselectedCustomAmount, setPreselectedCustomAmount] = useState<number | null>(null)
 
-  const openOrderModal = (service: string | null = null, pkg: string | null = null) => {
+  const openOrderModal = (
+    service: string | null = null,
+    pkg: string | null = null,
+    customAmount: number | null = null
+  ) => {
     setPreselectedService(service)
     setPreselectedPackage(pkg)
+    setPreselectedCustomAmount(customAmount)
     setIsOrderModalOpen(true)
   }
-  
+
   const closeOrderModal = () => {
     setIsOrderModalOpen(false)
     setPreselectedService(null)
     setPreselectedPackage(null)
+    setPreselectedCustomAmount(null)
   }
 
   return (
     <ModalContext.Provider value={{ isOrderModalOpen, openOrderModal, closeOrderModal }}>
       {children}
-      <OrderFlow 
-        isOpen={isOrderModalOpen} 
-        onClose={closeOrderModal} 
+      <OrderFlow
+        isOpen={isOrderModalOpen}
+        onClose={closeOrderModal}
         preselectedService={preselectedService}
         preselectedPackage={preselectedPackage}
+        preselectedCustomAmount={preselectedCustomAmount}
       />
       <Suspense>
         <SuccessModal />
