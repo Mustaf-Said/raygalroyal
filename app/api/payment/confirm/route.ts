@@ -127,6 +127,7 @@ export async function POST(req: NextRequest) {
       .from("project_orders")
       .update({
         amount: resolvedAmount,
+        custom_amount: existingOrder.plan === "support" ? resolvedAmount : null,
         currency: normalizedCurrency,
         provider,
         payment_id: resolvedPaymentId,

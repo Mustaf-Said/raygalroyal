@@ -32,12 +32,16 @@ export async function POST(req: NextRequest) {
     const orderId = session.client_reference_id || session.metadata?.orderId
 
     if (orderId) {
+      const isSupport = session.metadata?.plan === "support" || session.metadata?.isCustom === "true"
+      const resolvedAmount = session.amount_total ? session.amount_total / 100 : null
+
       const { data: order, error } = await supabase
         .from("project_orders")
         .update({
           status: "paid",
           payment_id: session.id,
-          amount: session.amount_total ? session.amount_total / 100 : null,
+          amount: resolvedAmount,
+          custom_amount: isSupport ? resolvedAmount : null,
           currency: session.currency?.toUpperCase() || "USD"
         })
         .eq("id", orderId)
