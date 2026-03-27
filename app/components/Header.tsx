@@ -27,7 +27,7 @@ export default function Header() {
     { name: t.nav.home, href: "/" },
     {
       name: t.nav.services,
-      href: "#services",
+      href: "/services",
       dropdown: [
         { name: t.services.items.web.title, key: "web" },
         { name: t.services.items.mobile.title, key: "mobile" },
@@ -37,11 +37,11 @@ export default function Header() {
         { name: t.services.items.security.title, key: "security" },
       ]
     },
-    { name: t.nav.projects, href: "#projects" },
-    { name: t.nav.team, href: "#team" },
-    { name: t.nav.pricing, href: "#pricing" },
-    { name: t.nav.faq, href: "#faq" },
-    { name: t.nav.contact, href: "#contact" },
+    { name: t.nav.projects, href: "/projects" },
+    { name: t.nav.team, href: "/team" },
+    { name: t.nav.pricing, href: "/pricing" },
+    { name: t.nav.faq, href: "/faq" },
+    { name: t.nav.contact, href: "/contact" },
   ]
 
   return (
@@ -54,8 +54,17 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
-            R
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+              boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+            <span className="relative hover:rotate-360 transition-transform z-10">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             Raygal<span className="text-blue-600">Royal</span>
@@ -144,9 +153,20 @@ export default function Header() {
           {/* START PROJECT CTA */}
           <button
             onClick={() => openOrderModal()}
-            className="hidden sm:block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full transition-all hover:shadow-lg hover:shadow-blue-500/25 active:scale-95"
+            className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group"
+            style={{
+              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+              boxShadow: "0 0 20px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
           >
-            {t.nav.startProject}
+            {/* Hover shimmer */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+            {/* Glow on hover */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-md -z-10"
+              style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
+            <span className="relative z-10 tracking-wide">{t.nav.startProject}</span>
           </button>
 
           {/* MOBILE MENU TOGGLE */}

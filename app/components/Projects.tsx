@@ -60,7 +60,7 @@ export default function Projects() {
             viewport={{ once: true }}
           >
             <Link
-              href="#contact"
+              href="/contact"
               className="group flex items-center gap-2 text-lg font-bold text-blue-600 dark:text-blue-400"
             >
               Start a project with us

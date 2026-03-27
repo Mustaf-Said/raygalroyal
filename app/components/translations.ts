@@ -168,6 +168,43 @@ const translationData = {
         "Professional Development Process",
       ],
     },
+    privacy: {
+      title: "Privacy Policy",
+      subtitle: "Your privacy matters to us. This policy explains how we collect, use and protect your personal data.",
+      content: "We are committed to safeguarding your personal information and being transparent about how we use it.",
+      bullets: {
+        one: "We collect only data necessary to deliver our services.",
+        two: "Your data is never sold to third parties.",
+        three: "You can request deletion of your data at any time.",
+      },
+      sections: {
+        collection: "Data We Collect",
+        usage: "How We Use Your Data",
+        sharing: "Data Sharing & Third Parties",
+        rights: "Your Rights",
+        retention: "Data Retention",
+        international: "International Transfers",
+      },
+    },
+
+    cookie: {
+      title: "Cookie Policy",
+      subtitle: "We use cookies to enhance your experience. Here's a clear breakdown of what we use and why.",
+      content: "Cookies help us understand how visitors interact with our site and improve functionality over time.",
+      bullets: {
+        one: "You can manage or disable cookies at any time via your browser settings.",
+        two: "Necessary cookies are required for the site to function and cannot be disabled.",
+        three: "Analytics data is anonymised and never linked to individual users.",
+      },
+      sections: {
+        whatAreCookies: "What Are Cookies?",
+        necessary: "Necessary Cookies",
+        analytics: "Analytics Cookies",
+        marketing: "Marketing Cookies",
+        managing: "Managing Your Preferences",
+        updates: "Policy Updates",
+      },
+    },
     terms: {
       title: "Terms and Conditions",
       subtitle: "Our working agreement and policies.",
@@ -421,6 +458,42 @@ const translationData = {
         "Waxqabad aad u degdeg ah",
         "Hab-shaqeed xirfadeed",
       ],
+    },
+    privacy: {
+      title: "Siyaasadda Asturnaanta",
+      subtitle: "Asturnaantaadu muhiim bay noogu tahay. Siyaasaddan waxay sharaxaysaa sida aan u aruurino, u isticmaalno, oo uu u dhawrno xogta shakhsigaaga.",
+      sections: {
+        collection: "Xogta Aan Aruurino",
+        usage: "Sida Aan Xogta Ugu Isticmaalno",
+        sharing: "Wadaagga Xogta & Dhinacyada Saddexaad",
+        rights: "Xuquuqdaada",
+        retention: "Kayditaanka Xogta",
+        international: "Wareejinta Caalamiga ah",
+      },
+      content: "Waxaan ku dedaalaan in aan dhawrno macluumaadkaaga shakhsiga ah, una ahaano cad sida aan u isticmaalno. Xog kasta waxaa lagu maarayaa sida GDPR iyo sharciyadda ilaalinta xogta ee xukumaysa.",
+      bullets: {
+        one: "Waxaan aruurinaa oo kaliya xogta lagama maarmaan ah si aan u bixino adeegyadayada.",
+        two: "Xogta shakhsigaaga waligiis looma iibin dhinacyada saddexaad.",
+        three: "Waxaad codsanaysaa tirtirka xogta marka kasta adiga oo nala xiriira.",
+      },
+    },
+    cookie: {
+      title: "Siyaasadda Cookie-ga",
+      subtitle: "Waxaan isticmaalnaa cookie-yada si aan u hagaajino khibradaada. Halkan waa faahfaahin cad oo ku saabsan waxa aan isticmaalno iyo sababta.",
+      sections: {
+        whatAreCookies: "Maxaa Ah Cookie-yada?",
+        necessary: "Cookie-yada Lagama Maarmaan ah",
+        analytics: "Cookie-yada Falanqaynta",
+        marketing: "Cookie-yada Suuq-geynta",
+        managing: "Maareynta Doorashadaada",
+        updates: "Cusbooneysiinta Siyaasadda",
+      },
+      content: "Cookie-yadu waa faylal qoraal ah oo yar oo lagu kaydiyay qalabkaaga marka aad booqato websaytkeena. Waxay na caawiyaan inaan fahno sida booqdayaashu ula falgalaan goobta oo aan hagaajino shaqaynteeda waqti ka dib.",
+      bullets: {
+        one: "Waxaad maarayn kartaa ama xannibayn kartaa cookie-yada marka kasta adiga oo adeegsanaya goobaha browser-kaaga.",
+        two: "Cookie-yada lagama maarmaan ah ayaa loo baahan yahay si goobtu u shaqayso mana xannibi kartid.",
+        three: "Xogta falanqaynta waa la gaashaantuuray mana laxiddilayneyso isticmaalayaasha shaqsiyeed.",
+      },
     },
     terms: {
       title: "Shuruudaha iyo Xaaladaha",

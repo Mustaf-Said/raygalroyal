@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Mail, MessageSquare, Phone, Send, CheckCircle2 } from "lucide-react"
-import { useLanguage } from "./LanguageProvider"
+import { useLanguage } from "../components/LanguageProvider"
 import { useState } from "react"
 
 export default function Contact() {
@@ -169,10 +169,23 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-blue-500/25 active:scale-95"
+                    className="w-full py-5 relative text-white font-black rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{
+                      background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                      boxShadow: "0 0 30px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                    }}
                   >
-                    <Send className="w-5 h-5" />
-                    {isSubmitting ? "Sending..." : t.contact.send}
+                    {/* Hover shimmer */}
+                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                      style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+                    {/* Glow on hover */}
+                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md -z-10"
+                      style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
+                    <Send className="relative z-10 w-5 h-5" />
+                    <span className="relative z-10 tracking-wide">
+                      {isSubmitting ? "Sending..." : t.contact.send}
+                    </span>
                   </button>
                 </form>
               )}
