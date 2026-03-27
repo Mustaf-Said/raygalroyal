@@ -146,13 +146,13 @@ export default function Footer() {
             © {year} Raygal Royal. {t.footer.rights}
           </p>
           <div className="flex gap-8 text-sm text-gray-500">
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/privacy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? "Privacy Policy"}
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
               {footerLegal.terms ?? "Terms of Service"}
             </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/cookies" className="hover:text-white transition-colors">
               {footerLegal.cookies ?? "Cookie Policy"}
             </Link>
           </div>
