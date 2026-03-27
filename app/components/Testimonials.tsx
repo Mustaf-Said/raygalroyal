@@ -48,16 +48,25 @@ export default function Testimonials() {
                   <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              
+
               <Quote className="absolute top-8 right-8 w-12 h-12 text-blue-600/10 group-hover:text-blue-600/20 transition-colors" />
-              
+
               <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 leading-relaxed italic">
                 &quot;{item.text}&quot;
               </p>
-              
+
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  {item.name[0]}
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                    boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  <span className="absolute inset-0 rounded-full"
+                    style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.03))" }} />
+                  <span className="relative z-10">{item.name[0]}</span>
                 </div>
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">{item.name}</div>

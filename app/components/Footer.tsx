@@ -18,8 +18,17 @@ export default function Footer() {
           {/* BRAND */}
           <div className="space-y-8">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
-                R
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                  boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                }}
+              >
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                  style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+                <span className="relative z-10">R</span>
               </div>
               <span className="text-2xl font-bold tracking-tight">
                 Raygal<span className="text-blue-600">Royal</span>
