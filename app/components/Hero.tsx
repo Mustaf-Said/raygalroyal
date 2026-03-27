@@ -54,7 +54,7 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="#contact"
+              href="/contact"
               className="group relative px-8 py-4 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden flex items-center gap-2"
               style={{
                 background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",

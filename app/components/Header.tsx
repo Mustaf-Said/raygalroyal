@@ -27,7 +27,7 @@ export default function Header() {
     { name: t.nav.home, href: "/" },
     {
       name: t.nav.services,
-      href: "#services",
+      href: "/services",
       dropdown: [
         { name: t.services.items.web.title, key: "web" },
         { name: t.services.items.mobile.title, key: "mobile" },
@@ -37,11 +37,11 @@ export default function Header() {
         { name: t.services.items.security.title, key: "security" },
       ]
     },
-    { name: t.nav.projects, href: "#projects" },
-    { name: t.nav.team, href: "#team" },
-    { name: t.nav.pricing, href: "#pricing" },
-    { name: t.nav.faq, href: "#faq" },
-    { name: t.nav.contact, href: "#contact" },
+    { name: t.nav.projects, href: "/projects" },
+    { name: t.nav.team, href: "/team" },
+    { name: t.nav.pricing, href: "/pricing" },
+    { name: t.nav.faq, href: "/faq" },
+    { name: t.nav.contact, href: "/contact" },
   ]
 
   return (
@@ -64,7 +64,7 @@ export default function Header() {
           >
             <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
               style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
-            <span className="relative z-10">R</span>
+            <span className="relative hover:rotate-360 transition-transform z-10">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             Raygal<span className="text-blue-600">Royal</span>
