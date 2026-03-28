@@ -49,9 +49,8 @@ export default function ReviewCard({ review, index, t }: ReviewCardProps) {
       <Quote className="absolute top-8 right-8 w-12 h-12 text-blue-600/10 group-hover:text-blue-600/20 transition-colors" />
 
       <p
-        className={`text-lg text-gray-700 dark:text-gray-300 mb-3 leading-relaxed italic ${
-          isExpanded ? "line-clamp-none" : "line-clamp-3"
-        }`}
+        className={`text-lg text-gray-700 dark:text-gray-300 mb-3 leading-relaxed italic ${isExpanded ? "line-clamp-none" : "line-clamp-3"
+          }`}
       >
         &quot;{review.message}&quot;
       </p>
