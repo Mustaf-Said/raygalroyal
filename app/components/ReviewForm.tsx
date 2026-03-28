@@ -18,7 +18,6 @@ type TestimonialsTranslation = {
 
 type ReviewFormState = {
   name: string
-  message: string
   rating: number
   website: string
 }
@@ -28,14 +27,10 @@ type ReviewFormProps = {
 }
 
 const MAX_REVIEW_WORDS = 200
+const REVIEW_WARNING_WORDS = 180
 
-const countWords = (value: string): number => {
-  const trimmed = value.trim()
-  if (!trimmed) {
-    return 0
-  }
-
-  return trimmed.split(/\s+/).length
+const countWords = (text: string) => {
+  return Array.from(text).filter((char) => /\S/u.test(char)).length
 }
 
 export default function ReviewForm({ t }: ReviewFormProps) {
@@ -45,13 +40,14 @@ export default function ReviewForm({ t }: ReviewFormProps) {
   const [showSuccessToast, setShowSuccessToast] = useState(false)
   const [form, setForm] = useState<ReviewFormState>({
     name: "",
-    message: "",
     rating: 5,
     website: "",
   })
+  const [message, setMessage] = useState("")
 
-  const messageWordCount = countWords(form.message)
-  const isOverWordLimit = messageWordCount > MAX_REVIEW_WORDS
+  const wordCount = countWords(message)
+  const isOverWordLimit = wordCount > MAX_REVIEW_WORDS
+  const isNearWordLimit = wordCount >= REVIEW_WARNING_WORDS && !isOverWordLimit
 
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -106,7 +102,7 @@ export default function ReviewForm({ t }: ReviewFormProps) {
         },
         body: JSON.stringify({
           name: form.name,
-          message: form.message,
+          message,
           rating: form.rating,
           website: form.website,
         }),
@@ -117,7 +113,8 @@ export default function ReviewForm({ t }: ReviewFormProps) {
         throw new Error(json?.error || "Failed to submit review")
       }
 
-      setForm({ name: "", message: "", rating: 5, website: "" })
+      setForm({ name: "", rating: 5, website: "" })
+      setMessage("")
       setIsOpen(false)
       setShowSuccessToast(true)
     } catch (error) {
@@ -230,12 +227,19 @@ export default function ReviewForm({ t }: ReviewFormProps) {
                   <textarea
                     required
                     rows={5}
-                    value={form.message}
-                    onChange={(event) => setForm((prev) => ({ ...prev, message: event.target.value }))}
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
                     className="w-full px-5 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
                   />
-                  <p className={`text-xs font-semibold ${isOverWordLimit ? "text-red-600 dark:text-red-400" : "text-gray-500"}`}>
-                    {messageWordCount}/{MAX_REVIEW_WORDS} words
+                  <p
+                    className={`text-xs font-semibold ${isOverWordLimit
+                      ? "text-red-600 dark:text-red-400"
+                      : isNearWordLimit
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-gray-500"
+                      }`}
+                  >
+                    {wordCount} / {MAX_REVIEW_WORDS} words
                   </p>
                 </div>
 

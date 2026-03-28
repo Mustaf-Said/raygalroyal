@@ -23,11 +23,12 @@ type ReviewCardProps = {
 }
 
 const RATING_VALUES = [1, 2, 3, 4, 5]
-const MESSAGE_COLLAPSE_LENGTH = 190
+const MESSAGE_COLLAPSE_LENGTH = 120
 
 export default function ReviewCard({ review, index, t }: ReviewCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const shouldShowToggle = review.message.length > MESSAGE_COLLAPSE_LENGTH
+  const showAdminResponse = Boolean(review.admin_response) && (!shouldShowToggle || expanded)
 
   return (
     <motion.div
@@ -35,7 +36,7 @@ export default function ReviewCard({ review, index, t }: ReviewCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="p-8 bg-gray-50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 rounded-[32px] relative group hover:bg-white dark:hover:bg-gray-900 transition-all duration-300"
+      className="p-8 bg-gray-50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 rounded-4xl relative group hover:bg-white dark:hover:bg-gray-900 transition-all duration-300"
     >
       <div className="flex gap-1 mb-6">
         {RATING_VALUES.map((ratingValue) => (
@@ -46,11 +47,20 @@ export default function ReviewCard({ review, index, t }: ReviewCardProps) {
         ))}
       </div>
 
-      <Quote className="absolute top-8 right-8 w-12 h-12 text-blue-600/10 group-hover:text-blue-600/20 transition-colors" />
+      <Quote className="absolute top-8 right-8 w-12 h-12 text-blue-600/10 group-hover:text-blue-600/20 transition-colors pointer-events-none" />
 
       <p
-        className={`text-lg text-gray-700 dark:text-gray-300 mb-3 leading-relaxed italic ${isExpanded ? "line-clamp-none" : "line-clamp-3"
-          }`}
+        className={`text-lg text-gray-700 dark:text-gray-300 mb-3 leading-relaxed italic ${expanded ? "" : "line-clamp-3"} relative z-10`}
+        style={
+          expanded
+            ? undefined
+            : {
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }
+        }
       >
         &quot;{review.message}&quot;
       </p>
@@ -58,16 +68,16 @@ export default function ReviewCard({ review, index, t }: ReviewCardProps) {
       {shouldShowToggle ? (
         <button
           type="button"
-          onClick={() => setIsExpanded((prev) => !prev)}
-          className="mb-8 text-sm font-bold text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
+          onClick={() => setExpanded(!expanded)}
+          className="mb-8 text-sm font-bold text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity relative z-10"
         >
-          {isExpanded ? t.showLess : t.readMore}
+          {expanded ? t.showLess : t.readMore}
         </button>
       ) : (
         <div className="mb-8" />
       )}
 
-      {review.admin_response ? (
+      {showAdminResponse ? (
         <div className="mb-8 border-t border-gray-200 dark:border-gray-800 pt-6">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t.responseLabel}</p>
           <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{review.admin_response}</p>
