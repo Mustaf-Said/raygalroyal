@@ -225,6 +225,19 @@ const translationData = {
     testimonials: {
       title: "Client Testimonials",
       subtitle: "What our clients say about Raygal Royal.",
+      formTitle: "Share Your Review",
+      formName: "Your Name",
+      formMessage: "Your Review",
+      formRating: "Rating",
+      submit: "Submit Review",
+      submitting: "Submitting...",
+      responseLabel: "Response from our team",
+      pendingSuccess: "Your review has been submitted and will be reviewed by our team.",
+      pendingToast: "Your review has been submitted and is awaiting approval.",
+      leaveReview: "Leave a Review",
+      cancel: "Cancel",
+      readMore: "Read more",
+      showLess: "Show less",
       items: [
         {
           name: "Ahmed Ali",
@@ -515,6 +528,19 @@ const translationData = {
     testimonials: {
       title: "Markhaatiyada Macmiilka",
       subtitle: "Waxa ay macaamiisheena ka yiraahdeen Raygal Royal.",
+      formTitle: "La wadaag Fikradaada",
+      formName: "Magacaaga",
+      formMessage: "Fikradaada",
+      formRating: "Qiimeyn",
+      submit: "Gudbi Fikrad",
+      submitting: "Waa la gudbinayaa...",
+      responseLabel: "Jawaab ka timid kooxdayada",
+      pendingSuccess: "Fikradaada waa la gudbiyey waxaana dib u eegi doona kooxdayada.",
+      pendingToast: "Fikradaada waa la gudbiyey waxayna sugaysaa ansixinta.",
+      leaveReview: "Ka tag Fikrad",
+      cancel: "Jooji",
+      readMore: "Akhri wax badan",
+      showLess: "Qari",
       items: [
         {
           name: "Ahmed Ali",

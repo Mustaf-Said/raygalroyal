@@ -7,6 +7,7 @@ export type Json =
   | Json[]
 
 export type ApplicationStatus = "pending" | "approved" | "rejected"
+export type ReviewStatus = "pending" | "approved"
 
 export type Database = {
   public: {
@@ -128,6 +129,36 @@ export type Database = {
           payment_id?: string | null
           created_at?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          id: string
+          name: string
+          message: string
+          rating: number
+          admin_response: string | null
+          status: ReviewStatus
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          message: string
+          rating: number
+          admin_response?: string | null
+          status?: ReviewStatus
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          message?: string
+          rating?: number
+          admin_response?: string | null
+          status?: ReviewStatus
+          created_at?: string
         }
         Relationships: []
       }

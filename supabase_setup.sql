@@ -108,3 +108,14 @@ ADD COLUMN IF NOT EXISTS message text NOT NULL DEFAULT '';
 
 ALTER TABLE freelancer_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;
+
+-- Table for moderated client testimonials workflow.
+CREATE TABLE IF NOT EXISTS reviews (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  name text NOT NULL,
+  message text NOT NULL,
+  rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  admin_response text,
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved')),
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);

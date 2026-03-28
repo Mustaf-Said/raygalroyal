@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { Loader2, Filter, CreditCard, ShoppingCart, ArrowLeft, CreditCard as PaymentIcon, Users } from "lucide-react"
+import { Loader2, Filter, CreditCard, ShoppingCart, ArrowLeft, CreditCard as PaymentIcon, Users, MessageSquareText } from "lucide-react"
 
 type ApplicationStatus = "pending" | "approved" | "rejected"
+type ReviewStatus = "pending" | "approved"
 
 type Order = {
   id: string
@@ -33,6 +34,16 @@ type FreelancerApplication = {
   created_at: string
 }
 
+type AdminReview = {
+  id: string
+  name: string
+  message: string
+  rating: number
+  admin_response: string | null
+  status: ReviewStatus
+  created_at: string
+}
+
 export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -43,10 +54,17 @@ export default function AdminOrders() {
   const [applicationFilter, setApplicationFilter] = useState<"all" | ApplicationStatus>("all")
   const [actionApplicationId, setActionApplicationId] = useState<number | null>(null)
   const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [reviews, setReviews] = useState<AdminReview[]>([])
+  const [reviewsLoading, setReviewsLoading] = useState(true)
+  const [reviewFilter, setReviewFilter] = useState<"all" | ReviewStatus>("all")
+  const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({})
+  const [reviewActionId, setReviewActionId] = useState<string | null>(null)
+  const [reviewActionStatus, setReviewActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const router = useRouter()
 
   // Refs for scroll navigation
   const paymentsRef = useRef<HTMLDivElement>(null)
+  const reviewsRef = useRef<HTMLDivElement>(null)
   const applicationsRef = useRef<HTMLDivElement>(null)
 
   async function getAuthHeaders(): Promise<Record<string, string>> {
@@ -62,7 +80,7 @@ export default function AdminOrders() {
     return headers
   }
 
-  async function fetchOrders() {
+  const fetchOrders = useCallback(async () => {
     setLoading(true)
     let query = supabase
       .from("project_orders")
@@ -78,9 +96,9 @@ export default function AdminOrders() {
     const { data } = await query
     if (data) setOrders(data as Order[])
     setLoading(false)
-  }
+  }, [providerFilter, statusFilter])
 
-  async function fetchApplications() {
+  const fetchApplications = useCallback(async () => {
     setApplicationsLoading(true)
     setActionStatus(null)
 
@@ -105,6 +123,120 @@ export default function AdminOrders() {
       })
     } finally {
       setApplicationsLoading(false)
+    }
+  }, [])
+
+  const fetchAdminReviews = useCallback(async () => {
+    setReviewsLoading(true)
+    setReviewActionStatus(null)
+
+    try {
+      const authHeaders = await getAuthHeaders()
+      const response = await fetch("/api/admin/reviews", {
+        cache: "no-store",
+        headers: authHeaders,
+      })
+      const json = await response.json()
+
+      if (!response.ok) {
+        throw new Error(json?.error || "Failed to load reviews")
+      }
+
+      const fetchedReviews = (json?.data ?? []) as AdminReview[]
+      setReviews(fetchedReviews)
+      setReviewDrafts(
+        fetchedReviews.reduce<Record<string, string>>((acc, review) => {
+          acc[review.id] = review.admin_response ?? ""
+          return acc
+        }, {})
+      )
+    } catch (error) {
+      setReviews([])
+      setReviewActionStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to load reviews",
+      })
+    } finally {
+      setReviewsLoading(false)
+    }
+  }, [])
+
+  async function saveReviewResponse(id: string) {
+    const responseText = (reviewDrafts[id] ?? "").trim()
+    if (!responseText) {
+      setReviewActionStatus({ type: "error", message: "Write a response before saving." })
+      return
+    }
+
+    setReviewActionId(id)
+    setReviewActionStatus(null)
+
+    try {
+      const authHeaders = await getAuthHeaders()
+      const response = await fetch(`/api/admin/reviews/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders,
+        },
+        body: JSON.stringify({ admin_response: responseText }),
+      })
+
+      const json = await response.json()
+      if (!response.ok) {
+        throw new Error(json?.error || "Failed to save response")
+      }
+
+      setReviewActionStatus({ type: "success", message: "Response saved successfully." })
+      await fetchAdminReviews()
+    } catch (error) {
+      setReviewActionStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to save response",
+      })
+    } finally {
+      setReviewActionId(null)
+    }
+  }
+
+  async function approveAndPublishReview(id: string) {
+    const responseText = (reviewDrafts[id] ?? "").trim()
+    if (!responseText) {
+      setReviewActionStatus({ type: "error", message: "Admin response is required before approval." })
+      return
+    }
+
+    setReviewActionId(id)
+    setReviewActionStatus(null)
+
+    try {
+      const authHeaders = await getAuthHeaders()
+      const response = await fetch(`/api/admin/reviews/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders,
+        },
+        body: JSON.stringify({
+          admin_response: responseText,
+          status: "approved",
+        }),
+      })
+
+      const json = await response.json()
+      if (!response.ok) {
+        throw new Error(json?.error || "Failed to approve review")
+      }
+
+      setReviewActionStatus({ type: "success", message: "Review approved and published." })
+      await fetchAdminReviews()
+    } catch (error) {
+      setReviewActionStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to approve review",
+      })
+    } finally {
+      setReviewActionId(null)
     }
   }
 
@@ -150,21 +282,25 @@ export default function AdminOrders() {
       if (!session) {
         router.push("/admin/login")
       } else {
-        fetchOrders()
-        fetchApplications()
+        await fetchOrders()
+        await fetchAdminReviews()
+        await fetchApplications()
       }
     }
-    checkUser()
-  }, [])
+    void checkUser()
+  }, [fetchAdminReviews, fetchApplications, fetchOrders, router])
 
   useEffect(() => {
-    fetchOrders()
-  }, [statusFilter, providerFilter])
+    void fetchOrders()
+  }, [fetchOrders])
 
   const filteredApplications =
     applicationFilter === "all"
       ? applications
       : applications.filter((application) => application.status === applicationFilter)
+
+  const filteredReviews =
+    reviewFilter === "all" ? reviews : reviews.filter((review) => review.status === reviewFilter)
 
   const badgeClassName = (status: ApplicationStatus) => {
     if (status === "approved") return "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
@@ -218,6 +354,13 @@ export default function AdminOrders() {
             >
               <PaymentIcon className="w-5 h-5" />
               Payments
+            </button>
+            <button
+              onClick={() => scrollToSection(reviewsRef as React.RefObject<HTMLDivElement>)}
+              className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <MessageSquareText className="w-5 h-5" />
+              Review Management
             </button>
             <button
               onClick={() => scrollToSection(applicationsRef as React.RefObject<HTMLDivElement>)}
@@ -339,6 +482,114 @@ export default function AdminOrders() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* REVIEW MANAGEMENT SECTION */}
+        <div ref={reviewsRef} className="mt-16 scroll-mt-32">
+          <div className="mb-8">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Review Management</h2>
+            <p className="text-gray-500">Approve client reviews only after posting a professional admin response.</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-900 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Moderate pending and approved reviews</p>
+              </div>
+
+              <select
+                value={reviewFilter}
+                onChange={(event) => setReviewFilter(event.target.value as "all" | ReviewStatus)}
+                className="bg-gray-50 dark:bg-gray-800 border-none rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-600 outline-none"
+              >
+                <option value="all">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+
+            {reviewActionStatus ? (
+              <div
+                className={`mx-6 mt-6 rounded-xl px-4 py-3 text-sm font-semibold ${reviewActionStatus.type === "success"
+                    ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                    : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                  }`}
+              >
+                {reviewActionStatus.message}
+              </div>
+            ) : null}
+
+            {reviewsLoading ? (
+              <div className="p-20 flex flex-col items-center justify-center gap-4 text-gray-400">
+                <Loader2 className="w-10 h-10 animate-spin" />
+                <p>Loading reviews...</p>
+              </div>
+            ) : filteredReviews.length === 0 ? (
+              <div className="p-20 text-center text-gray-500">No reviews found.</div>
+            ) : (
+              <div className="p-6 space-y-5">
+                {filteredReviews.map((review) => {
+                  const isBusy = reviewActionId === review.id
+                  const isApproved = review.status === "approved"
+
+                  return (
+                    <div key={review.id} className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 p-6">
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-5">
+                        <div>
+                          <h3 className="text-xl font-black text-gray-900 dark:text-white">{review.name}</h3>
+                          <p className="text-sm text-gray-500 mt-1">Rating: {review.rating}/5</p>
+                        </div>
+                        <span
+                          className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${review.status === "approved"
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                              : "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                            }`}
+                        >
+                          {review.status}
+                        </span>
+                      </div>
+
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-5">{review.message}</p>
+
+                      <div className="space-y-2 mb-5">
+                        <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response</label>
+                        <textarea
+                          rows={4}
+                          value={reviewDrafts[review.id] ?? ""}
+                          onChange={(event) =>
+                            setReviewDrafts((prev) => ({
+                              ...prev,
+                              [review.id]: event.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                        />
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          type="button"
+                          onClick={() => saveReviewResponse(review.id)}
+                          disabled={isBusy}
+                          className="px-5 py-3 rounded-2xl bg-gray-800 text-white font-bold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isBusy ? "Working..." : "Save Response"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => approveAndPublishReview(review.id)}
+                          disabled={isBusy || isApproved}
+                          className="px-5 py-3 rounded-2xl bg-green-600 text-white font-bold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isApproved ? "Already Published" : "Approve & Publish"}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>
