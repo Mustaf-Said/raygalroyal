@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       amount = parsedCustomAmount
       currency = "SEK"
     } else if (plan === "enterprise") {
-      if (language === "so") {
+      if (language === "so" || language === "ar") {
         amount = 5000;
         currency = "USD";
       } else {

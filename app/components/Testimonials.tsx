@@ -26,6 +26,9 @@ type ReviewFormState = {
   leaveReview: string
   cancel: string
   pendingToast: string
+  maxWordsError: string
+  wordsLabel: string
+  honeypotWebsite: string
 }
 
 type ReviewCardTranslations = {
@@ -55,6 +58,9 @@ export default function Testimonials() {
     leaveReview: t.testimonials.leaveReview,
     cancel: t.testimonials.cancel,
     pendingToast: t.testimonials.pendingToast,
+    maxWordsError: t.testimonials.maxWordsError,
+    wordsLabel: t.testimonials.wordsLabel,
+    honeypotWebsite: t.testimonials.honeypotWebsite,
   }
 
   const fetchApprovedReviews = async () => {
@@ -107,9 +113,9 @@ export default function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {isLoadingReviews ? (
-            <div className="md:col-span-3 text-center text-gray-500">Loading reviews...</div>
+            <div className="md:col-span-3 text-center text-gray-500">{t.testimonials.loadingReviews}</div>
           ) : reviews.length === 0 ? (
-            <div className="md:col-span-3 text-center text-gray-500">No approved reviews yet.</div>
+            <div className="md:col-span-3 text-center text-gray-500">{t.testimonials.noApprovedReviews}</div>
           ) : (
             reviews.map((item, index) => (
               <ReviewCard

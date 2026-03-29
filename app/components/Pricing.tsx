@@ -76,7 +76,7 @@ export default function Pricing() {
           currency: "SEK",
           status: "pending",
           language,
-          description: "Support payment",
+          description: t.pricing.supportDescription,
         }),
       })
 
@@ -85,7 +85,7 @@ export default function Pricing() {
       if (!createOrderResponse.ok || !createOrderPayload?.data?.id) {
         const message = getErrorMessage(
           createOrderPayload?.error,
-          "Unable to create support order"
+          t.pricing.checkoutErrors.createOrder
         )
         throw new Error(message)
       }
@@ -106,7 +106,7 @@ export default function Pricing() {
       const payload = await response.json()
 
       if (!response.ok || !payload?.url) {
-        const message = getErrorMessage(payload?.error, "Unable to start checkout")
+        const message = getErrorMessage(payload?.error, t.pricing.checkoutErrors.startCheckout)
         throw new Error(message)
       }
 
@@ -116,7 +116,7 @@ export default function Pricing() {
       setSupportError(
         error instanceof Error && error.message
           ? error.message
-          : "Unable to start checkout. Please try again."
+          : t.pricing.checkoutErrors.retry
       )
     } finally {
       setSupportLoading(false)
@@ -168,7 +168,7 @@ export default function Pricing() {
               >
                 {plan.popular && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-linear-to-r from-blue-400 to-indigo-500 text-white text-xs font-black uppercase tracking-widest rounded-full shadow-lg text-center">
-                    Most Popular
+                    {t.pricing.mostPopular}
                   </div>
                 )}
 
@@ -214,7 +214,7 @@ export default function Pricing() {
                         <span className="text-sm font-bold opacity-70">{t.pricing.perProject}</span>
                         <span className="text-4xl font-black">
                           {plan.key === "enterprise"
-                            ? (language === "so" ? "Qiimo go'an" : "Custom")
+                            ? t.pricing.enterprise.price
                             : `${t.pricing.currency}${planText.price}`
                           }
                         </span>
@@ -271,7 +271,7 @@ export default function Pricing() {
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md -z-10"
                     style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
                   <span className="relative z-10 tracking-wide">
-                    {isSupportPlan ? (supportLoading ? "Redirecting..." : t.pricing.payNow) : t.pricing.choose}
+                    {isSupportPlan ? (supportLoading ? t.pricing.redirecting : t.pricing.payNow) : t.pricing.choose}
                   </span>
                 </button>
               </motion.div>

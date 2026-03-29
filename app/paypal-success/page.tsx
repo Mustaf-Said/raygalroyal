@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { CheckCircle2, Package, CreditCard, ChevronRight, Loader2 } from "lucide-react"
-import { translations, Language } from "@/app/components/translations"
+import { translations, type Language } from "@/locales"
 import { supabase } from "@/lib/supabase"
 
 type Order = {
@@ -14,6 +14,9 @@ type Order = {
   created_at: string | null
   language: string | null
 }
+
+const isLanguage = (value: string | null): value is Language =>
+  value === "en" || value === "so" || value === "ar"
 
 function PayPalSuccessContent() {
   const params = useSearchParams()
@@ -59,7 +62,7 @@ function PayPalSuccessContent() {
 
           if (!confirmRes.ok) {
             const confirmData = await confirmRes.json().catch(() => ({}))
-            throw new Error(confirmData.error || "Payment confirmation failed")
+            throw new Error(confirmData.error || translations[lang].order.errors.confirmPaymentFailed)
           }
 
           // Fetch updated order details
@@ -71,10 +74,10 @@ function PayPalSuccessContent() {
 
           if (data) {
             setOrder(data)
-            setLang((data.language === "so" ? "so" : "en") as Language)
+            setLang(isLanguage(data.language) ? data.language : "en")
           }
         } else {
-          throw new Error(captureData.error || "Capture failed")
+          throw new Error(captureData.error || translations[lang].order.errors.captureFailed)
         }
       } catch (error) {
         console.error("Capture failed:", error)
@@ -101,7 +104,7 @@ function PayPalSuccessContent() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto" />
-          <p className="text-gray-500 font-bold animate-pulse">Confirming your payment...</p>
+          <p className="text-gray-500 font-bold animate-pulse">{t.confirmingPayment}</p>
         </div>
       </div>
     )
@@ -129,7 +132,7 @@ function PayPalSuccessContent() {
                 <span className="text-xs font-black uppercase tracking-widest">{t.plan}</span>
               </div>
               <div className="text-xl font-bold text-gray-900 dark:text-white capitalize">
-                {order?.plan || "Standard"}
+                {order?.plan || translations[lang].pricing.basic.name}
               </div>
             </div>
 
@@ -146,7 +149,7 @@ function PayPalSuccessContent() {
 
           {formattedDate && (
             <p className="text-sm text-gray-500 mb-6">
-              Created: {formattedDate} (Europe/Stockholm)
+              {t.createdAt}: {formattedDate} (Europe/Stockholm)
             </p>
           )}
 
@@ -174,7 +177,7 @@ export default function PayPalSuccess() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto" />
-          <p className="text-gray-500 font-bold">Loading payment confirmation...</p>
+          <p className="text-gray-500 font-bold">{translations.en.order.success.loadingConfirmation}</p>
         </div>
       </div>
     }>

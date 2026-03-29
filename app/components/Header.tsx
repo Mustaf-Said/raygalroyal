@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
-import { useLanguage } from "./LanguageProvider"
+import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
+import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
 import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
@@ -13,14 +14,34 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
-  const { language, toggleLanguage, t } = useLanguage()
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const languageMenuRef = useRef<HTMLDivElement | null>(null)
+  const { language, setLanguage, t } = useLanguage()
   const { toggleTheme, isDark } = useTheme()
   const { openOrderModal } = useModals()
+
+  const languageLabels: Record<Language, string> = {
+    en: "English",
+    so: "Somali",
+    ar: "العربية",
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", onScroll)
     return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  useEffect(() => {
+    const onClickOutside = (event: MouseEvent) => {
+      if (!languageMenuRef.current) return
+      if (!languageMenuRef.current.contains(event.target as Node)) {
+        setLanguageMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", onClickOutside)
+    return () => document.removeEventListener("mousedown", onClickOutside)
   }, [])
 
   const navLinks = [
@@ -126,7 +147,7 @@ export default function Header() {
           <Link
             href="/admin/orders"
             className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            title="Admin Dashboard"
+            title={t.nav.adminDashboard}
           >
             <Lock className="w-5 h-5" />
           </Link>
@@ -140,15 +161,52 @@ export default function Header() {
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
 
-          {/* LANGUAGE TOGGLE */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-            title={t.toggle.label}
-          >
-            <Globe className="w-5 h-5" />
-            <span className="text-xs font-bold uppercase">{language}</span>
-          </button>
+          {/* LANGUAGE SWITCHER */}
+          <div className="relative" ref={languageMenuRef}>
+            <button
+              onClick={() => setLanguageMenuOpen((prev) => !prev)}
+              className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+              title={t.toggle.label}
+              aria-haspopup="menu"
+              aria-expanded={languageMenuOpen}
+            >
+              <Globe className="w-5 h-5" />
+              <span className="text-xs font-bold uppercase">{language}</span>
+              <ChevronDown className={cn("w-3 h-3 transition-transform", languageMenuOpen && "rotate-180")} />
+            </button>
+
+            <AnimatePresence>
+              {languageMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="absolute top-full right-0 mt-2 w-36 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                  role="menu"
+                >
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        setLanguage(lang)
+                        setLanguageMenuOpen(false)
+                      }}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                        language === lang
+                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      )}
+                      role="menuitem"
+                    >
+                      <span className="font-semibold">{lang.toUpperCase()}</span>
+                      <span className="block text-xs opacity-80">{languageLabels[lang]}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* START PROJECT CTA */}
           <button
@@ -205,7 +263,7 @@ export default function Header() {
                 className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
               >
                 <Lock className="w-4 h-4" />
-                Admin
+                {t.nav.admin}
               </Link>
               <button
                 onClick={() => {

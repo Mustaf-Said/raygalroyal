@@ -104,13 +104,13 @@ export default function OrderFlow({
             const uploadPayload = await uploadResponse.json()
 
             if (!uploadResponse.ok) {
-              throw new Error(uploadPayload?.error || "File upload failed")
+              throw new Error(uploadPayload?.error || t.order.fileUpload.uploadFailed)
             }
 
             fileUrl = uploadPayload?.filePath || null
           } catch (error) {
             console.error("Upload failed:", JSON.stringify(error, null, 2))
-            setUploadWarning("Your file could not be uploaded, but you can continue to payment.")
+            setUploadWarning(t.order.fileUpload.uploadContinueWarning)
           }
         }
 
@@ -144,7 +144,7 @@ export default function OrderFlow({
 
           if (!createOrderResponse.ok) {
             console.error(result.error)
-            throw new Error("Failed to create order")
+            throw new Error(t.order.errors.detailsSaveFailed)
           }
 
           const res = { data: result.data, error: null }
@@ -167,7 +167,7 @@ export default function OrderFlow({
             console.error("Error hint:", (error as Record<string, unknown>).hint)
           }
           if (!uploadWarning) {
-            setUploadWarning("We could not save your project details right now, but you can continue to payment.")
+            setUploadWarning(t.order.errors.detailsSaveContinueWarning)
           }
         }
 
@@ -183,7 +183,7 @@ export default function OrderFlow({
 
   const handleCheckout = async (provider: "stripe" | "paypal") => {
     if (!selectedPackage || !orderId) {
-      setPaymentError("Please select a package before continuing.")
+      setPaymentError(t.order.errors.selectPackage)
       return
     }
 
@@ -219,13 +219,13 @@ export default function OrderFlow({
       const payload = await response.json()
 
       if (!response.ok || !payload?.url) {
-        throw new Error(payload?.error || "Failed to start checkout")
+        throw new Error(payload?.error || t.order.errors.checkoutStart)
       }
 
       window.location.href = payload.url
     } catch (error) {
       console.error(error)
-      setPaymentError("Unable to start checkout. Please try again.")
+      setPaymentError(t.order.errors.checkoutStart)
       setLoadingProvider(null) // reset on error
     }
   }
@@ -347,7 +347,7 @@ export default function OrderFlow({
                         type="email"
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
-                        placeholder="your@email.com"
+                        placeholder={t.order.placeholders.email}
                         className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                       />
                     </div>
@@ -362,7 +362,7 @@ export default function OrderFlow({
                         className="w-full p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
                       />
                       <div className="text-right text-xs text-gray-400">
-                        {projectDetails.length} characters (min 10)
+                        {t.order.detailsCounter.replace("{count}", String(projectDetails.length))}
                       </div>
                     </div>
                   </div>
@@ -383,7 +383,7 @@ export default function OrderFlow({
                             <Upload className="w-6 h-6" />
                           </div>
                           <div className="text-center">
-                            <p className="font-bold text-gray-900 dark:text-white">Click or drag to upload</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{t.order.fileUpload.callToAction}</p>
                             <p className="text-sm text-gray-500">{t.order.fileUpload.hint}</p>
                           </div>
                         </div>
@@ -500,7 +500,7 @@ export default function OrderFlow({
                       <ShieldCheck className="w-10 h-10" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t.order.steps.payment}</h3>
-                    <p className="text-gray-500">Choose your preferred payment method to secure your project slot.</p>
+                    <p className="text-gray-500">{t.order.paymentSubtitle}</p>
                   </div>
 
                   <div className="space-y-4">
@@ -516,7 +516,7 @@ export default function OrderFlow({
                     >
                       <div className="flex items-center gap-4">
                         <CreditCard className="w-6 h-6" />
-                        {loadingProvider === "stripe" ? "Redirecting..." : "Pay with Stripe"}
+                        {loadingProvider === "stripe" ? t.order.redirecting : t.order.payWithStripe}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -527,7 +527,7 @@ export default function OrderFlow({
                     >
                       <div className="flex items-center gap-4">
                         <ShoppingCart className="w-6 h-6" />
-                        {loadingProvider === "paypal" ? "Redirecting..." : "Pay with PayPal"}
+                        {loadingProvider === "paypal" ? t.order.redirecting : t.order.payWithPayPal}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
