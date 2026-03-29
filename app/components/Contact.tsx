@@ -43,7 +43,7 @@ export default function Contact() {
       if (error instanceof Error) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage("Could not send your message. Please try again.")
+        setErrorMessage(t.contact.submitFailed)
       }
     } finally {
       setIsSubmitting(false)
@@ -97,8 +97,8 @@ export default function Contact() {
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Office</div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">Gothenborg, Sweden</div>
+                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{t.contact.office}</div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">{t.contact.location}</div>
                 </div>
               </div>
             </div>
@@ -121,7 +121,7 @@ export default function Contact() {
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t.contact.success}</h3>
-                  <p className="text-gray-500">We&apos;ll get back to you within 24 hours.</p>
+                  <p className="text-gray-500">{t.contact.replyWithin}</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -134,7 +134,7 @@ export default function Contact() {
                         value={formData.name}
                         onChange={(e) => handleInputChange("name", e.target.value)}
                         className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        placeholder="John Doe"
+                        placeholder={t.contact.placeholders.name}
                       />
                     </div>
                     <div className="space-y-2">
@@ -145,7 +145,7 @@ export default function Contact() {
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
                         className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        placeholder="john@example.com"
+                        placeholder={t.contact.placeholders.email}
                       />
                     </div>
                   </div>
@@ -158,7 +158,7 @@ export default function Contact() {
                       value={formData.message}
                       onChange={(e) => handleInputChange("message", e.target.value)}
                       className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
-                      placeholder="Tell us about your project..."
+                      placeholder={t.contact.placeholders.message}
                     />
                   </div>
 
@@ -184,7 +184,7 @@ export default function Contact() {
                       style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
                     <Send className="relative z-10 w-5 h-5" />
                     <span className="relative z-10 tracking-wide">
-                      {isSubmitting ? "Sending..." : t.contact.send}
+                      {isSubmitting ? t.contact.sending : t.contact.send}
                     </span>
                   </button>
                 </form>

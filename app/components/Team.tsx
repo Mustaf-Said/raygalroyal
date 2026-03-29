@@ -77,10 +77,17 @@ type ApplyFormTranslations = {
   success?: string
   error?: string
   submitting?: string
+  closeMember?: string
+  closeForm?: string
+  loadingTeam?: string
+  seeMoreFreelancers?: string
+  noFreelancers?: string
+  bio?: string
+  linkedinPlaceholder?: string
 }
 
 export default function Team() {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
   const [members, setMembers] = useState<TeamMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
@@ -101,23 +108,24 @@ export default function Team() {
   const applyFormT = (t.team as { applyForm?: ApplyFormTranslations }).applyForm
 
   const defaultApplyText = {
-    title: language === "so" ? "Foomka Codsiga" : "Application Form",
-    name: language === "so" ? "Magaca" : "Name",
-    email: language === "so" ? "Iimayl" : "Email",
-    linkedin: language === "so" ? "LinkedIn URL" : "LinkedIn URL",
-    role: language === "so" ? "Doorka" : "Role",
-    message: language === "so" ? "Fariinta" : "Message",
-    image: language === "so" ? "Sawir" : "Image",
-    submit: language === "so" ? "Gudbi" : "Submit",
-    submitting: language === "so" ? "Waa la gudbinayaa..." : "Submitting...",
-    success: language === "so" ? "Codsiga si guul leh ayaa loo diray." : "Application sent successfully.",
-    error: language === "so" ? "Codsiga lama diri karin. Fadlan mar kale isku day." : "Could not send application. Please try again.",
-    closeMember: language === "so" ? "Xir faahfaahinta xubinta" : "Close member details",
-    closeForm: language === "so" ? "Xir foomka codsiga" : "Close application form",
-    loadingTeam: language === "so" ? "Kooxda waa la soo gelinayaa..." : "Loading team...",
-    seeMoreFreelancers: language === "so" ? "Arag freelancers badan" : "See more freelancers",
-    noFreelancers: language === "so" ? "Freelancers lama helin." : "No freelancers found.",
-    bio: language === "so" ? "Bio" : "Bio",
+    title: applyFormT?.title ?? "Application Form",
+    name: applyFormT?.name ?? "Name",
+    email: applyFormT?.email ?? "Email",
+    linkedin: applyFormT?.linkedin ?? "LinkedIn URL",
+    role: applyFormT?.role ?? "Role",
+    message: applyFormT?.message ?? "Message",
+    image: applyFormT?.image ?? "Image",
+    submit: applyFormT?.submit ?? "Submit",
+    submitting: applyFormT?.submitting ?? "Submitting...",
+    success: applyFormT?.success ?? "Application sent successfully.",
+    error: applyFormT?.error ?? "Could not send application. Please try again.",
+    closeMember: applyFormT?.closeMember ?? "Close member details",
+    closeForm: applyFormT?.closeForm ?? "Close application form",
+    loadingTeam: applyFormT?.loadingTeam ?? "Loading team...",
+    seeMoreFreelancers: applyFormT?.seeMoreFreelancers ?? "See more freelancers",
+    noFreelancers: applyFormT?.noFreelancers ?? "No freelancers found.",
+    bio: applyFormT?.bio ?? "Bio",
+    linkedinPlaceholder: applyFormT?.linkedinPlaceholder ?? "https://www.linkedin.com/in/username",
   }
 
   useEffect(() => {
@@ -512,7 +520,7 @@ export default function Team() {
                     required
                     value={formData.linkedin_url}
                     onChange={(event) => setFormData((prev) => ({ ...prev, linkedin_url: event.target.value }))}
-                    placeholder="https://www.linkedin.com/in/username"
+                    placeholder={defaultApplyText.linkedinPlaceholder}
                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 outline-none focus:border-blue-500"
                   />
                 </div>

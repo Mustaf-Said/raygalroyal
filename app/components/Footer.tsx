@@ -121,7 +121,7 @@ export default function Footer() {
             <ul className="space-y-6">
               <li className="flex items-start gap-4 text-gray-400">
                 <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                <span>Gothenborg, Sweden</span>
+                <span>{t.contact.location}</span>
               </li>
               <li className="flex items-center gap-4 text-gray-400">
                 <Phone className="w-6 h-6 text-blue-600 flex-shrink-0" />
@@ -147,13 +147,13 @@ export default function Footer() {
           </p>
           <div className="flex gap-8 text-sm text-gray-500">
             <Link href="/privacy" className="hover:text-white transition-colors">
-              {footerLegal.privacy ?? "Privacy Policy"}
+              {footerLegal.privacy ?? t.footer.privacy}
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
-              {footerLegal.terms ?? "Terms of Service"}
+              {footerLegal.terms ?? t.footer.terms}
             </Link>
             <Link href="/cookies" className="hover:text-white transition-colors">
-              {footerLegal.cookies ?? "Cookie Policy"}
+              {footerLegal.cookies ?? t.footer.cookies}
             </Link>
           </div>
         </div>

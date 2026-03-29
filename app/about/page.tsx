@@ -2,13 +2,16 @@
 
 import { motion } from "framer-motion"
 import { ShieldCheck, Target, Users, Award } from "lucide-react"
+import { useLanguage } from "../components/LanguageProvider"
 
 export default function AboutPage() {
+  const { t } = useLanguage()
+
   const values = [
-    { icon: ShieldCheck, title: "Excellence", desc: "We deliver only the highest quality digital products." },
-    { icon: Target, title: "Innovation", desc: "Staying ahead of tech trends to give you the edge." },
-    { icon: Users, title: "Collaboration", desc: "Your vision, our expertise, one successful team." },
-    { icon: Award, title: "Integrity", desc: "Transparent processes and honest communication." },
+    { icon: ShieldCheck, title: t.about.values.excellence.title, desc: t.about.values.excellence.desc },
+    { icon: Target, title: t.about.values.innovation.title, desc: t.about.values.innovation.desc },
+    { icon: Users, title: t.about.values.collaboration.title, desc: t.about.values.collaboration.desc },
+    { icon: Award, title: t.about.values.integrity.title, desc: t.about.values.integrity.desc },
   ]
 
   return (
@@ -20,16 +23,16 @@ export default function AboutPage() {
             animate={{ opacity: 1, x: 0 }}
           >
             <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-wider text-blue-600 uppercase bg-blue-50 dark:bg-blue-900/30 rounded-full">
-              Our Agency
+              {t.about.badge}
             </span>
             <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 leading-tight">
-              About <span className="text-blue-600">Raygal Royal</span>
+              {t.about.titlePrefix} <span className="text-blue-600">Raygal Royal</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-              Raygal Royal is a modern digital solutions agency based in Sweden. We specialize in building high-performance, scalable, and visually stunning web and mobile applications for global businesses.
+              {t.about.descriptionOne}
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              Our mission is to empower businesses with cutting-edge technology and exceptional design, ensuring they stay ahead in the rapidly evolving digital landscape.
+              {t.about.descriptionTwo}
             </p>
           </motion.div>
 
@@ -52,22 +55,20 @@ export default function AboutPage() {
         <div className="bg-blue-600 rounded-[60px] p-12 md:p-24 text-center text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-black mb-10">Crafting Digital Success Stories</h2>
-            <p className="text-xl text-blue-100 mb-12">
-              We don&apos;t just build websites; we create digital experiences that drive growth, engage users, and leave a lasting impression. From startups to enterprises, we help you navigate the future.
-            </p>
+            <h2 className="text-3xl md:text-5xl font-black mb-10">{t.about.missionTitle}</h2>
+            <p className="text-xl text-blue-100 mb-12">{t.about.missionBody}</p>
             <div className="flex flex-wrap justify-center gap-12">
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">5+</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">Years Experience</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.years}</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">150+</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">Projects Done</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.projects}</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">100%</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">Satisfaction</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.satisfaction}</div>
               </div>
             </div>
           </div>

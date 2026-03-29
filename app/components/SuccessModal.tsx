@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle2, Package, CreditCard, ChevronRight, X, Loader2 } from "lucide-react"
-import { translations, Language } from "@/app/components/translations"
+import { translations, type Language } from "@/locales"
 import { supabase } from "@/lib/supabase"
 import { useLanguage } from "./LanguageProvider"
 
@@ -17,6 +17,9 @@ interface Order {
   status: string
   created_at: string | null
 }
+
+const isLanguage = (value: string | null): value is Language =>
+  value === "en" || value === "so" || value === "ar"
 
 export default function SuccessModal() {
   const params = useSearchParams()
@@ -50,7 +53,7 @@ export default function SuccessModal() {
 
           if (!confirmRes.ok) {
             const confirmData = await confirmRes.json().catch(() => ({}))
-            throw new Error(confirmData.error || "Stripe confirmation failed")
+            throw new Error(confirmData.error || translations[currentLang].order.errors.confirmPaymentFailed)
           }
         } catch (error) {
           console.error("Stripe confirmation failed:", error)
@@ -66,7 +69,7 @@ export default function SuccessModal() {
 
       if (data) {
         setOrder(data)
-        setLang((data.language === "so" ? "so" : "en") as Language)
+        setLang(isLanguage(data.language) ? data.language : "en")
       }
       setLoading(false)
     }
@@ -122,7 +125,7 @@ export default function SuccessModal() {
               {loading ? (
                 <div className="py-20 flex flex-col items-center justify-center gap-4">
                   <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
-                  <p className="text-gray-500 font-bold animate-pulse">Fetching order details...</p>
+                  <p className="text-gray-500 font-bold animate-pulse">{translations[currentLang].order.success.fetchingDetails}</p>
                 </div>
               ) : (
                 <>
@@ -144,7 +147,7 @@ export default function SuccessModal() {
                         <span className="text-[10px] font-black uppercase tracking-widest">{t.plan}</span>
                       </div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white capitalize">
-                        {order?.plan || "Standard"}
+                        {order?.plan || translations[currentLang].pricing.basic.name}
                       </div>
                     </div>
 
@@ -161,7 +164,7 @@ export default function SuccessModal() {
 
                   {formattedDate && (
                     <p className="text-sm text-gray-500 mb-6">
-                      Created: {formattedDate} (Europe/Stockholm)
+                      {translations[currentLang].order.success.createdAt}: {formattedDate} (Europe/Stockholm)
                     </p>
                   )}
 

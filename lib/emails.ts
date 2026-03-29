@@ -1,4 +1,4 @@
-import { translations, Language } from "@/app/components/translations"
+import { translations, type Language } from "@/locales"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const RESEND_FALLBACK_FROM = "Raygal Royal <onboarding@resend.dev>"

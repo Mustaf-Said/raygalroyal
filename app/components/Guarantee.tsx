@@ -110,7 +110,7 @@ export default function Guarantee() {
                   </div>
                   <div>
                     <div className="text-white font-bold">Raygal Royal</div>
-                    <div className="text-sm" style={{ color: "rgba(196,181,253,0.8)" }}>Quality Assurance Team</div>
+                    <div className="text-sm" style={{ color: "rgba(196,181,253,0.8)" }}>{t.guarantee.signatureRole}</div>
                   </div>
                 </div>
               </div>

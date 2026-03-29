@@ -59,3 +59,19 @@ body,
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+html[dir='rtl'] body {
+  direction: rtl;
+}
+
+html[dir='rtl'] input,
+html[dir='rtl'] textarea,
+html[dir='rtl'] select {
+  text-align: right;
+}
+
+html[dir='rtl'] ul.list-disc,
+html[dir='rtl'] ol.list-decimal {
+  padding-left: 0;
+  padding-right: 1.25rem;
+}

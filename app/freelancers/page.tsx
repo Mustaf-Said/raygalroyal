@@ -19,23 +19,12 @@ type Freelancer = {
 }
 
 export default function FreelancersPage() {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
   const [freelancers, setFreelancers] = useState<Freelancer[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedFreelancer, setSelectedFreelancer] = useState<Freelancer | null>(null)
 
-  const text = {
-    title: language === "so" ? "Freelancers" : "Freelancers",
-    subtitle:
-      language === "so"
-        ? "Baro dhammaan xubnaha freelancers-keena."
-        : "Meet all of our freelancer talent.",
-    loading: language === "so" ? "Freelancers waa la soo gelinayaa..." : "Loading freelancers...",
-    empty: language === "so" ? "Freelancers lama helin." : "No freelancers found.",
-    back: language === "so" ? "Ku noqo homepage" : "Back to homepage",
-    bio: language === "so" ? "Bio" : "Bio",
-    close: language === "so" ? "Xir faahfaahinta freelancer" : "Close freelancer details",
-  }
+  const text = t.freelancers
 
   useEffect(() => {
     const fetchFreelancers = async () => {

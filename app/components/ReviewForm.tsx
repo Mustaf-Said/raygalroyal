@@ -14,6 +14,9 @@ type TestimonialsTranslation = {
   leaveReview: string
   cancel: string
   pendingToast: string
+  maxWordsError: string
+  wordsLabel: string
+  honeypotWebsite: string
 }
 
 type ReviewFormState = {
@@ -88,7 +91,7 @@ export default function ReviewForm({ t }: ReviewFormProps) {
     setErrorMessage("")
 
     if (isOverWordLimit) {
-      setErrorMessage(`Please keep your review within ${MAX_REVIEW_WORDS} words.`)
+      setErrorMessage(t.maxWordsError.replace("{max}", String(MAX_REVIEW_WORDS)))
       return
     }
 
@@ -199,7 +202,7 @@ export default function ReviewForm({ t }: ReviewFormProps) {
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="sr-only" aria-hidden="true">
-                  <label htmlFor="website">Website</label>
+                  <label htmlFor="website">{t.honeypotWebsite}</label>
                   <input
                     id="website"
                     name="website"
@@ -239,7 +242,7 @@ export default function ReviewForm({ t }: ReviewFormProps) {
                         : "text-gray-500"
                       }`}
                   >
-                    {wordCount} / {MAX_REVIEW_WORDS} words
+                    {wordCount} / {MAX_REVIEW_WORDS} {t.wordsLabel}
                   </p>
                 </div>
 

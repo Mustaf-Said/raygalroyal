@@ -80,7 +80,7 @@ export default function Services() {
                   onClick={() => openOrderModal(key)}
                   className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 group/btn"
                 >
-                  LEARN MORE
+                  {t.services.learnMore}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </button>
               </motion.div>
@@ -118,10 +118,10 @@ export default function Services() {
           {/* Content */}
           <div className="relative z-10">
             <h3 className="text-3xl font-bold mb-4 drop-shadow-lg">
-              Ready to build something amazing?
+              {t.services.cta.title}
             </h3>
             <p className="text-blue-100/80 mb-8 text-lg font-light tracking-wide">
-              Select a service and let&apos;s get started on your digital journey.
+              {t.services.cta.subtitle}
             </p>
             <button
               onClick={() => openOrderModal()}
@@ -136,7 +136,7 @@ export default function Services() {
               {/* Button hover shimmer */}
               <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
                 style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
-              <span className="relative z-10 tracking-widest text-sm">START YOUR ORDER</span>
+              <span className="relative z-10 tracking-widest text-sm">{t.services.cta.button}</span>
             </button>
           </div>
         </motion.div>
