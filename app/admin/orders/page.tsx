@@ -58,6 +58,9 @@ type AdminReview = {
   message_ar: string | null
   rating: number
   admin_response: string | null
+  admin_response_en: string | null
+  admin_response_so: string | null
+  admin_response_ar: string | null
   status: ReviewStatus
   created_at: string
 }
@@ -75,7 +78,7 @@ export default function AdminOrders() {
   const [reviews, setReviews] = useState<AdminReview[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [reviewFilter, setReviewFilter] = useState<"all" | ReviewStatus>("all")
-  const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({})
+  const [reviewResponseDrafts, setReviewResponseDrafts] = useState<Record<string, LocalizedTextDraft>>({})
   const [reviewMessageDrafts, setReviewMessageDrafts] = useState<Record<string, LocalizedTextDraft>>({})
   const [applicationTranslationDrafts, setApplicationTranslationDrafts] = useState<Record<number, FreelancerTranslationDraft>>({})
   const [reviewActionId, setReviewActionId] = useState<string | null>(null)
@@ -178,9 +181,14 @@ export default function AdminOrders() {
 
       const fetchedReviews = (json?.data ?? []) as AdminReview[]
       setReviews(fetchedReviews)
-      setReviewDrafts(
-        fetchedReviews.reduce<Record<string, string>>((acc, review) => {
-          acc[review.id] = review.admin_response ?? ""
+      setReviewResponseDrafts(
+        fetchedReviews.reduce<Record<string, LocalizedTextDraft>>((acc, review) => {
+          const fallbackResponse = review.admin_response ?? ""
+          acc[review.id] = {
+            en: review.admin_response_en ?? fallbackResponse,
+            so: review.admin_response_so ?? fallbackResponse,
+            ar: review.admin_response_ar ?? fallbackResponse,
+          }
           return acc
         }, {})
       )
@@ -207,11 +215,12 @@ export default function AdminOrders() {
   }, [])
 
   async function saveReviewResponse(id: string) {
-    const responseText = (reviewDrafts[id] ?? "").trim()
+    const responseDraft = reviewResponseDrafts[id]
+    const englishResponse = (responseDraft?.en ?? "").trim()
     const messageDraft = reviewMessageDrafts[id]
     const englishMessage = (messageDraft?.en ?? "").trim()
-    if (!responseText) {
-      setReviewActionStatus({ type: "error", message: "Write a response before saving." })
+    if (!englishResponse) {
+      setReviewActionStatus({ type: "error", message: "English admin response is required." })
       return
     }
 
@@ -232,7 +241,10 @@ export default function AdminOrders() {
           ...authHeaders,
         },
         body: JSON.stringify({
-          admin_response: responseText,
+          admin_response: englishResponse,
+          admin_response_en: englishResponse,
+          admin_response_so: (responseDraft?.so ?? "").trim(),
+          admin_response_ar: (responseDraft?.ar ?? "").trim(),
           message_en: englishMessage,
           message_so: (messageDraft?.so ?? "").trim(),
           message_ar: (messageDraft?.ar ?? "").trim(),
@@ -257,11 +269,12 @@ export default function AdminOrders() {
   }
 
   async function approveAndPublishReview(id: string) {
-    const responseText = (reviewDrafts[id] ?? "").trim()
+    const responseDraft = reviewResponseDrafts[id]
+    const englishResponse = (responseDraft?.en ?? "").trim()
     const messageDraft = reviewMessageDrafts[id]
     const englishMessage = (messageDraft?.en ?? "").trim()
-    if (!responseText) {
-      setReviewActionStatus({ type: "error", message: "Admin response is required before approval." })
+    if (!englishResponse) {
+      setReviewActionStatus({ type: "error", message: "English admin response is required before approval." })
       return
     }
 
@@ -282,7 +295,10 @@ export default function AdminOrders() {
           ...authHeaders,
         },
         body: JSON.stringify({
-          admin_response: responseText,
+          admin_response: englishResponse,
+          admin_response_en: englishResponse,
+          admin_response_so: (responseDraft?.so ?? "").trim(),
+          admin_response_ar: (responseDraft?.ar ?? "").trim(),
           message_en: englishMessage,
           message_so: (messageDraft?.so ?? "").trim(),
           message_ar: (messageDraft?.ar ?? "").trim(),
@@ -689,19 +705,58 @@ export default function AdminOrders() {
                         </div>
                       </div>
 
-                      <div className="space-y-2 mb-5">
-                        <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response</label>
-                        <textarea
-                          rows={4}
-                          value={reviewDrafts[review.id] ?? ""}
-                          onChange={(event) =>
-                            setReviewDrafts((prev) => ({
-                              ...prev,
-                              [review.id]: event.target.value,
-                            }))
-                          }
-                          className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response (EN)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewResponseDrafts[review.id]?.en ?? ""}
+                            onChange={(event) =>
+                              setReviewResponseDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  en: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response (SO)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewResponseDrafts[review.id]?.so ?? ""}
+                            onChange={(event) =>
+                              setReviewResponseDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  so: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response (AR)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewResponseDrafts[review.id]?.ar ?? ""}
+                            onChange={(event) =>
+                              setReviewResponseDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  ar: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-3">

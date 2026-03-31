@@ -80,7 +80,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("reviews")
-      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, admin_response_en, admin_response_so, admin_response_ar, status, created_at")
       .eq("status", "approved" satisfies ReviewStatus)
       .order("created_at", { ascending: false })
 
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from("reviews")
       .insert(payload)
-      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, admin_response_en, admin_response_so, admin_response_ar, status, created_at")
       .single()
 
     if (error) {

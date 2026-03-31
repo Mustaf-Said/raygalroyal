@@ -15,6 +15,9 @@ type Review = {
   message_ar: string | null
   rating: number
   admin_response: string | null
+  admin_response_en: string | null
+  admin_response_so: string | null
+  admin_response_ar: string | null
   status: "pending" | "approved"
   created_at: string
 }
@@ -79,9 +82,11 @@ export default function Testimonials() {
       const rawReviews = (json?.data ?? []) as Review[]
       const localizedReviews = rawReviews.map((review) => {
         const languageMessage = review[`message_${language}` as "message_en" | "message_so" | "message_ar"]
+        const languageResponse = review[`admin_response_${language}` as "admin_response_en" | "admin_response_so" | "admin_response_ar"]
         return {
           ...review,
           message: languageMessage || review.message_en || review.message,
+          admin_response: languageResponse || review.admin_response_en || review.admin_response,
         }
       })
 

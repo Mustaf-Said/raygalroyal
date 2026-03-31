@@ -5,6 +5,9 @@ import type { Database, ReviewStatus } from "@/lib/database.types"
 
 type UpdateReviewBody = {
   admin_response?: string
+  admin_response_en?: string
+  admin_response_so?: string
+  admin_response_ar?: string
   status?: ReviewStatus
   message_en?: string
   message_so?: string
@@ -39,7 +42,7 @@ export async function PATCH(
 
     const { data: currentReview, error: currentReviewError } = await supabase
       .from("reviews")
-      .select("id, admin_response, message_en")
+      .select("id, admin_response, admin_response_en, message_en")
       .eq("id", id)
       .single()
 
@@ -48,7 +51,26 @@ export async function PATCH(
     }
 
     if (typeof body.admin_response === "string") {
-      updates.admin_response = body.admin_response.trim() || null
+      const adminResponse = body.admin_response.trim()
+      updates.admin_response = adminResponse || null
+
+      if (typeof body.admin_response_en !== "string") {
+        updates.admin_response_en = adminResponse || null
+      }
+    }
+
+    if (typeof body.admin_response_en === "string") {
+      const adminResponseEn = body.admin_response_en.trim()
+      updates.admin_response_en = adminResponseEn || null
+      updates.admin_response = adminResponseEn || null
+    }
+
+    if (typeof body.admin_response_so === "string") {
+      updates.admin_response_so = body.admin_response_so.trim() || null
+    }
+
+    if (typeof body.admin_response_ar === "string") {
+      updates.admin_response_ar = body.admin_response_ar.trim() || null
     }
 
     if (typeof body.message_en === "string") {
@@ -70,9 +92,9 @@ export async function PATCH(
       }
 
       const nextResponseText =
-        typeof updates.admin_response === "string"
-          ? updates.admin_response
-          : currentReview.admin_response
+        typeof updates.admin_response_en === "string"
+          ? updates.admin_response_en
+          : (currentReview.admin_response_en ?? currentReview.admin_response)
 
       const nextEnglishMessage =
         typeof updates.message_en === "string"
@@ -98,7 +120,10 @@ export async function PATCH(
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
-        { error: "Provide at least one field: admin_response, status, message_en, message_so, or message_ar" },
+        {
+          error:
+            "Provide at least one field: admin_response, admin_response_en, admin_response_so, admin_response_ar, status, message_en, message_so, or message_ar",
+        },
         { status: 400 }
       )
     }
@@ -107,7 +132,7 @@ export async function PATCH(
       .from("reviews")
       .update(updates)
       .eq("id", id)
-      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, admin_response_en, admin_response_so, admin_response_ar, status, created_at")
       .single()
 
     if (error) {

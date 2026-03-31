@@ -160,6 +160,9 @@ CREATE TABLE IF NOT EXISTS reviews (
   message text NOT NULL,
   rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
   admin_response text,
+  admin_response_en text,
+  admin_response_so text,
+  admin_response_ar text,
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved')),
   created_at timestamp WITH TIME ZONE DEFAULT now()
 );
@@ -173,13 +176,39 @@ ADD COLUMN IF NOT EXISTS message_so text;
 ALTER TABLE reviews
 ADD COLUMN IF NOT EXISTS message_ar text;
 
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_en text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_so text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_ar text;
+
 -- Safe backfill for existing records.
 UPDATE reviews
 SET
   message_en = COALESCE(NULLIF(message_en, ''), message),
   message_so = COALESCE(NULLIF(message_so, ''), message),
-  message_ar = COALESCE(NULLIF(message_ar, ''), message)
+  message_ar = COALESCE(NULLIF(message_ar, ''), message),
+  admin_response_en = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_en
+    ELSE COALESCE(NULLIF(admin_response_en, ''), admin_response)
+  END,
+  admin_response_so = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_so
+    ELSE COALESCE(NULLIF(admin_response_so, ''), admin_response)
+  END,
+  admin_response_ar = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_ar
+    ELSE COALESCE(NULLIF(admin_response_ar, ''), admin_response)
+  END
 WHERE
   message_en IS NULL OR message_en = '' OR
   message_so IS NULL OR message_so = '' OR
-  message_ar IS NULL OR message_ar = '';
+  message_ar IS NULL OR message_ar = '' OR
+  ((admin_response IS NOT NULL AND admin_response <> '') AND (
+    admin_response_en IS NULL OR admin_response_en = '' OR
+    admin_response_so IS NULL OR admin_response_so = '' OR
+    admin_response_ar IS NULL OR admin_response_ar = ''
+  ));

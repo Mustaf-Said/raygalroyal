@@ -160,6 +160,9 @@ export type Database = {
           message_ar: string | null
           rating: number
           admin_response: string | null
+          admin_response_en: string | null
+          admin_response_so: string | null
+          admin_response_ar: string | null
           status: ReviewStatus
           created_at: string
         }
@@ -172,6 +175,9 @@ export type Database = {
           message_ar?: string | null
           rating: number
           admin_response?: string | null
+          admin_response_en?: string | null
+          admin_response_so?: string | null
+          admin_response_ar?: string | null
           status?: ReviewStatus
           created_at?: string
         }
@@ -184,6 +190,9 @@ export type Database = {
           message_ar?: string | null
           rating?: number
           admin_response?: string | null
+          admin_response_en?: string | null
+          admin_response_so?: string | null
+          admin_response_ar?: string | null
           status?: ReviewStatus
           created_at?: string
         }
