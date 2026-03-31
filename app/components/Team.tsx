@@ -12,6 +12,12 @@ type TeamMember = {
   id: number
   name: string
   role: string
+  title_en?: string | null
+  title_so?: string | null
+  title_ar?: string | null
+  bio_en?: string | null
+  bio_so?: string | null
+  bio_ar?: string | null
   image_url: string | null
   email: string
   linkedin_url: string
@@ -87,7 +93,7 @@ type ApplyFormTranslations = {
 }
 
 export default function Team() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [members, setMembers] = useState<TeamMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
@@ -162,6 +168,20 @@ export default function Team() {
   }, [showSuccessToast])
 
   const roleOptions = Object.keys(t.team.roles as Record<string, string>)
+
+  const getLocalizedTitle = (member: TeamMember) => {
+    return member[`title_${language}` as "title_en" | "title_so" | "title_ar"]
+      || member.title_en
+      || t.team.roles[member.role as keyof typeof t.team.roles]
+      || member.role
+  }
+
+  const getLocalizedBio = (member: TeamMember) => {
+    return member[`bio_${language}` as "bio_en" | "bio_so" | "bio_ar"]
+      || member.bio_en
+      || member.message
+      || "-"
+  }
 
   const fileToDataUrl = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -284,7 +304,7 @@ export default function Team() {
                     {member.name}
                   </h3>
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400 text-center mb-6">
-                    {t.team.roles[member.role as keyof typeof t.team.roles] ?? member.role}
+                    {getLocalizedTitle(member)}
                   </p>
 
                   <div className="flex items-center justify-center gap-4">
@@ -398,13 +418,13 @@ export default function Team() {
                 {selectedMember.name}
               </h3>
               <p className="text-blue-600 dark:text-blue-400 font-semibold mb-5">
-                {t.team.roles[selectedMember.role as keyof typeof t.team.roles] ?? selectedMember.role}
+                {getLocalizedTitle(selectedMember)}
               </p>
 
               <div className="mb-5 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
                 <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">{defaultApplyText.bio}</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                  {selectedMember.message || "-"}
+                  {getLocalizedBio(selectedMember)}
                 </p>
               </div>
 

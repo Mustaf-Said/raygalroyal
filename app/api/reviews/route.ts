@@ -8,6 +8,7 @@ type CreateReviewBody = {
   name?: string
   message?: string
   rating?: number
+  language?: "en" | "so" | "ar"
   website?: string
 }
 
@@ -79,7 +80,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("reviews")
-      .select("id, name, message, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
       .eq("status", "approved" satisfies ReviewStatus)
       .order("created_at", { ascending: false })
 
@@ -134,9 +135,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const language = body.language === "so" || body.language === "ar" ? body.language : "en"
+
     const payload: ReviewInsert = {
       name: trimmedName,
       message: trimmedMessage,
+      message_en: language === "en" ? trimmedMessage : "",
+      message_so: language === "so" ? trimmedMessage : "",
+      message_ar: language === "ar" ? trimmedMessage : "",
       rating: body.rating,
       status: "pending",
       admin_response: null,
@@ -145,7 +151,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from("reviews")
       .insert(payload)
-      .select("id, name, message, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
       .single()
 
     if (error) {

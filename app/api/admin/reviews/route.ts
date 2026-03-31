@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   try {
     const { data, error } = await supabase
       .from("reviews")
-      .select("id, name, message, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
       .order("created_at", { ascending: false })
 
     if (error) {

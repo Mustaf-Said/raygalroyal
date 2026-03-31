@@ -6,6 +6,9 @@ import type { Database, ReviewStatus } from "@/lib/database.types"
 type UpdateReviewBody = {
   admin_response?: string
   status?: ReviewStatus
+  message_en?: string
+  message_so?: string
+  message_ar?: string
 }
 
 const supabase = createClient<Database>(
@@ -36,7 +39,7 @@ export async function PATCH(
 
     const { data: currentReview, error: currentReviewError } = await supabase
       .from("reviews")
-      .select("id, admin_response")
+      .select("id, admin_response, message_en")
       .eq("id", id)
       .single()
 
@@ -46,6 +49,19 @@ export async function PATCH(
 
     if (typeof body.admin_response === "string") {
       updates.admin_response = body.admin_response.trim() || null
+    }
+
+    if (typeof body.message_en === "string") {
+      updates.message_en = body.message_en.trim()
+      updates.message = body.message_en.trim()
+    }
+
+    if (typeof body.message_so === "string") {
+      updates.message_so = body.message_so.trim()
+    }
+
+    if (typeof body.message_ar === "string") {
+      updates.message_ar = body.message_ar.trim()
     }
 
     if (typeof body.status === "string") {
@@ -58,9 +74,21 @@ export async function PATCH(
           ? updates.admin_response
           : currentReview.admin_response
 
+      const nextEnglishMessage =
+        typeof updates.message_en === "string"
+          ? updates.message_en
+          : currentReview.message_en ?? ""
+
       if (body.status === "approved" && !isNonEmptyString(nextResponseText)) {
         return NextResponse.json(
           { error: "Admin response is required before approval" },
+          { status: 400 }
+        )
+      }
+
+      if (body.status === "approved" && !isNonEmptyString(nextEnglishMessage)) {
+        return NextResponse.json(
+          { error: "English review message is required before approval" },
           { status: 400 }
         )
       }
@@ -70,7 +98,7 @@ export async function PATCH(
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
-        { error: "Provide at least one field: admin_response or status" },
+        { error: "Provide at least one field: admin_response, status, message_en, message_so, or message_ar" },
         { status: 400 }
       )
     }
@@ -79,7 +107,7 @@ export async function PATCH(
       .from("reviews")
       .update(updates)
       .eq("id", id)
-      .select("id, name, message, rating, admin_response, status, created_at")
+      .select("id, name, message, message_en, message_so, message_ar, rating, admin_response, status, created_at")
       .single()
 
     if (error) {

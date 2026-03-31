@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useLanguage } from "./LanguageProvider"
 import ReviewCard from "./ReviewCard"
@@ -10,6 +10,9 @@ type Review = {
   id: string
   name: string
   message: string
+  message_en: string | null
+  message_so: string | null
+  message_ar: string | null
   rating: number
   admin_response: string | null
   status: "pending" | "approved"
@@ -38,7 +41,7 @@ type ReviewCardTranslations = {
 }
 
 export default function Testimonials() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoadingReviews, setIsLoadingReviews] = useState(true)
 
@@ -63,7 +66,7 @@ export default function Testimonials() {
     honeypotWebsite: t.testimonials.honeypotWebsite,
   }
 
-  const fetchApprovedReviews = async () => {
+  const fetchApprovedReviews = useCallback(async () => {
     setIsLoadingReviews(true)
     try {
       const response = await fetch("/api/reviews", { cache: "no-store" })
@@ -73,17 +76,26 @@ export default function Testimonials() {
         throw new Error(json?.error || "Failed to load reviews")
       }
 
-      setReviews((json?.data ?? []) as Review[])
+      const rawReviews = (json?.data ?? []) as Review[]
+      const localizedReviews = rawReviews.map((review) => {
+        const languageMessage = review[`message_${language}` as "message_en" | "message_so" | "message_ar"]
+        return {
+          ...review,
+          message: languageMessage || review.message_en || review.message,
+        }
+      })
+
+      setReviews(localizedReviews)
     } catch {
       setReviews([])
     } finally {
       setIsLoadingReviews(false)
     }
-  }
+  }, [language])
 
   useEffect(() => {
     void fetchApprovedReviews()
-  }, [])
+  }, [fetchApprovedReviews])
 
   return (
     <section className="py-24 bg-white dark:bg-gray-950 relative overflow-hidden">

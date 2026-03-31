@@ -5,6 +5,12 @@ import type { Database } from "@/lib/database.types"
 
 type ApproveBody = {
   id?: number | string
+  title_en?: string
+  title_so?: string
+  title_ar?: string
+  bio_en?: string
+  bio_so?: string
+  bio_ar?: string
 }
 
 type FreelancerInsert = Database["public"]["Tables"]["freelancers"]["Insert"]
@@ -45,10 +51,27 @@ export async function POST(req: NextRequest) {
 
     const normalizedEmail = application.email.trim().toLowerCase()
     const normalizedImageUrl = application.image_url?.trim() || DEFAULT_AVATAR_URL
+    const titleEn = typeof body.title_en === "string" && body.title_en.trim().length > 0
+      ? body.title_en.trim()
+      : application.role
+    const titleSo = typeof body.title_so === "string" ? body.title_so.trim() : ""
+    const titleAr = typeof body.title_ar === "string" ? body.title_ar.trim() : ""
+    const bioEn = typeof body.bio_en === "string" && body.bio_en.trim().length > 0
+      ? body.bio_en.trim()
+      : application.message
+    const bioSo = typeof body.bio_so === "string" ? body.bio_so.trim() : ""
+    const bioAr = typeof body.bio_ar === "string" ? body.bio_ar.trim() : ""
+
     const freelancerPayload: FreelancerInsert = {
       name: application.name,
       email: normalizedEmail,
       role: application.role,
+      title_en: titleEn,
+      title_so: titleSo,
+      title_ar: titleAr,
+      bio_en: bioEn,
+      bio_so: bioSo,
+      bio_ar: bioAr,
       message: application.message,
       image_url: normalizedImageUrl,
       linkedin_url: application.linkedin_url,

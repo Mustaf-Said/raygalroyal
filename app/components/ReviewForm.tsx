@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
+import { useLanguage } from "./LanguageProvider"
 
 type TestimonialsTranslation = {
   formTitle: string
@@ -37,6 +38,7 @@ const countWords = (text: string) => {
 }
 
 export default function ReviewForm({ t }: ReviewFormProps) {
+  const { language } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
@@ -107,6 +109,7 @@ export default function ReviewForm({ t }: ReviewFormProps) {
           name: form.name,
           message,
           rating: form.rating,
+          language,
           website: form.website,
         }),
       })

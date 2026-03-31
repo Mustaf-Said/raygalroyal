@@ -62,7 +62,7 @@ function PayPalSuccessContent() {
 
           if (!confirmRes.ok) {
             const confirmData = await confirmRes.json().catch(() => ({}))
-            throw new Error(confirmData.error || translations[lang].order.errors.confirmPaymentFailed)
+            throw new Error(confirmData.error || translations.en.order.errors.confirmPaymentFailed)
           }
 
           // Fetch updated order details
@@ -77,7 +77,7 @@ function PayPalSuccessContent() {
             setLang(isLanguage(data.language) ? data.language : "en")
           }
         } else {
-          throw new Error(captureData.error || translations[lang].order.errors.captureFailed)
+          throw new Error(captureData.error || translations.en.order.errors.captureFailed)
         }
       } catch (error) {
         console.error("Capture failed:", error)

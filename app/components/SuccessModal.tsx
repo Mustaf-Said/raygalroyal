@@ -77,7 +77,7 @@ export default function SuccessModal() {
     if (isSuccess && orderId) {
       confirmAndFetchOrder()
     }
-  }, [isSuccess, orderId, sessionId])
+  }, [currentLang, isSuccess, orderId, sessionId])
 
   const close = () => {
     setIsOpen(false)

@@ -34,10 +34,28 @@ type FreelancerApplication = {
   created_at: string
 }
 
+type LocalizedTextDraft = {
+  en: string
+  so: string
+  ar: string
+}
+
+type FreelancerTranslationDraft = {
+  title_en: string
+  title_so: string
+  title_ar: string
+  bio_en: string
+  bio_so: string
+  bio_ar: string
+}
+
 type AdminReview = {
   id: string
   name: string
   message: string
+  message_en: string | null
+  message_so: string | null
+  message_ar: string | null
   rating: number
   admin_response: string | null
   status: ReviewStatus
@@ -58,6 +76,8 @@ export default function AdminOrders() {
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [reviewFilter, setReviewFilter] = useState<"all" | ReviewStatus>("all")
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({})
+  const [reviewMessageDrafts, setReviewMessageDrafts] = useState<Record<string, LocalizedTextDraft>>({})
+  const [applicationTranslationDrafts, setApplicationTranslationDrafts] = useState<Record<number, FreelancerTranslationDraft>>({})
   const [reviewActionId, setReviewActionId] = useState<string | null>(null)
   const [reviewActionStatus, setReviewActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const router = useRouter()
@@ -114,7 +134,21 @@ export default function AdminOrders() {
         throw new Error(json?.error || "Failed to load freelancer applications")
       }
 
-      setApplications((json?.data ?? []) as FreelancerApplication[])
+      const fetchedApplications = (json?.data ?? []) as FreelancerApplication[]
+      setApplications(fetchedApplications)
+      setApplicationTranslationDrafts(
+        fetchedApplications.reduce<Record<number, FreelancerTranslationDraft>>((acc, application) => {
+          acc[application.id] = {
+            title_en: application.role,
+            title_so: application.role,
+            title_ar: application.role,
+            bio_en: application.message,
+            bio_so: application.message,
+            bio_ar: application.message,
+          }
+          return acc
+        }, {})
+      )
     } catch (error) {
       setApplications([])
       setActionStatus({
@@ -150,6 +184,17 @@ export default function AdminOrders() {
           return acc
         }, {})
       )
+      setReviewMessageDrafts(
+        fetchedReviews.reduce<Record<string, LocalizedTextDraft>>((acc, review) => {
+          const fallbackMessage = review.message ?? ""
+          acc[review.id] = {
+            en: review.message_en ?? fallbackMessage,
+            so: review.message_so ?? fallbackMessage,
+            ar: review.message_ar ?? fallbackMessage,
+          }
+          return acc
+        }, {})
+      )
     } catch (error) {
       setReviews([])
       setReviewActionStatus({
@@ -163,8 +208,15 @@ export default function AdminOrders() {
 
   async function saveReviewResponse(id: string) {
     const responseText = (reviewDrafts[id] ?? "").trim()
+    const messageDraft = reviewMessageDrafts[id]
+    const englishMessage = (messageDraft?.en ?? "").trim()
     if (!responseText) {
       setReviewActionStatus({ type: "error", message: "Write a response before saving." })
+      return
+    }
+
+    if (!englishMessage) {
+      setReviewActionStatus({ type: "error", message: "English review message is required." })
       return
     }
 
@@ -179,7 +231,12 @@ export default function AdminOrders() {
           "Content-Type": "application/json",
           ...authHeaders,
         },
-        body: JSON.stringify({ admin_response: responseText }),
+        body: JSON.stringify({
+          admin_response: responseText,
+          message_en: englishMessage,
+          message_so: (messageDraft?.so ?? "").trim(),
+          message_ar: (messageDraft?.ar ?? "").trim(),
+        }),
       })
 
       const json = await response.json()
@@ -201,8 +258,15 @@ export default function AdminOrders() {
 
   async function approveAndPublishReview(id: string) {
     const responseText = (reviewDrafts[id] ?? "").trim()
+    const messageDraft = reviewMessageDrafts[id]
+    const englishMessage = (messageDraft?.en ?? "").trim()
     if (!responseText) {
       setReviewActionStatus({ type: "error", message: "Admin response is required before approval." })
+      return
+    }
+
+    if (!englishMessage) {
+      setReviewActionStatus({ type: "error", message: "English review message is required before approval." })
       return
     }
 
@@ -219,6 +283,9 @@ export default function AdminOrders() {
         },
         body: JSON.stringify({
           admin_response: responseText,
+          message_en: englishMessage,
+          message_so: (messageDraft?.so ?? "").trim(),
+          message_ar: (messageDraft?.ar ?? "").trim(),
           status: "approved",
         }),
       })
@@ -252,7 +319,21 @@ export default function AdminOrders() {
           "Content-Type": "application/json",
           ...authHeaders,
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify(
+          action === "approve"
+            ? {
+              id,
+              ...(applicationTranslationDrafts[id] ?? {
+                title_en: "",
+                title_so: "",
+                title_ar: "",
+                bio_en: "",
+                bio_so: "",
+                bio_ar: "",
+              }),
+            }
+            : { id }
+        ),
       })
 
       const json = await response.json()
@@ -514,8 +595,8 @@ export default function AdminOrders() {
             {reviewActionStatus ? (
               <div
                 className={`mx-6 mt-6 rounded-xl px-4 py-3 text-sm font-semibold ${reviewActionStatus.type === "success"
-                    ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
-                    : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                  ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                  : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
                   }`}
               >
                 {reviewActionStatus.message}
@@ -544,15 +625,69 @@ export default function AdminOrders() {
                         </div>
                         <span
                           className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${review.status === "approved"
-                              ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                              : "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                            : "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
                             }`}
                         >
                           {review.status}
                         </span>
                       </div>
 
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-5">{review.message}</p>
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-5">{review.message_en || review.message}</p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Message (EN)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewMessageDrafts[review.id]?.en ?? ""}
+                            onChange={(event) =>
+                              setReviewMessageDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  en: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Message (SO)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewMessageDrafts[review.id]?.so ?? ""}
+                            onChange={(event) =>
+                              setReviewMessageDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  so: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Message (AR)</label>
+                          <textarea
+                            rows={4}
+                            value={reviewMessageDrafts[review.id]?.ar ?? ""}
+                            onChange={(event) =>
+                              setReviewMessageDrafts((prev) => ({
+                                ...prev,
+                                [review.id]: {
+                                  ...(prev[review.id] ?? { en: "", so: "", ar: "" }),
+                                  ar: event.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                          />
+                        </div>
+                      </div>
 
                       <div className="space-y-2 mb-5">
                         <label className="text-sm font-bold text-gray-500 dark:text-gray-400">Admin response</label>
@@ -664,6 +799,141 @@ export default function AdminOrders() {
                             </span>
                           </td>
                           <td className="px-6 py-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.title_en ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      title_en: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Title (EN)"
+                              />
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.title_so ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      title_so: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Title (SO)"
+                              />
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.title_ar ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      title_ar: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Title (AR)"
+                              />
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.bio_en ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      bio_en: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Bio (EN)"
+                              />
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.bio_so ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      bio_so: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Bio (SO)"
+                              />
+                              <input
+                                type="text"
+                                value={applicationTranslationDrafts[application.id]?.bio_ar ?? ""}
+                                onChange={(event) =>
+                                  setApplicationTranslationDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] ?? {
+                                        title_en: "",
+                                        title_so: "",
+                                        title_ar: "",
+                                        bio_en: "",
+                                        bio_so: "",
+                                        bio_ar: "",
+                                      }),
+                                      bio_ar: event.target.value,
+                                    },
+                                  }))
+                                }
+                                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Bio (AR)"
+                              />
+                            </div>
+
                             <div className="flex items-center gap-3">
                               <button
                                 type="button"

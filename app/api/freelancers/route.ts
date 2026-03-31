@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("freelancers")
-      .select("id, name, role, image_url, email, linkedin_url, message")
+      .select("id, name, role, title_en, title_so, title_ar, bio_en, bio_so, bio_ar, image_url, email, linkedin_url, message")
       .order("id", { ascending: true })
 
     if (error) {
