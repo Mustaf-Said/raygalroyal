@@ -26,6 +26,16 @@ const en = {
       "Raygal Royal is a premier digital agency crafting high-performance, scalable, and visually stunning web & mobile solutions for global businesses.",
     ctaPrimary: "Start Your Project",
     ctaSecondary: "View Portfolio",
+    stats: {
+      projectsCompleted: "Projects Completed",
+      projectsCompletedValue: "150+",
+      happyClients: "Happy Clients",
+      happyClientsValue: "90+",
+      experience: "Experience",
+      experienceValue: "5+ Years",
+      technologies: "Technologies",
+      technologiesValue: "12+",
+    },
   },
   services: {
     title: "Our Services",

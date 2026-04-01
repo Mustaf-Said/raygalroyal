@@ -41,13 +41,17 @@ export default function AboutPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="grid grid-cols-2 gap-6"
           >
-            {values.map((value, i) => (
-              <div key={i} className="p-8 bg-gray-50 dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 transition-all">
-                <value.icon className="w-10 h-10 text-blue-600 mb-6" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
-                <p className="text-sm text-gray-500">{value.desc}</p>
-              </div>
-            ))}
+            {values.map((value, i) => {
+              const Icon = value.icon
+
+              return (
+                <div key={i} className="p-8 bg-gray-50 dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 transition-all">
+                  <Icon className="w-10 h-10 text-blue-600 mb-6" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
+                  <p className="text-sm text-gray-500">{value.desc}</p>
+                </div>
+              )
+            })}
           </motion.div>
         </div>
 

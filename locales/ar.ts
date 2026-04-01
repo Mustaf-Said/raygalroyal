@@ -27,6 +27,16 @@ const arOverrides = {
       "رايغال رويال وكالة رقمية متخصصة في بناء حلول ويب وموبايل عالية الأداء وقابلة للتوسع.",
     ctaPrimary: "ابدأ مشروعك",
     ctaSecondary: "عرض الأعمال",
+    stats: {
+      projectsCompleted: "المشاريع المنجزة",
+      projectsCompletedValue: "+١٥٠",
+      happyClients: "عملاء سعداء",
+      happyClientsValue: "+٩٠",
+      experience: "سنوات الخبرة",
+      experienceValue: "+٥ ",
+      technologies: "التقنيات",
+      technologiesValue: "+١٢",
+    },
   },
   services: {
     title: "خدماتنا",
