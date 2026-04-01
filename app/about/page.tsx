@@ -60,15 +60,15 @@ export default function AboutPage() {
             <div className="flex flex-wrap justify-center gap-12">
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">5+</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.years}</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.experience}</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">150+</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.projects}</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.projectsCompleted}</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl font-black mb-2">100%</div>
-                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.satisfaction}</div>
+                <div className="text-blue-200 uppercase tracking-widest text-sm font-bold">{t.about.stats.happyClients}</div>
               </div>
             </div>
           </div>

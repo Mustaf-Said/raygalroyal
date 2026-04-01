@@ -90,10 +90,10 @@ export default function Hero() {
           className="mt-20 pt-10 border-t border-gray-100 dark:border-gray-900 grid grid-cols-2 md:grid-cols-4 gap-8"
         >
           {[
-            { label: "Projects Completed", value: "150+" },
-            { label: "Happy Clients", value: "80+" },
-            { label: "Experience", value: "5+ Years" },
-            { label: "Technologies", value: "12+" },
+            { label: t.about.stats.projectsCompleted, value: t.about.stats.projectsCompletedValue },
+            { label: t.about.stats.happyClients, value: t.about.stats.happyClientsValue },
+            { label: t.about.stats.experience, value: t.about.stats.experienceValue },
+            { label: t.about.stats.technologies, value: t.about.stats.technologiesValue },
           ].map((stat, i) => (
             <div key={i} className="text-center">
               <div className="text-3xl font-black text-gray-900 dark:text-white">{stat.value}</div>

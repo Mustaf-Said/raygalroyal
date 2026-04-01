@@ -53,6 +53,12 @@ export type Database = {
           id: number
           name: string
           role: string
+          title_en: string | null
+          title_so: string | null
+          title_ar: string | null
+          bio_en: string | null
+          bio_so: string | null
+          bio_ar: string | null
           image_url: string | null
           email: string
           linkedin_url: string
@@ -62,6 +68,12 @@ export type Database = {
           id?: number
           name: string
           role: string
+          title_en?: string | null
+          title_so?: string | null
+          title_ar?: string | null
+          bio_en?: string | null
+          bio_so?: string | null
+          bio_ar?: string | null
           image_url?: string | null
           email: string
           linkedin_url: string
@@ -71,6 +83,12 @@ export type Database = {
           id?: number
           name?: string
           role?: string
+          title_en?: string | null
+          title_so?: string | null
+          title_ar?: string | null
+          bio_en?: string | null
+          bio_so?: string | null
+          bio_ar?: string | null
           image_url?: string | null
           email?: string
           linkedin_url?: string
@@ -137,8 +155,14 @@ export type Database = {
           id: string
           name: string
           message: string
+          message_en: string | null
+          message_so: string | null
+          message_ar: string | null
           rating: number
           admin_response: string | null
+          admin_response_en: string | null
+          admin_response_so: string | null
+          admin_response_ar: string | null
           status: ReviewStatus
           created_at: string
         }
@@ -146,8 +170,14 @@ export type Database = {
           id?: string
           name: string
           message: string
+          message_en?: string | null
+          message_so?: string | null
+          message_ar?: string | null
           rating: number
           admin_response?: string | null
+          admin_response_en?: string | null
+          admin_response_so?: string | null
+          admin_response_ar?: string | null
           status?: ReviewStatus
           created_at?: string
         }
@@ -155,8 +185,14 @@ export type Database = {
           id?: string
           name?: string
           message?: string
+          message_en?: string | null
+          message_so?: string | null
+          message_ar?: string | null
           rating?: number
           admin_response?: string | null
+          admin_response_en?: string | null
+          admin_response_so?: string | null
+          admin_response_ar?: string | null
           status?: ReviewStatus
           created_at?: string
         }

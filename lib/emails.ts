@@ -39,8 +39,6 @@ export async function sendOrderConfirmationEmail({
   const lang = (language === "so" ? "so" : "en") as Language
   const t = translations[lang].emails
 
-  const currencySymbol = currency === "SEK" ? "SEK" : "$"
-
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h1 style="color: #2563eb;">Raygal Royal</h1>

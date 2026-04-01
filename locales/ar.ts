@@ -334,9 +334,14 @@ const arOverrides = {
     missionTitle: "نصنع قصص نجاح رقمية",
     missionBody: "نحن لا نبني مواقع فقط؛ بل نصنع تجارب رقمية تدفع النمو وتزيد التفاعل وتترك أثراً دائماً. من الشركات الناشئة إلى المؤسسات الكبرى، نساعدك على مواكبة المستقبل.",
     stats: {
-      years: "سنوات خبرة",
-      projects: "مشاريع منجزة",
-      satisfaction: "رضا العملاء",
+      projectsCompleted: "المشاريع المنجزة",
+      projectsCompletedValue: "+١٥٠",
+      happyClients: "عملاء سعداء",
+      happyClientsValue: "+٩٠",
+      experience: "سنوات الخبرة",
+      experienceValue: "+٥ سنوات",
+      technologies: "التقنيات",
+      technologiesValue: "+١٢",
     },
   },
   guarantee: {

@@ -85,6 +85,12 @@ CREATE TABLE IF NOT EXISTS freelancers (
   id bigserial PRIMARY KEY,
   name text NOT NULL,
   role text NOT NULL,
+  title_en text,
+  title_so text,
+  title_ar text,
+  bio_en text,
+  bio_so text,
+  bio_ar text,
   image_url text,
   email text NOT NULL,
   linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com',
@@ -106,6 +112,41 @@ ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedi
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS message text NOT NULL DEFAULT '';
 
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS title_en text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS title_so text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS title_ar text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS bio_en text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS bio_so text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS bio_ar text;
+
+-- Safe backfill for existing records.
+UPDATE freelancers
+SET
+  title_en = COALESCE(NULLIF(title_en, ''), role),
+  title_so = COALESCE(NULLIF(title_so, ''), role),
+  title_ar = COALESCE(NULLIF(title_ar, ''), role),
+  bio_en = COALESCE(NULLIF(bio_en, ''), message),
+  bio_so = COALESCE(NULLIF(bio_so, ''), message),
+  bio_ar = COALESCE(NULLIF(bio_ar, ''), message)
+WHERE
+  title_en IS NULL OR title_en = '' OR
+  title_so IS NULL OR title_so = '' OR
+  title_ar IS NULL OR title_ar = '' OR
+  bio_en IS NULL OR bio_en = '' OR
+  bio_so IS NULL OR bio_so = '' OR
+  bio_ar IS NULL OR bio_ar = '';
+
 ALTER TABLE freelancer_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;
 
@@ -113,9 +154,61 @@ ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS reviews (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL,
+  message_en text,
+  message_so text,
+  message_ar text,
   message text NOT NULL,
   rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
   admin_response text,
+  admin_response_en text,
+  admin_response_so text,
+  admin_response_ar text,
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved')),
   created_at timestamp WITH TIME ZONE DEFAULT now()
 );
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS message_en text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS message_so text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS message_ar text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_en text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_so text;
+
+ALTER TABLE reviews
+ADD COLUMN IF NOT EXISTS admin_response_ar text;
+
+-- Safe backfill for existing records.
+UPDATE reviews
+SET
+  message_en = COALESCE(NULLIF(message_en, ''), message),
+  message_so = COALESCE(NULLIF(message_so, ''), message),
+  message_ar = COALESCE(NULLIF(message_ar, ''), message),
+  admin_response_en = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_en
+    ELSE COALESCE(NULLIF(admin_response_en, ''), admin_response)
+  END,
+  admin_response_so = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_so
+    ELSE COALESCE(NULLIF(admin_response_so, ''), admin_response)
+  END,
+  admin_response_ar = CASE
+    WHEN admin_response IS NULL OR admin_response = '' THEN admin_response_ar
+    ELSE COALESCE(NULLIF(admin_response_ar, ''), admin_response)
+  END
+WHERE
+  message_en IS NULL OR message_en = '' OR
+  message_so IS NULL OR message_so = '' OR
+  message_ar IS NULL OR message_ar = '' OR
+  ((admin_response IS NOT NULL AND admin_response <> '') AND (
+    admin_response_en IS NULL OR admin_response_en = '' OR
+    admin_response_so IS NULL OR admin_response_so = '' OR
+    admin_response_ar IS NULL OR admin_response_ar = ''
+  ));

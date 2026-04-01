@@ -26,6 +26,8 @@ export default function Header() {
     ar: "العربية",
   }
 
+
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", onScroll)
@@ -43,6 +45,7 @@ export default function Header() {
     document.addEventListener("mousedown", onClickOutside)
     return () => document.removeEventListener("mousedown", onClickOutside)
   }, [])
+
 
   const navLinks = [
     { name: t.nav.home, href: "/" },
@@ -88,7 +91,15 @@ export default function Header() {
             <span className="relative hover:rotate-360 transition-transform z-10">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Raygal<span className="text-blue-600">Royal</span>
+            {language === "ar" ? (
+              <>
+                رايغال <span className="text-blue-600">رويال</span>
+              </>
+            ) : (
+              <>
+                Raygal<span className="text-blue-600">Royal</span>
+              </>
+            )}
           </span>
         </Link>
 
@@ -158,7 +169,9 @@ export default function Header() {
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={t.toggle.theme}
           >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {
+              isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />
+            }
           </button>
 
           {/* LANGUAGE SWITCHER */}
@@ -278,6 +291,6 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </header >
   )
 }
