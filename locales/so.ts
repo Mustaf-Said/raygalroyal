@@ -211,7 +211,7 @@ const so = {
   },
   contact: {
     title: "Nala Soo Xiriir",
-    subtitle: "Ma diyaar u tahay inaad bilowdo isbeddelkaaga dijitaalka ah? Aan hadalno.",
+    subtitle: "Diyaar ma utahay inaad bilowdo isbeddelkaaga dijitaalka ah? aynu wadashaqayno.",
     name: "Magacaaga",
     email: "Iimaylkaaga",
     message: "Faahfaahinta Mashruuca",
@@ -586,8 +586,8 @@ const so = {
   footer: {
     about: "Ku saabsan Raygal Royal",
     aboutDesc: "Siinta ganacsiyada xalal dijitaal ah oo heer sare ah iyo farsamo xirfadeed.",
-    links: "Xiriirro Degdeg ah",
-    contact: "Macluumaadka Xiriirka",
+    links: "Kulaabo qaybahan",
+    contact: "Cinwaanada Xiriirka",
     rights: "Dhammaan xuquuqaha waa dhowran yihiin.",
     privacy: "Siyaasadda Asturnaanta",
     terms: "Shuruudaha Adeegga",
