@@ -337,7 +337,7 @@ const arOverrides = {
       projectsCompleted: "المشاريع المنجزة",
       projectsCompletedValue: "+١٥٠",
       happyClients: "عملاء سعداء",
-      happyClientsValue: "+٨٠",
+      happyClientsValue: "+٩٠",
       experience: "سنوات الخبرة",
       experienceValue: "+٥ سنوات",
       technologies: "التقنيات",

@@ -623,7 +623,7 @@ const en = {
       projectsCompleted: "Projects Completed",
       projectsCompletedValue: "150+",
       happyClients: "Happy Clients",
-      happyClientsValue: "80+",
+      happyClientsValue: "90+",
       experience: "Experience",
       experienceValue: "5+ Years",
       technologies: "Technologies",

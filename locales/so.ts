@@ -626,7 +626,7 @@ const so = {
       projectsCompleted: "Mashruucyada La Dhammeeyay",
       projectsCompletedValue: "150+",
       happyClients: "Macaamiisha Faraxsan",
-      happyClientsValue: "80+",
+      happyClientsValue: "90+",
       experience: "Khibradda",
       experienceValue: "5+ Sano",
       technologies: "Tknolojiyada",
