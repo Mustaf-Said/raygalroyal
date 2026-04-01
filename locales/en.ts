@@ -1,5 +1,6 @@
 const en = {
   nav: {
+    RaygalRoyal: "Raygal Royal",
     home: "Home",
     services: "Services",
     projects: "Projects",
@@ -617,10 +618,16 @@ const en = {
     },
     missionTitle: "Crafting Digital Success Stories",
     missionBody: "We don't just build websites; we create digital experiences that drive growth, engage users, and leave a lasting impression. From startups to enterprises, we help you navigate the future.",
+
     stats: {
-      years: "Years Experience",
-      projects: "Projects Done",
-      satisfaction: "Satisfaction",
+      projectsCompleted: "Projects Completed",
+      projectsCompletedValue: "150+",
+      happyClients: "Happy Clients",
+      happyClientsValue: "80+",
+      experience: "Experience",
+      experienceValue: "5+ Years",
+      technologies: "Technologies",
+      technologiesValue: "12+",
     },
   },
 } as const

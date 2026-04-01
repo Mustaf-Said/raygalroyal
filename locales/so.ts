@@ -1,5 +1,6 @@
 const so = {
   nav: {
+    RaygalRoyal: "Raygal Royal",
     home: "Bogga Hore",
     services: "Adeegyada",
     projects: "Mashaariic",
@@ -620,10 +621,16 @@ const so = {
     },
     missionTitle: "Abuurista Sheekooyin Guul Dijitaal ah",
     missionBody: "Kaliya ma dhisno bogag; waxaan abuurnaa khibrado dijitaal ah oo kobciya ganacsiga, soo jiita isticmaalayaasha, kuna reeba saameyn waarta. Laga bilaabo startups ilaa shirkado waaweyn, waxaan kaa caawinaa inaad u diyaargarowdo mustaqbalka.",
+    // so.ts
     stats: {
-      years: "Sano Khibrad",
-      projects: "Mashaariic La Fuliyay",
-      satisfaction: "Qanacsanaan",
+      projectsCompleted: "Mashruucyada La Dhammeeyay",
+      projectsCompletedValue: "150+",
+      happyClients: "Macaamiisha Faraxsan",
+      happyClientsValue: "80+",
+      experience: "Khibradda",
+      experienceValue: "5+ Sano",
+      technologies: "Tknolojiyada",
+      technologiesValue: "12+",
     },
   },
 } as const
