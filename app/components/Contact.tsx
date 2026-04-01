@@ -82,7 +82,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 group">
+              {/* <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
                   <MessageSquare className="w-6 h-6" />
                 </div>
@@ -91,7 +91,7 @@ export default function Contact() {
                   <a href="https://wa.me/46722889588" target="_blank" className="text-xl font-bold text-gray-900 dark:text-white hover:text-green-600 transition-colors">+46 72 288 95 88</a>
                 </div>
               </div>
-
+ */}
               <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
                   <Phone className="w-6 h-6" />

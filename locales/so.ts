@@ -26,6 +26,16 @@ const so = {
       "Raygal Royal waa hay'ad dijitaal ah oo dhisaysa xalal web iyo mobile oo heer sare ah, lehna waxqabad sare iyo qurux aad u saraysa.",
     ctaPrimary: "Bilow Mashruucaaga",
     ctaSecondary: "Eeg Mashaariicda",
+    stats: {
+      projectsCompleted: "Mashruucyada La Dhammeeyay",
+      projectsCompletedValue: "150+",
+      happyClients: "Macaamiisha Faraxsan",
+      happyClientsValue: "90+",
+      experience: "Khibradda",
+      experienceValue: "5+ Sano",
+      technologies: "Tknolojiyada",
+      technologiesValue: "12+",
+    },
   },
   services: {
     title: "Adeegyadayada",
