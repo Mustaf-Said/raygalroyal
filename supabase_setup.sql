@@ -83,8 +83,15 @@ CREATE TABLE IF NOT EXISTS freelancer_applications (
 
 CREATE TABLE IF NOT EXISTS freelancers (
   id bigserial PRIMARY KEY,
+  user_id uuid,
   name text NOT NULL,
-  role text NOT NULL,
+  role text,
+  bio text,
+  profile_image text,
+  phone text,
+  github text,
+  status text NOT NULL DEFAULT 'pending',
+  created_at timestamp WITH TIME ZONE DEFAULT now(),
   title_en text,
   title_so text,
   title_ar text,
@@ -105,6 +112,27 @@ ADD COLUMN IF NOT EXISTS image_url text;
 
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS image_url text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS user_id uuid;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS bio text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS profile_image text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS phone text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS github text;
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'pending';
+
+ALTER TABLE freelancers
+ADD COLUMN IF NOT EXISTS created_at timestamp WITH TIME ZONE DEFAULT now();
 
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com';
@@ -130,9 +158,28 @@ ADD COLUMN IF NOT EXISTS bio_so text;
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS bio_ar text;
 
+-- Allow creating freelancer accounts before profile/application details are completed.
+ALTER TABLE freelancers
+ALTER COLUMN image_url DROP NOT NULL;
+
+ALTER TABLE freelancers
+ALTER COLUMN role DROP NOT NULL;
+
+ALTER TABLE freelancers
+ALTER COLUMN bio DROP NOT NULL;
+
+ALTER TABLE freelancers
+ALTER COLUMN phone DROP NOT NULL;
+
+ALTER TABLE freelancers
+ALTER COLUMN github DROP NOT NULL;
+
 -- Safe backfill for existing records.
 UPDATE freelancers
 SET
+  bio = COALESCE(NULLIF(bio, ''), message),
+  profile_image = COALESCE(NULLIF(profile_image, ''), image_url),
+  github = COALESCE(NULLIF(github, ''), linkedin_url),
   title_en = COALESCE(NULLIF(title_en, ''), role),
   title_so = COALESCE(NULLIF(title_so, ''), role),
   title_ar = COALESCE(NULLIF(title_ar, ''), role),
@@ -140,6 +187,9 @@ SET
   bio_so = COALESCE(NULLIF(bio_so, ''), message),
   bio_ar = COALESCE(NULLIF(bio_ar, ''), message)
 WHERE
+  bio IS NULL OR bio = '' OR
+  profile_image IS NULL OR profile_image = '' OR
+  github IS NULL OR github = '' OR
   title_en IS NULL OR title_en = '' OR
   title_so IS NULL OR title_so = '' OR
   title_ar IS NULL OR title_ar = '' OR
@@ -149,6 +199,59 @@ WHERE
 
 ALTER TABLE freelancer_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE IF NOT EXISTS messages (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  sender_id uuid NOT NULL,
+  receiver_id uuid NOT NULL,
+  message text NOT NULL,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read approved freelancers" ON freelancers;
+CREATE POLICY "Public can read approved freelancers"
+ON freelancers
+FOR SELECT
+TO anon, authenticated
+USING (status = 'approved');
+
+DROP POLICY IF EXISTS "Freelancers can insert own profile" ON freelancers;
+CREATE POLICY "Freelancers can insert own profile"
+ON freelancers
+FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Freelancers can update own profile" ON freelancers;
+CREATE POLICY "Freelancers can update own profile"
+ON freelancers
+FOR UPDATE
+TO authenticated
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Freelancers can delete own profile" ON freelancers;
+CREATE POLICY "Freelancers can delete own profile"
+ON freelancers
+FOR DELETE
+TO authenticated
+USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can read own messages" ON messages;
+CREATE POLICY "Users can read own messages"
+ON messages
+FOR SELECT
+TO authenticated
+USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+
+DROP POLICY IF EXISTS "Users can send own messages" ON messages;
+CREATE POLICY "Users can send own messages"
+ON messages
+FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = sender_id);
 
 -- Table for moderated client testimonials workflow.
 CREATE TABLE IF NOT EXISTS reviews (

@@ -8,6 +8,7 @@ export type Json =
 
 export type ApplicationStatus = "pending" | "approved" | "rejected"
 export type ReviewStatus = "pending" | "approved"
+export type FreelancerStatus = "pending" | "approved" | "rejected"
 
 export type Database = {
   public: {
@@ -51,8 +52,15 @@ export type Database = {
       freelancers: {
         Row: {
           id: number
+          user_id: string | null
           name: string
-          role: string
+          role: string | null
+          bio: string | null
+          profile_image: string | null
+          phone: string | null
+          github: string | null
+          status: FreelancerStatus
+          created_at: string
           title_en: string | null
           title_so: string | null
           title_ar: string | null
@@ -66,8 +74,15 @@ export type Database = {
         }
         Insert: {
           id?: number
+          user_id?: string | null
           name: string
-          role: string
+          role?: string | null
+          bio?: string | null
+          profile_image?: string | null
+          phone?: string | null
+          github?: string | null
+          status?: FreelancerStatus
+          created_at?: string
           title_en?: string | null
           title_so?: string | null
           title_ar?: string | null
@@ -76,13 +91,20 @@ export type Database = {
           bio_ar?: string | null
           image_url?: string | null
           email: string
-          linkedin_url: string
-          message: string
+          linkedin_url?: string
+          message?: string
         }
         Update: {
           id?: number
+          user_id?: string | null
           name?: string
-          role?: string
+          role?: string | null
+          bio?: string | null
+          profile_image?: string | null
+          phone?: string | null
+          github?: string | null
+          status?: FreelancerStatus
+          created_at?: string
           title_en?: string | null
           title_so?: string | null
           title_ar?: string | null
@@ -93,6 +115,30 @@ export type Database = {
           email?: string
           linkedin_url?: string
           message?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          receiver_id?: string
+          message?: string
+          created_at?: string
         }
         Relationships: []
       }

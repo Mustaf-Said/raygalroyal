@@ -15,7 +15,9 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const languageMenuRef = useRef<HTMLDivElement | null>(null)
+  const authMenuRef = useRef<HTMLDivElement | null>(null)
   const { language, setLanguage, t } = useLanguage()
   const { toggleTheme, isDark } = useTheme()
   const { openOrderModal } = useModals()
@@ -36,9 +38,12 @@ export default function Header() {
 
   useEffect(() => {
     const onClickOutside = (event: MouseEvent) => {
-      if (!languageMenuRef.current) return
-      if (!languageMenuRef.current.contains(event.target as Node)) {
+      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target as Node)) {
         setLanguageMenuOpen(false)
+      }
+
+      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
+        setAuthMenuOpen(false)
       }
     }
 
@@ -121,7 +126,7 @@ export default function Header() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full left-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl p-2 z-[60]"
+                        className="absolute top-full left-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl p-2 z-60"
                       >
                         {link.dropdown.map((item) => (
                           <button
@@ -155,13 +160,46 @@ export default function Header() {
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
           {/* ADMIN BUTTON */}
-          <Link
-            href="/admin/orders"
-            className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            title={t.nav.adminDashboard}
-          >
-            <Lock className="w-5 h-5" />
-          </Link>
+          <div className="relative" ref={authMenuRef}>
+            <button
+              onClick={() => setAuthMenuOpen((prev) => !prev)}
+              className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              title="Logins"
+              aria-haspopup="menu"
+              aria-expanded={authMenuOpen}
+            >
+              <Lock className="w-5 h-5" />
+            </button>
+
+            <AnimatePresence>
+              {authMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                  role="menu"
+                >
+                  <Link
+                    href="/admin/orders"
+                    onClick={() => setAuthMenuOpen(false)}
+                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    role="menuitem"
+                  >
+                    Admin Login
+                  </Link>
+                  <Link
+                    href="/freelancer/login"
+                    onClick={() => setAuthMenuOpen(false)}
+                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    role="menuitem"
+                  >
+                    Freelancer Login
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* THEME TOGGLE */}
           <button
@@ -276,7 +314,15 @@ export default function Header() {
                 className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
               >
                 <Lock className="w-4 h-4" />
-                {t.nav.admin}
+                Admin Login
+              </Link>
+              <Link
+                href="/freelancer/login"
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4" />
+                Freelancer Login
               </Link>
               <button
                 onClick={() => {

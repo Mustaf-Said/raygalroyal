@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, MessageSquare, Phone, Send, CheckCircle2 } from "lucide-react"
+import { Mail, /* MessageSquare */ Phone, Send, CheckCircle2 } from "lucide-react"
 import { useLanguage } from "../components/LanguageProvider"
 import { useState } from "react"
 
