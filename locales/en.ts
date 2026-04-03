@@ -220,11 +220,7 @@ const en = {
     error: "Something went wrong. Please try again.",
     whatsapp: "Chat on WhatsApp",
     office: "Office",
-<<<<<<< HEAD
-    location: "19 Royal Street, London, UK",
-=======
     location: "Gothenburg, Sweden",
->>>>>>> 0acc9100ed47be9dbed773caded384e0450c2380
     replyWithin: "We'll get back to you within 24 hours.",
     placeholders: {
       name: "John Doe",
