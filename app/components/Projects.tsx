@@ -10,19 +10,19 @@ const PROJECTS_DATA = [
   {
     key: "ecommerce",
     image: "/images/projekt/1.jpg",
-    category: "E-Commerce",
+    categoryKey: "ecommerce",
     tech: ["Next.js", "Stripe", "Tailwind"],
   },
   {
     key: "fintech",
     image: "/images/projekt/2.jpg",
-    category: "FinTech",
+    categoryKey: "fintech",
     tech: ["React", "D3.js", "Node.js"],
   },
   {
     key: "healthcare",
     image: "/images/projekt/3.jpg",
-    category: "Healthcare",
+    categoryKey: "healthcare",
     tech: ["TypeScript", "Next.js", "Firebase"],
   },
 ] as const
@@ -60,10 +60,10 @@ export default function Projects() {
             viewport={{ once: true }}
           >
             <Link
-              href="#contact"
+              href="/contact"
               className="group flex items-center gap-2 text-lg font-bold text-blue-600 dark:text-blue-400"
             >
-              Start a project with us
+              {t.projects.startProjectWithUs}
               <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
           </motion.div>
@@ -116,7 +116,7 @@ export default function Projects() {
 
                 <div className="px-4">
                   <span className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2 block">
-                    {project.category}
+                    {t.projects.categories[project.categoryKey]}
                   </span>
                   <p className="text-gray-600 dark:text-gray-400 line-clamp-2">
                     {projectText.description}

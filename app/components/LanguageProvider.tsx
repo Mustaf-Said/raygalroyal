@@ -1,9 +1,20 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react"
-import { translations, type Language, type TranslationStrings } from "./translations"
+import { translations, type Language, type TranslationStrings } from "@/locales"
 
 const STORAGE_KEY = "raygalroyal-language"
+const RTL_LANGUAGE: Language = "ar"
+export const SUPPORTED_LANGUAGES: Language[] = ["en", "so", "ar"]
+
+const isSupportedLanguage = (value: string | null): value is Language =>
+  value !== null && SUPPORTED_LANGUAGES.includes(value as Language)
+
+const getNextLanguage = (lang: Language): Language => {
+  const idx = SUPPORTED_LANGUAGES.indexOf(lang)
+  if (idx === -1) return "en"
+  return SUPPORTED_LANGUAGES[(idx + 1) % SUPPORTED_LANGUAGES.length]
+}
 
 type LanguageContextValue = {
   language: Language
@@ -26,7 +37,7 @@ function useLocalStorageLanguage(): [Language, (lang: Language) => void] {
     // 2. getSnapshot: what the CLIENT reads right now
     () => {
       const saved = localStorage.getItem(STORAGE_KEY)
-      return (saved === "so" ? "so" : "en") as Language
+      return isSupportedLanguage(saved) ? saved : "en"
     },
     // 3. getServerSnapshot: what the SERVER always renders — must be "en"
     () => "en" as Language
@@ -47,12 +58,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // ✅ Only syncs external DOM — correct useEffect usage, no setState here
   useEffect(() => {
     document.documentElement.lang = language
+    document.documentElement.dir = language === RTL_LANGUAGE ? "rtl" : "ltr"
   }, [language])
 
   const value = useMemo<LanguageContextValue>(() => ({
     language,
     setLanguage,
-    toggleLanguage: () => setLanguage(language === "so" ? "en" : "so"),
+    toggleLanguage: () => setLanguage(getNextLanguage(language)),
     t: translations[language],
   }), [language, setLanguage])
 

@@ -54,11 +54,22 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="#contact"
-              className="group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 flex items-center gap-2"
+              href="/contact"
+              className="group relative px-8 py-4 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden flex items-center gap-2"
+              style={{
+                background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                boxShadow: "0 0 20px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
             >
-              {t.hero.ctaPrimary}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {/* Hover shimmer */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+              {/* Glow on hover */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md -z-10"
+                style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
+              <span className="relative z-10">{t.hero.ctaPrimary}</span>
+              <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <Link
@@ -79,10 +90,10 @@ export default function Hero() {
           className="mt-20 pt-10 border-t border-gray-100 dark:border-gray-900 grid grid-cols-2 md:grid-cols-4 gap-8"
         >
           {[
-            { label: "Projects Completed", value: "150+" },
-            { label: "Happy Clients", value: "80+" },
-            { label: "Experience", value: "5+ Years" },
-            { label: "Technologies", value: "12+" },
+            { label: t.hero.stats.projectsCompleted, value: t.hero.stats.projectsCompletedValue },
+            { label: t.hero.stats.happyClients, value: t.hero.stats.happyClientsValue },
+            { label: t.hero.stats.experience, value: t.hero.stats.experienceValue },
+            { label: t.hero.stats.technologies, value: t.hero.stats.technologiesValue },
           ].map((stat, i) => (
             <div key={i} className="text-center">
               <div className="text-3xl font-black text-gray-900 dark:text-white">{stat.value}</div>

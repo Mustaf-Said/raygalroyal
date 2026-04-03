@@ -1,4 +1,4 @@
-import { translations, Language } from "@/app/components/translations"
+import { translations, type Language } from "@/locales"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const RESEND_FALLBACK_FROM = "Raygal Royal <onboarding@resend.dev>"
@@ -38,8 +38,6 @@ export async function sendOrderConfirmationEmail({
 
   const lang = (language === "so" ? "so" : "en") as Language
   const t = translations[lang].emails
-
-  const currencySymbol = currency === "SEK" ? "SEK" : "$"
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">

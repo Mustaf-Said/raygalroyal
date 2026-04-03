@@ -1,8 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, MessageSquare, Phone, Send, CheckCircle2 } from "lucide-react"
-import { useLanguage } from "./LanguageProvider"
+import { Mail, /* MessageSquare */ Phone, Send, CheckCircle2 } from "lucide-react"
+import { useLanguage } from "../components/LanguageProvider"
 import { useState } from "react"
 
 export default function Contact() {
@@ -43,7 +43,7 @@ export default function Contact() {
       if (error instanceof Error) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage("Could not send your message. Please try again.")
+        setErrorMessage(t.contact.submitFailed)
       }
     } finally {
       setIsSubmitting(false)
@@ -82,7 +82,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 group">
+              {/* <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
                   <MessageSquare className="w-6 h-6" />
                 </div>
@@ -91,14 +91,14 @@ export default function Contact() {
                   <a href="https://wa.me/46722889588" target="_blank" className="text-xl font-bold text-gray-900 dark:text-white hover:text-green-600 transition-colors">+46 72 288 95 88</a>
                 </div>
               </div>
-
+ */}
               <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Office</div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">Gothenborg, Sweden</div>
+                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{t.contact.office}</div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">{t.contact.location}</div>
                 </div>
               </div>
             </div>
@@ -121,7 +121,7 @@ export default function Contact() {
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t.contact.success}</h3>
-                  <p className="text-gray-500">We&apos;ll get back to you within 24 hours.</p>
+                  <p className="text-gray-500">{t.contact.replyWithin}</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -134,7 +134,7 @@ export default function Contact() {
                         value={formData.name}
                         onChange={(e) => handleInputChange("name", e.target.value)}
                         className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        placeholder="John Doe"
+                        placeholder={t.contact.placeholders.name}
                       />
                     </div>
                     <div className="space-y-2">
@@ -145,7 +145,7 @@ export default function Contact() {
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
                         className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        placeholder="john@example.com"
+                        placeholder={t.contact.placeholders.email}
                       />
                     </div>
                   </div>
@@ -158,7 +158,7 @@ export default function Contact() {
                       value={formData.message}
                       onChange={(e) => handleInputChange("message", e.target.value)}
                       className="w-full px-6 py-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
-                      placeholder="Tell us about your project..."
+                      placeholder={t.contact.placeholders.message}
                     />
                   </div>
 
@@ -169,10 +169,23 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-blue-500/25 active:scale-95"
+                    className="w-full py-5 relative text-white font-black rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{
+                      background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                      boxShadow: "0 0 30px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                    }}
                   >
-                    <Send className="w-5 h-5" />
-                    {isSubmitting ? "Sending..." : t.contact.send}
+                    {/* Hover shimmer */}
+                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                      style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+                    {/* Glow on hover */}
+                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md -z-10"
+                      style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
+                    <Send className="relative z-10 w-5 h-5" />
+                    <span className="relative z-10 tracking-wide">
+                      {isSubmitting ? t.contact.sending : t.contact.send}
+                    </span>
                   </button>
                 </form>
               )}

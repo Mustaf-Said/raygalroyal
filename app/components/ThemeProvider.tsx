@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 type Theme = "light" | "dark"
 
@@ -15,23 +15,25 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 const STORAGE_KEY = "raygalroyal-theme"
 
 function getSavedTheme(): Theme {
-  if (typeof window === "undefined") return "dark"
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    // ✅ Only return if explicitly set to 'light', otherwise default to 'dark'
+    // Only return light when explicitly stored; default to dark.
     if (saved === "light") return "light"
     return "dark"
   } catch {
-    // ✅ Fallback to dark if localStorage fails
+    // Fallback to dark if localStorage is unavailable.
     return "dark"
   }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // SSR-safe default is dark; on client this resolves from localStorage.
-  const [theme, setThemeState] = useState<Theme>(getSavedTheme)
+  // Keep the first server and client render identical to avoid hydration mismatches.
+  const [theme, setThemeState] = useState<Theme>("dark")
+  const isHydratedRef = useRef(false)
 
   useEffect(() => {
+    if (!isHydratedRef.current) return
+
     const root = document.documentElement
     if (theme === "dark") {
       root.classList.add("dark")
@@ -42,6 +44,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
+
+  useEffect(() => {
+    const savedTheme = getSavedTheme()
+    isHydratedRef.current = true
+
+    if (savedTheme !== "dark") {
+      queueMicrotask(() => setThemeState(savedTheme))
+    }
+  }, [])
 
   const setTheme = (t: Theme) => setThemeState(t)
   const toggleTheme = () => setThemeState((current) => current === "dark" ? "light" : "dark")

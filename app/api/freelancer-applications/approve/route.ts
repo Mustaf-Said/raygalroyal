@@ -5,10 +5,15 @@ import type { Database } from "@/lib/database.types"
 
 type ApproveBody = {
   id?: number | string
+  title_en?: string
+  title_so?: string
+  title_ar?: string
+  bio_en?: string
+  bio_so?: string
+  bio_ar?: string
 }
 
-type FreelancerInsert = Database["public"]["Tables"]["freelancers"]["Insert"]
-const DEFAULT_AVATAR_URL = "https://cdn.creativefabrica.com/2021/12/25/Freelancer-avatar-icon-Graphics-22319749-2-580x387.jpg"
+type FreelancerUpdate = Database["public"]["Tables"]["freelancers"]["Update"]
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,70 +34,48 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid application id" }, { status: 400 })
     }
 
-    const { data: application, error: fetchError } = await supabase
-      .from("freelancer_applications")
-      .select("id, name, email, role, message, linkedin_url, image_url, status")
+    const { data: freelancer, error: fetchError } = await supabase
+      .from("freelancers")
+      .select("id, role, bio, message, status")
       .eq("id", id)
       .single()
 
-    if (fetchError || !application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 })
+    if (fetchError || !freelancer) {
+      return NextResponse.json({ error: "Freelancer not found" }, { status: 404 })
     }
 
-    if (application.status === "approved") {
+    if (freelancer.status === "approved") {
       return NextResponse.json({ success: true, alreadyApproved: true })
     }
 
-    const normalizedEmail = application.email.trim().toLowerCase()
-    const normalizedImageUrl = application.image_url?.trim() || DEFAULT_AVATAR_URL
-    const freelancerPayload: FreelancerInsert = {
-      name: application.name,
-      email: normalizedEmail,
-      role: application.role,
-      message: application.message,
-      image_url: normalizedImageUrl,
-      linkedin_url: application.linkedin_url,
-    }
+    const baseRole = freelancer.role?.trim() || "pending-profile"
+    const baseBio = freelancer.bio?.trim() || freelancer.message
+    const titleEn = typeof body.title_en === "string" && body.title_en.trim().length > 0
+      ? body.title_en.trim()
+      : baseRole
+    const titleSo = typeof body.title_so === "string" ? body.title_so.trim() : ""
+    const titleAr = typeof body.title_ar === "string" ? body.title_ar.trim() : ""
+    const bioEn = typeof body.bio_en === "string" && body.bio_en.trim().length > 0
+      ? body.bio_en.trim()
+      : baseBio
+    const bioSo = typeof body.bio_so === "string" ? body.bio_so.trim() : ""
+    const bioAr = typeof body.bio_ar === "string" ? body.bio_ar.trim() : ""
 
-    const { data: existingFreelancer, error: existingError } = await supabase
-      .from("freelancers")
-      .select("id")
-      .eq("email", normalizedEmail)
-      .limit(1)
-      .maybeSingle()
-
-    if (existingError) {
-      return NextResponse.json({ error: existingError.message }, { status: 500 })
-    }
-
-    if (!existingFreelancer) {
-      const { error: insertFreelancerError } = await supabase
-        .from("freelancers")
-        .insert(freelancerPayload)
-
-      if (insertFreelancerError) {
-        return NextResponse.json(
-          { error: insertFreelancerError.message },
-          { status: 500 }
-        )
-      }
-    } else {
-      const { error: updateFreelancerError } = await supabase
-        .from("freelancers")
-        .update(freelancerPayload)
-        .eq("id", existingFreelancer.id)
-
-      if (updateFreelancerError) {
-        return NextResponse.json(
-          { error: updateFreelancerError.message },
-          { status: 500 }
-        )
-      }
+    const freelancerPayload: FreelancerUpdate = {
+      status: "approved",
+      role: baseRole,
+      bio: baseBio,
+      title_en: titleEn,
+      title_so: titleSo,
+      title_ar: titleAr,
+      bio_en: bioEn,
+      bio_so: bioSo,
+      bio_ar: bioAr,
     }
 
     const { error: updateError } = await supabase
-      .from("freelancer_applications")
-      .update({ status: "approved" })
+      .from("freelancers")
+      .update(freelancerPayload)
       .eq("id", id)
 
     if (updateError) {

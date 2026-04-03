@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
-import { useLanguage } from "./LanguageProvider"
+import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
+import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
 import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
@@ -13,9 +14,21 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
-  const { language, toggleLanguage, t } = useLanguage()
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const [authMenuOpen, setAuthMenuOpen] = useState(false)
+  const languageMenuRef = useRef<HTMLDivElement | null>(null)
+  const authMenuRef = useRef<HTMLDivElement | null>(null)
+  const { language, setLanguage, t } = useLanguage()
   const { toggleTheme, isDark } = useTheme()
   const { openOrderModal } = useModals()
+
+  const languageLabels: Record<Language, string> = {
+    en: "English",
+    so: "Somali",
+    ar: "العربية",
+  }
+
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -23,11 +36,27 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
+  useEffect(() => {
+    const onClickOutside = (event: MouseEvent) => {
+      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target as Node)) {
+        setLanguageMenuOpen(false)
+      }
+
+      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
+        setAuthMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", onClickOutside)
+    return () => document.removeEventListener("mousedown", onClickOutside)
+  }, [])
+
+
   const navLinks = [
     { name: t.nav.home, href: "/" },
     {
       name: t.nav.services,
-      href: "#services",
+      href: "/services",
       dropdown: [
         { name: t.services.items.web.title, key: "web" },
         { name: t.services.items.mobile.title, key: "mobile" },
@@ -37,11 +66,11 @@ export default function Header() {
         { name: t.services.items.security.title, key: "security" },
       ]
     },
-    { name: t.nav.projects, href: "#projects" },
-    { name: t.nav.team, href: "#team" },
-    { name: t.nav.pricing, href: "#pricing" },
-    { name: t.nav.faq, href: "#faq" },
-    { name: t.nav.contact, href: "#contact" },
+    { name: t.nav.projects, href: "/projects" },
+    { name: t.nav.team, href: "/team" },
+    { name: t.nav.pricing, href: "/pricing" },
+    { name: t.nav.faq, href: "/faq" },
+    { name: t.nav.contact, href: "/contact" },
   ]
 
   return (
@@ -54,11 +83,28 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
-            R
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+              boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+            <span className="relative hover:rotate-360 transition-transform z-10">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Raygal<span className="text-blue-600">Royal</span>
+            {language === "ar" ? (
+              <>
+                رايغال <span className="text-blue-600">رويال</span>
+              </>
+            ) : (
+              <>
+                Raygal<span className="text-blue-600">Royal</span>
+              </>
+            )}
           </span>
         </Link>
 
@@ -80,7 +126,7 @@ export default function Header() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full left-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl p-2 z-[60]"
+                        className="absolute top-full left-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl p-2 z-60"
                       >
                         {link.dropdown.map((item) => (
                           <button
@@ -114,13 +160,46 @@ export default function Header() {
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
           {/* ADMIN BUTTON */}
-          <Link
-            href="/admin/orders"
-            className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            title="Admin Dashboard"
-          >
-            <Lock className="w-5 h-5" />
-          </Link>
+          <div className="relative" ref={authMenuRef}>
+            <button
+              onClick={() => setAuthMenuOpen((prev) => !prev)}
+              className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              title="Logins"
+              aria-haspopup="menu"
+              aria-expanded={authMenuOpen}
+            >
+              <Lock className="w-5 h-5" />
+            </button>
+
+            <AnimatePresence>
+              {authMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                  role="menu"
+                >
+                  <Link
+                    href="/admin/orders"
+                    onClick={() => setAuthMenuOpen(false)}
+                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    role="menuitem"
+                  >
+                    Admin Login
+                  </Link>
+                  <Link
+                    href="/freelancer/login"
+                    onClick={() => setAuthMenuOpen(false)}
+                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    role="menuitem"
+                  >
+                    Freelancer Login
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* THEME TOGGLE */}
           <button
@@ -128,25 +207,75 @@ export default function Header() {
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={t.toggle.theme}
           >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {
+              isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />
+            }
           </button>
 
-          {/* LANGUAGE TOGGLE */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-            title={t.toggle.label}
-          >
-            <Globe className="w-5 h-5" />
-            <span className="text-xs font-bold uppercase">{language}</span>
-          </button>
+          {/* LANGUAGE SWITCHER */}
+          <div className="relative" ref={languageMenuRef}>
+            <button
+              onClick={() => setLanguageMenuOpen((prev) => !prev)}
+              className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+              title={t.toggle.label}
+              aria-haspopup="menu"
+              aria-expanded={languageMenuOpen}
+            >
+              <Globe className="w-5 h-5" />
+              <span className="text-xs font-bold uppercase">{language}</span>
+              <ChevronDown className={cn("w-3 h-3 transition-transform", languageMenuOpen && "rotate-180")} />
+            </button>
+
+            <AnimatePresence>
+              {languageMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="absolute top-full right-0 mt-2 w-36 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                  role="menu"
+                >
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        setLanguage(lang)
+                        setLanguageMenuOpen(false)
+                      }}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                        language === lang
+                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      )}
+                      role="menuitem"
+                    >
+                      <span className="font-semibold">{lang.toUpperCase()}</span>
+                      <span className="block text-xs opacity-80">{languageLabels[lang]}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* START PROJECT CTA */}
           <button
             onClick={() => openOrderModal()}
-            className="hidden sm:block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full transition-all hover:shadow-lg hover:shadow-blue-500/25 active:scale-95"
+            className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group"
+            style={{
+              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+              boxShadow: "0 0 20px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
           >
-            {t.nav.startProject}
+            {/* Hover shimmer */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
+            {/* Glow on hover */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-md -z-10"
+              style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
+            <span className="relative z-10 tracking-wide">{t.nav.startProject}</span>
           </button>
 
           {/* MOBILE MENU TOGGLE */}
@@ -185,7 +314,15 @@ export default function Header() {
                 className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
               >
                 <Lock className="w-4 h-4" />
-                Admin
+                Admin Login
+              </Link>
+              <Link
+                href="/freelancer/login"
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4" />
+                Freelancer Login
               </Link>
               <button
                 onClick={() => {
@@ -200,6 +337,6 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </header >
   )
 }

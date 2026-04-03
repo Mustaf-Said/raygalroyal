@@ -27,17 +27,17 @@ export async function POST(req: NextRequest) {
     }
 
     const { data: application, error: fetchError } = await supabase
-      .from("freelancer_applications")
+      .from("freelancers")
       .select("id")
       .eq("id", id)
       .single()
 
     if (fetchError || !application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 })
+      return NextResponse.json({ error: "Freelancer not found" }, { status: 404 })
     }
 
     const { error: updateError } = await supabase
-      .from("freelancer_applications")
+      .from("freelancers")
       .update({ status: "rejected" })
       .eq("id", id)
 

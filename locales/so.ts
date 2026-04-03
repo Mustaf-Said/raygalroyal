@@ -220,7 +220,11 @@ const so = {
     error: "Wax baa khaldamay. Fadlan isku day markale.",
     whatsapp: "Nagala hadal WhatsApp",
     office: "Xafiis",
+<<<<<<< HEAD
     location: "19 Royal Street, London, UK",
+=======
+    location: "Gothenburg, Sweden",
+>>>>>>> 0acc9100ed47be9dbed773caded384e0450c2380
     replyWithin: "Waxaan kuugu soo jawaabi doonaa 24 saacadood gudahood.",
     placeholders: {
       name: "John Doe",

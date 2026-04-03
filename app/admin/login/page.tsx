@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { ShieldCheck, Loader2 } from "lucide-react"
+import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -11,6 +12,12 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    if (getFreelancerAccessToken()) {
+      router.push("/freelancer/dashboard")
+    }
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,7 +33,32 @@ export default function AdminLogin() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push("/admin/orders")
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+
+        if (!session?.access_token) {
+          throw new Error("Invalid admin session")
+        }
+
+        const verifyResponse = await fetch("/api/freelancers?admin=1", {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        })
+
+        if (!verifyResponse.ok) {
+          await supabase.auth.signOut()
+          throw new Error("Access denied. This account is not an admin account.")
+        }
+
+        router.push("/admin")
+      } catch (verifyError) {
+        setError(verifyError instanceof Error ? verifyError.message : "Access denied")
+        setLoading(false)
+      }
     }
   }
 
@@ -82,7 +114,7 @@ export default function AdminLogin() {
             </button>
           </form>
         </div>
-        
+
         <p className="text-center mt-8 text-sm text-gray-400">
           Secure access restricted to authorized personnel only.
         </p>
