@@ -23,6 +23,30 @@ type FreelancerProfile = {
   email: string
 }
 
+const ROLE_OPTIONS = [
+  { value: "frontend", label: "Frontend" },
+  { value: "backend", label: "Backend" },
+  { value: "fullstack", label: "Fullstack" },
+  { value: "uiux", label: "UI/UX" },
+] as const
+
+const ALLOWED_ROLES = new Set(ROLE_OPTIONS.map((option) => option.value))
+
+const normalizeRole = (role: string | null | undefined) => {
+  const value = (role ?? "").trim().toLowerCase()
+
+  if (ALLOWED_ROLES.has(value as (typeof ROLE_OPTIONS)[number]["value"])) {
+    return value
+  }
+
+  if (value.includes("front")) return "frontend"
+  if (value.includes("back")) return "backend"
+  if (value.includes("full")) return "fullstack"
+  if (value.includes("ui") || value.includes("ux") || value.includes("design")) return "uiux"
+
+  return ""
+}
+
 export default function FreelancerDashboardPage() {
   const router = useRouter()
   const [profile, setProfile] = useState<FreelancerProfile | null>(null)
@@ -97,7 +121,9 @@ export default function FreelancerDashboardPage() {
     setSuccess(null)
 
     try {
-      if (!profile.role?.trim() || !profile.phone?.trim() || !profile.github?.trim() || !profile.bio?.trim()) {
+      const normalizedRole = normalizeRole(profile.role)
+
+      if (!normalizedRole || !profile.phone?.trim() || !profile.github?.trim() || !profile.bio?.trim()) {
         throw new Error("Please fill role, phone, GitHub, and bio before submitting.")
       }
 
@@ -115,7 +141,7 @@ export default function FreelancerDashboardPage() {
         },
         body: JSON.stringify({
           name: profile.name,
-          role: profile.role,
+          role: normalizedRole,
           bio: profile.bio,
           phone: profile.phone,
           github: profile.github,
@@ -216,7 +242,17 @@ export default function FreelancerDashboardPage() {
 
         <form onSubmit={handleProfileUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input required value={profile.name ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, name: e.target.value } : prev))} placeholder="Name" className="md:col-span-2 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
-          <input required value={profile.role ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, role: e.target.value } : prev))} placeholder="Role" className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
+          <select
+            required
+            value={normalizeRole(profile.role)}
+            onChange={(e) => setProfile((prev) => (prev ? { ...prev, role: e.target.value } : prev))}
+            className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+          >
+            <option value="" disabled>Select role</option>
+            {ROLE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
           <input required value={profile.phone ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, phone: e.target.value } : prev))} placeholder="Phone" className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
           <input required value={profile.github ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, github: e.target.value } : prev))} placeholder="GitHub" className="md:col-span-2 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
           <input type="file" accept="image/*" onChange={(e) => setProfileFile(e.target.files?.[0] ?? null)} className="md:col-span-2 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
