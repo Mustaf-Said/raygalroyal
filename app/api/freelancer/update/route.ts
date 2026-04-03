@@ -12,6 +12,11 @@ type UpdateBody = {
   profile_image?: string
 }
 
+type FreelancerApplicationInsert =
+  Database["public"]["Tables"]["freelancer_applications"]["Insert"]
+
+const DEFAULT_LINKEDIN_URL = "https://www.linkedin.com"
+
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -157,6 +162,73 @@ export async function PATCH(req: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    const { data: freelancerRow, error: freelancerReadError } = await supabase
+      .from("freelancers")
+      .select("name, email, role, bio, profile_image, image_url, github, linkedin_url, message")
+      .eq("user_id", auth.user.id)
+      .limit(1)
+      .maybeSingle()
+
+    if (freelancerReadError) {
+      return NextResponse.json({ error: freelancerReadError.message }, { status: 500 })
+    }
+
+    if (!freelancerRow) {
+      return NextResponse.json({ error: "Freelancer profile not found" }, { status: 404 })
+    }
+
+    const applicationPayload: FreelancerApplicationInsert = {
+      name: freelancerRow.name,
+      email: freelancerRow.email.trim().toLowerCase(),
+      role: (freelancerRow.role ?? "pending-profile").trim() || "pending-profile",
+      message:
+        (freelancerRow.bio ?? freelancerRow.message ?? "").trim() ||
+        "Application details submitted from freelancer dashboard",
+      linkedin_url:
+        (freelancerRow.github ?? freelancerRow.linkedin_url ?? DEFAULT_LINKEDIN_URL).trim() ||
+        DEFAULT_LINKEDIN_URL,
+      image_url: (freelancerRow.profile_image ?? freelancerRow.image_url ?? null),
+      status: "pending",
+    }
+
+    const { data: existingPendingApplication, error: existingApplicationError } = await supabase
+      .from("freelancer_applications")
+      .select("id")
+      .eq("email", applicationPayload.email)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingApplicationError) {
+      return NextResponse.json({ error: existingApplicationError.message }, { status: 500 })
+    }
+
+    if (existingPendingApplication) {
+      const { error: updateApplicationError } = await supabase
+        .from("freelancer_applications")
+        .update({
+          name: applicationPayload.name,
+          role: applicationPayload.role,
+          message: applicationPayload.message,
+          linkedin_url: applicationPayload.linkedin_url,
+          image_url: applicationPayload.image_url,
+        })
+        .eq("id", existingPendingApplication.id)
+
+      if (updateApplicationError) {
+        return NextResponse.json({ error: updateApplicationError.message }, { status: 500 })
+      }
+    } else {
+      const { error: insertApplicationError } = await supabase
+        .from("freelancer_applications")
+        .insert(applicationPayload)
+
+      if (insertApplicationError) {
+        return NextResponse.json({ error: insertApplicationError.message }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ success: true })

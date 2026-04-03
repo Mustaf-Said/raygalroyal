@@ -59,9 +59,7 @@ export const isAdminUser = (user: User) => {
   }
 
   const roleFromMetadata =
-    (typeof user.app_metadata?.role === "string" && user.app_metadata.role) ||
-    (typeof user.user_metadata?.role === "string" && user.user_metadata.role) ||
-    ""
+    (typeof user.app_metadata?.role === "string" && user.app_metadata.role) || ""
 
   return roleFromMetadata.toLowerCase() === "admin"
 }

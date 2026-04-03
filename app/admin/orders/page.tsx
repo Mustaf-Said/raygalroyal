@@ -103,23 +103,53 @@ export default function AdminOrders() {
     return headers
   }
 
+  const verifyAdminAccess = useCallback(async () => {
+    const authHeaders = await getAuthHeaders()
+    const response = await fetch("/api/freelancers?admin=1", {
+      cache: "no-store",
+      headers: authHeaders,
+    })
+
+    if (!response.ok) {
+      await supabase.auth.signOut()
+      router.push("/admin/login")
+      return false
+    }
+
+    return true
+  }, [router])
+
   const fetchOrders = useCallback(async () => {
     setLoading(true)
-    let query = supabase
-      .from("project_orders")
-      .select("id, plan, description, file_url, customer_email, service, language, status, amount, currency, provider, payment_id")
+    try {
+      const authHeaders = await getAuthHeaders()
+      const params = new URLSearchParams()
+      params.set("status", statusFilter)
+      params.set("provider", providerFilter)
 
-    if (statusFilter !== "all") {
-      query = query.eq("status", statusFilter)
-    }
-    if (providerFilter !== "all") {
-      query = query.eq("provider", providerFilter)
-    }
+      const response = await fetch(`/api/admin/orders?${params.toString()}`, {
+        cache: "no-store",
+        headers: authHeaders,
+      })
 
-    const { data } = await query
-    if (data) setOrders(data as Order[])
-    setLoading(false)
-  }, [providerFilter, statusFilter])
+      const json = (await response.json().catch(() => null)) as { error?: string; data?: Order[] } | null
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          await supabase.auth.signOut()
+          router.push("/admin/login")
+          return
+        }
+        throw new Error(json?.error || "Failed to load orders")
+      }
+
+      setOrders(json?.data ?? [])
+    } catch {
+      setOrders([])
+    } finally {
+      setLoading(false)
+    }
+  }, [providerFilter, router, statusFilter])
 
   const fetchApplications = useCallback(async () => {
     setApplicationsLoading(true)
@@ -379,13 +409,17 @@ export default function AdminOrders() {
       if (!session) {
         router.push("/admin/login")
       } else {
+        const isAdmin = await verifyAdminAccess()
+        if (!isAdmin) {
+          return
+        }
         await fetchOrders()
         await fetchAdminReviews()
         await fetchApplications()
       }
     }
     void checkUser()
-  }, [fetchAdminReviews, fetchApplications, fetchOrders, router])
+  }, [fetchAdminReviews, fetchApplications, fetchOrders, router, verifyAdminAccess])
 
   useEffect(() => {
     void fetchOrders()

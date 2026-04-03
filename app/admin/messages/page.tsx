@@ -72,6 +72,12 @@ export default function AdminMessagesPage() {
         headers: await getAuthHeaders(),
       })
 
+      if (response.status === 401 || response.status === 403) {
+        await supabase.auth.signOut()
+        router.push("/admin/login")
+        return
+      }
+
       const json = (await response.json().catch(() => null)) as { error?: string; data?: Freelancer[] } | null
       if (!response.ok) {
         throw new Error(json?.error || "Failed to load freelancers")

@@ -26,7 +26,32 @@ export default function AdminLogin() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push("/admin/orders")
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+
+        if (!session?.access_token) {
+          throw new Error("Invalid admin session")
+        }
+
+        const verifyResponse = await fetch("/api/freelancers?admin=1", {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        })
+
+        if (!verifyResponse.ok) {
+          await supabase.auth.signOut()
+          throw new Error("Access denied. This account is not an admin account.")
+        }
+
+        router.push("/admin/orders")
+      } catch (verifyError) {
+        setError(verifyError instanceof Error ? verifyError.message : "Access denied")
+        setLoading(false)
+      }
     }
   }
 
@@ -82,7 +107,7 @@ export default function AdminLogin() {
             </button>
           </form>
         </div>
-        
+
         <p className="text-center mt-8 text-sm text-gray-400">
           Secure access restricted to authorized personnel only.
         </p>

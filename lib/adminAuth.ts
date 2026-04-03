@@ -60,9 +60,7 @@ export async function requireAdminFromRequest(req: NextRequest): Promise<Require
   }
 
   const roleFromMetadata =
-    (typeof data.user.app_metadata?.role === "string" && data.user.app_metadata.role) ||
-    (typeof data.user.user_metadata?.role === "string" && data.user.user_metadata.role) ||
-    ""
+    (typeof data.user.app_metadata?.role === "string" && data.user.app_metadata.role) || ""
 
   if (roleFromMetadata.toLowerCase() !== "admin") {
     return {
