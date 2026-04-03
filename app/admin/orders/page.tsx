@@ -32,6 +32,12 @@ type FreelancerApplication = {
   message: string
   status: ApplicationStatus
   created_at: string
+  title_en?: string | null
+  title_so?: string | null
+  title_ar?: string | null
+  bio_en?: string | null
+  bio_so?: string | null
+  bio_ar?: string | null
 }
 
 type LocalizedTextDraft = {
@@ -172,12 +178,12 @@ export default function AdminOrders() {
       setApplicationTranslationDrafts(
         fetchedApplications.reduce<Record<number, FreelancerTranslationDraft>>((acc, application) => {
           acc[application.id] = {
-            title_en: application.role,
-            title_so: application.role,
-            title_ar: application.role,
-            bio_en: application.message,
-            bio_so: application.message,
-            bio_ar: application.message,
+            title_en: application.title_en ?? application.role,
+            title_so: application.title_so ?? "",
+            title_ar: application.title_ar ?? "",
+            bio_en: application.bio_en ?? application.message,
+            bio_so: application.bio_so ?? "",
+            bio_ar: application.bio_ar ?? "",
           }
           return acc
         }, {})
@@ -883,6 +889,10 @@ export default function AdminOrders() {
                     {filteredApplications.map((application) => {
                       const isPending = application.status === "pending"
                       const isBusy = actionApplicationId === application.id
+                      const isUpdateRequest =
+                        isPending &&
+                        typeof application.title_en === "string" &&
+                        application.title_en.trim().length > 0
 
                       return (
                         <tr key={application.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
@@ -890,9 +900,16 @@ export default function AdminOrders() {
                           <td className="px-6 py-5 text-gray-600 dark:text-gray-400">{application.email}</td>
                           <td className="px-6 py-5 text-gray-600 dark:text-gray-400 capitalize">{application.role}</td>
                           <td className="px-6 py-5">
-                            <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${badgeClassName(application.status)}`}>
-                              {application.status}
-                            </span>
+                            <div className="flex flex-col items-start gap-2">
+                              <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${badgeClassName(application.status)}`}>
+                                {application.status}
+                              </span>
+                              {isUpdateRequest ? (
+                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300">
+                                  Updated Profile Waiting Approval
+                                </span>
+                              ) : null}
+                            </div>
                           </td>
                           <td className="px-6 py-5">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">

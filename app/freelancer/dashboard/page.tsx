@@ -90,6 +90,8 @@ export default function FreelancerDashboardPage() {
       return
     }
 
+    const wasApproved = profile.status === "approved"
+
     setSaving(true)
     setError(null)
     setSuccess(null)
@@ -112,6 +114,7 @@ export default function FreelancerDashboardPage() {
           ...getFreelancerAuthHeaders(),
         },
         body: JSON.stringify({
+          name: profile.name,
           role: profile.role,
           bio: profile.bio,
           phone: profile.phone,
@@ -125,7 +128,11 @@ export default function FreelancerDashboardPage() {
         throw new Error(json?.error || "Failed to update profile")
       }
 
-      setSuccess("Application saved successfully.")
+      setSuccess(
+        wasApproved
+          ? "Update submitted. Admin approval is required before new changes appear publicly."
+          : "Application saved successfully."
+      )
       setProfileFile(null)
       await fetchProfile()
     } catch (updateError) {
@@ -185,6 +192,8 @@ export default function FreelancerDashboardPage() {
     )
   }
 
+  const isApprovedProfile = profile.status === "approved"
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-xl p-8">
@@ -206,6 +215,7 @@ export default function FreelancerDashboardPage() {
         </div>
 
         <form onSubmit={handleProfileUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input required value={profile.name ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, name: e.target.value } : prev))} placeholder="Name" className="md:col-span-2 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
           <input required value={profile.role ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, role: e.target.value } : prev))} placeholder="Role" className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
           <input required value={profile.phone ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, phone: e.target.value } : prev))} placeholder="Phone" className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
           <input required value={profile.github ?? ""} onChange={(e) => setProfile((prev) => (prev ? { ...prev, github: e.target.value } : prev))} placeholder="GitHub" className="md:col-span-2 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700" />
@@ -220,8 +230,12 @@ export default function FreelancerDashboardPage() {
           {success ? <p className="md:col-span-2 text-sm text-green-700 dark:text-green-300">{success}</p> : null}
 
           <div className="md:col-span-2 flex flex-wrap gap-3 mt-2">
-            <button type="submit" disabled={saving} className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-60 flex items-center gap-2">
-              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Application"}
+            <button
+              type="submit"
+              disabled={saving}
+              className={`px-6 py-3 rounded-xl text-white font-bold disabled:opacity-60 flex items-center gap-2 ${isApprovedProfile ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}`}
+            >
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : isApprovedProfile ? "Update Application" : "Save Application"}
             </button>
             <button type="button" onClick={handleDeleteAccount} disabled={deleting} className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 disabled:opacity-60">
               {deleting ? "Deleting..." : "Delete Account"}

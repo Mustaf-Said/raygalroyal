@@ -118,7 +118,6 @@ export async function PATCH(req: NextRequest) {
 
     if (isNonEmptyString(body.role)) {
       updatePayload.role = body.role.trim()
-      updatePayload.title_en = body.role.trim()
     }
 
     if (isNonEmptyString(body.bio)) {
@@ -149,6 +148,9 @@ export async function PATCH(req: NextRequest) {
     if (Object.keys(updatePayload).length === 0) {
       return NextResponse.json({ error: "No update fields provided" }, { status: 400 })
     }
+
+    // Any freelancer profile edit requires admin re-approval before public display.
+    updatePayload.status = "pending"
 
     const { error } = await supabase
       .from("freelancers")
