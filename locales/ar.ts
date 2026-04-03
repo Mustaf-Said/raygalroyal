@@ -214,8 +214,9 @@ const arOverrides = {
     error: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
     whatsapp: "الدردشة عبر واتساب",
     office: "المكتب",
-    location: "غوتنبرغ، السويد",
+    location: "١٩ شارع رويال، لندن، المملكة المتحدة",
     replyWithin: "سنرد عليك خلال 24 ساعة.",
+    mobile: "٤٦٧٢٢٨٨٩٥٨٨+",
     placeholders: {
       name: "الاسم",
       email: "name@example.com",

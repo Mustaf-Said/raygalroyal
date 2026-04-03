@@ -220,7 +220,8 @@ const en = {
     error: "Something went wrong. Please try again.",
     whatsapp: "Chat on WhatsApp",
     office: "Office",
-    location: "Gothenburg, Sweden",
+    location: "19 Royal Street, London, UK",
+    mobile: "+46722889588",
     replyWithin: "We'll get back to you within 24 hours.",
     placeholders: {
       name: "John Doe",
@@ -502,7 +503,7 @@ const en = {
     maxWordsError: "Please keep your review within {max} words.",
     wordsLabel: "words",
     honeypotWebsite: "Website",
-    items: [
+    /* items: [
       {
         name: "Ahmed Ali",
         role: "CEO of TechMove",
@@ -518,7 +519,7 @@ const en = {
         role: "Director at NordVibe",
         text: "Professional, reliable, and highly skilled. Their team is truly world-class.",
       },
-    ],
+    ], */
   },
   order: {
     title: "Start Your Project",

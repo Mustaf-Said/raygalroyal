@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { useLanguage } from "./LanguageProvider"
 import ReviewCard from "./ReviewCard"
 import ReviewForm from "./ReviewForm"
+import ReviewsCarousel from "./ReviewsCarousel"
 
 type Review = {
   id: string
@@ -128,20 +129,13 @@ export default function Testimonials() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="mb-16">
           {isLoadingReviews ? (
-            <div className="md:col-span-3 text-center text-gray-500">{t.testimonials.loadingReviews}</div>
+            <div className="text-center text-gray-500">{t.testimonials.loadingReviews}</div>
           ) : reviews.length === 0 ? (
-            <div className="md:col-span-3 text-center text-gray-500">{t.testimonials.noApprovedReviews}</div>
+            <div className="text-center text-gray-500">{t.testimonials.noApprovedReviews}</div>
           ) : (
-            reviews.map((item, index) => (
-              <ReviewCard
-                key={item.id}
-                review={item}
-                index={index}
-                t={reviewCardT}
-              />
-            ))
+            <ReviewsCarousel reviews={reviews} t={reviewCardT} />
           )}
         </div>
 
