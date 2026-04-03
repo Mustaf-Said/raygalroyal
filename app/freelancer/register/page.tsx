@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { setFreelancerAuth } from "@/lib/freelancerAuth"
+import { supabase } from "@/lib/supabase"
 
 type FormState = {
   name: string
@@ -21,6 +22,29 @@ export default function FreelancerRegisterPage() {
   })
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const redirectAdmin = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        return
+      }
+
+      const adminCheck = await fetch("/api/freelancers?admin=1", {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+
+      if (adminCheck.ok) {
+        router.push("/admin")
+      }
+    }
+
+    void redirectAdmin()
+  }, [router])
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()

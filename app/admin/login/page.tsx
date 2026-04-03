@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { ShieldCheck, Loader2 } from "lucide-react"
+import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -11,6 +12,12 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    if (getFreelancerAccessToken()) {
+      router.push("/freelancer/dashboard")
+    }
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,7 +54,7 @@ export default function AdminLogin() {
           throw new Error("Access denied. This account is not an admin account.")
         }
 
-        router.push("/admin/orders")
+        router.push("/admin")
       } catch (verifyError) {
         setError(verifyError instanceof Error ? verifyError.message : "Access denied")
         setLoading(false)
