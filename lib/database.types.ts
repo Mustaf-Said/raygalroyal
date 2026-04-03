@@ -8,91 +8,95 @@ export type Json =
 
 export type ApplicationStatus = "pending" | "approved" | "rejected"
 export type ReviewStatus = "pending" | "approved"
+export type FreelancerStatus = "pending" | "approved" | "rejected"
 
 export type Database = {
   public: {
     Tables: {
-      freelancer_applications: {
-        Row: {
-          id: number
-          name: string
-          email: string
-          role: string
-          message: string
-          linkedin_url: string
-          image_url: string | null
-          status: ApplicationStatus
-          created_at: string
-        }
-        Insert: {
-          id?: number
-          name: string
-          email: string
-          role: string
-          message: string
-          linkedin_url: string
-          image_url?: string | null
-          status?: ApplicationStatus
-          created_at?: string
-        }
-        Update: {
-          id?: number
-          name?: string
-          email?: string
-          role?: string
-          message?: string
-          linkedin_url?: string
-          image_url?: string | null
-          status?: ApplicationStatus
-          created_at?: string
-        }
-        Relationships: []
-      }
       freelancers: {
         Row: {
           id: number
+          user_id: string | null
           name: string
-          role: string
+          role: string | null
+          bio: string | null
+          profile_image: string | null
+          phone: string | null
+          github: string | null
+          status: FreelancerStatus
+          created_at: string
           title_en: string | null
           title_so: string | null
           title_ar: string | null
           bio_en: string | null
           bio_so: string | null
           bio_ar: string | null
-          image_url: string | null
           email: string
-          linkedin_url: string
           message: string
         }
         Insert: {
           id?: number
+          user_id?: string | null
           name: string
-          role: string
+          role?: string | null
+          bio?: string | null
+          profile_image?: string | null
+          phone?: string | null
+          github?: string | null
+          status?: FreelancerStatus
+          created_at?: string
           title_en?: string | null
           title_so?: string | null
           title_ar?: string | null
           bio_en?: string | null
           bio_so?: string | null
           bio_ar?: string | null
-          image_url?: string | null
           email: string
-          linkedin_url: string
-          message: string
+          message?: string
         }
         Update: {
           id?: number
+          user_id?: string | null
           name?: string
-          role?: string
+          role?: string | null
+          bio?: string | null
+          profile_image?: string | null
+          phone?: string | null
+          github?: string | null
+          status?: FreelancerStatus
+          created_at?: string
           title_en?: string | null
           title_so?: string | null
           title_ar?: string | null
           bio_en?: string | null
           bio_so?: string | null
           bio_ar?: string | null
-          image_url?: string | null
           email?: string
-          linkedin_url?: string
           message?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          receiver_id?: string
+          message?: string
+          created_at?: string
         }
         Relationships: []
       }

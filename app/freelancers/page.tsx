@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { Mail, Linkedin, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useLanguage } from "@/app/components/LanguageProvider"
 import { getSafeAvatarSrc } from "@/lib/utils"
 
@@ -12,16 +12,14 @@ type Freelancer = {
   id: number
   name: string
   role: string
+  bio?: string | null
+  profile_image?: string | null
   title_en?: string | null
   title_so?: string | null
   title_ar?: string | null
   bio_en?: string | null
   bio_so?: string | null
   bio_ar?: string | null
-  image_url: string | null
-  email: string
-  linkedin_url: string
-  message: string
 }
 
 export default function FreelancersPage() {
@@ -42,7 +40,7 @@ export default function FreelancersPage() {
   const getLocalizedBio = (member: Freelancer) => {
     return member[`bio_${language}` as "bio_en" | "bio_so" | "bio_ar"]
       || member.bio_en
-      || member.message
+      || member.bio
       || "-"
   }
 
@@ -102,7 +100,7 @@ export default function FreelancersPage() {
                 >
                   <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-6">
                     <Image
-                      src={getSafeAvatarSrc(member.image_url)}
+                      src={getSafeAvatarSrc(member.profile_image)}
                       alt={member.name || "Freelancer"}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -114,25 +112,6 @@ export default function FreelancersPage() {
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400 text-center mb-6">
                     {getLocalizedTitle(member)}
                   </p>
-
-                  <div className="flex items-center justify-center gap-4">
-                    <a
-                      href={member.linkedin_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) => event.stopPropagation()}
-                      className="p-2 bg-gray-50 dark:bg-gray-900 rounded-full text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`mailto:${member.email}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="p-2 bg-gray-50 dark:bg-gray-900 rounded-full text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      <Mail className="w-5 h-5" />
-                    </a>
-                  </div>
                 </motion.div>
               ))}
             </div>
@@ -170,7 +149,7 @@ export default function FreelancersPage() {
 
               <div className="relative w-full aspect-square max-h-85 rounded-2xl overflow-hidden mb-6">
                 <Image
-                  src={getSafeAvatarSrc(selectedFreelancer.image_url)}
+                  src={getSafeAvatarSrc(selectedFreelancer.profile_image)}
                   alt={selectedFreelancer.name}
                   fill
                   className="object-cover"
@@ -187,25 +166,6 @@ export default function FreelancersPage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                   {getLocalizedBio(selectedFreelancer)}
                 </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={`mailto:${selectedFreelancer.email}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  {selectedFreelancer.email}
-                </a>
-                <a
-                  href={selectedFreelancer.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Linkedin className="w-4 h-4" />
-                  LinkedIn
-                </a>
               </div>
             </motion.div>
           </motion.div>

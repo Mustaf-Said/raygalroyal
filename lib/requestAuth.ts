@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import type { User } from "@supabase/supabase-js"
 import type { Database } from "@/lib/database.types"
 
-type RequireAdminResult =
-  | { ok: true }
+type RequireUserResult =
+  | { ok: true; user: User; token: string }
   | { ok: false; response: NextResponse }
 
 const getAdminEmails = () => {
@@ -16,7 +17,12 @@ const getAdminEmails = () => {
   return Array.from(new Set(values))
 }
 
-export async function requireAdminFromRequest(req: NextRequest): Promise<RequireAdminResult> {
+const authClient = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+export async function requireUserFromRequest(req: NextRequest): Promise<RequireUserResult> {
   const authHeader = req.headers.get("authorization")
   if (!authHeader?.startsWith("Bearer ")) {
     return {
@@ -33,11 +39,6 @@ export async function requireAdminFromRequest(req: NextRequest): Promise<Require
     }
   }
 
-  const authClient = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
   const { data, error } = await authClient.auth.getUser(token)
   if (error || !data.user) {
     return {
@@ -46,34 +47,19 @@ export async function requireAdminFromRequest(req: NextRequest): Promise<Require
     }
   }
 
+  return { ok: true, user: data.user, token }
+}
+
+export const isAdminUser = (user: User) => {
   const adminEmails = getAdminEmails()
-  const userEmail = data.user.email?.toLowerCase()
+  const userEmail = user.email?.toLowerCase()
 
   if (adminEmails.length > 0) {
-    if (!userEmail || !adminEmails.includes(userEmail)) {
-      return {
-        ok: false,
-        response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-      }
-    }
-    return { ok: true }
+    return !!userEmail && adminEmails.includes(userEmail)
   }
 
   const roleFromMetadata =
-    (typeof data.user.app_metadata?.role === "string" && data.user.app_metadata.role) || ""
+    (typeof user.app_metadata?.role === "string" && user.app_metadata.role) || ""
 
-  if (roleFromMetadata.toLowerCase() !== "admin") {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        {
-          error:
-            "Forbidden. Configure ADMIN_EMAIL or ADMIN_EMAILS in .env.local, or set user role metadata to admin.",
-        },
-        { status: 403 }
-      ),
-    }
-  }
-
-  return { ok: true }
+  return roleFromMetadata.toLowerCase() === "admin"
 }
