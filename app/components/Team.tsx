@@ -20,9 +20,7 @@ type TeamMember = {
   bio_en?: string | null
   bio_so?: string | null
   bio_ar?: string | null
-  image_url?: string | null
   email?: string
-  linkedin_url?: string
   message?: string
 }
 
@@ -31,36 +29,32 @@ const FALLBACK_TEAM_MEMBERS: TeamMember[] = [
     id: 1,
     name: "Alex Johnson",
     role: "frontend",
-    image_url: "/images/profile.jpg",
+    profile_image: "/images/profile.jpg",
     email: "alex@example.com",
-    linkedin_url: "https://www.linkedin.com",
     message: "Frontend engineer focused on motion-rich interfaces and clean UX.",
   },
   {
     id: 2,
     name: "Sarah Chen",
     role: "backend",
-    image_url: "/images/profile.jpg",
+    profile_image: "/images/profile.jpg",
     email: "sarah@example.com",
-    linkedin_url: "https://www.linkedin.com",
     message: "Backend specialist working on scalable APIs and secure systems.",
   },
   {
     id: 3,
     name: "Marcus Ray",
     role: "fullstack",
-    image_url: "/images/profile.jpg",
+    profile_image: "/images/profile.jpg",
     email: "marcus@example.com",
-    linkedin_url: "https://www.linkedin.com",
     message: "Fullstack developer bridging product vision and technical delivery.",
   },
   {
     id: 4,
     name: "Elena Soto",
     role: "uiux",
-    image_url: "/images/profile.jpg",
+    profile_image: "/images/profile.jpg",
     email: "elena@example.com",
-    linkedin_url: "https://www.linkedin.com",
     message: "Product designer crafting delightful user journeys across web platforms.",
   },
 ]
@@ -132,13 +126,9 @@ export default function Team() {
   }
 
   const getLocalizedBio = (member: TeamMember) => {
-    if (member.bio && member.bio.trim().length > 0) {
-      return member.bio
-    }
-
     return member[`bio_${language}` as "bio_en" | "bio_so" | "bio_ar"]
       || member.bio_en
-      || member.message
+      || member.bio
       || "-"
   }
 
@@ -193,7 +183,7 @@ export default function Team() {
                 >
                   <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-6">
                     <Image
-                      src={getSafeAvatarSrc(member.profile_image || member.image_url)}
+                      src={getSafeAvatarSrc(member.profile_image)}
                       alt={member.name || "Freelancer"}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -285,7 +275,7 @@ export default function Team() {
 
               <div className="relative w-full aspect-square max-h-85 rounded-2xl overflow-hidden mb-6">
                 <Image
-                  src={getSafeAvatarSrc(selectedMember.profile_image || selectedMember.image_url)}
+                  src={getSafeAvatarSrc(selectedMember.profile_image)}
                   alt={selectedMember.name}
                   fill
                   className="object-cover"

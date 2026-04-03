@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
       const { data, error } = await supabase
         .from("freelancers")
-        .select("id, user_id, name, role, bio, profile_image, phone, github, email, status, created_at")
+        .select("id, user_id, name, role, bio, profile_image, phone, github, email, message, status, created_at")
         .order("created_at", { ascending: false })
 
       if (error) {
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
       .from("freelancers")
-      .select("id, name, role, bio, profile_image")
+      .select("id, name, role, bio, bio_en, bio_so, bio_ar, profile_image, title_en, title_so, title_ar")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
 

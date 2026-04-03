@@ -13,42 +13,6 @@ export type FreelancerStatus = "pending" | "approved" | "rejected"
 export type Database = {
   public: {
     Tables: {
-      freelancer_applications: {
-        Row: {
-          id: number
-          name: string
-          email: string
-          role: string
-          message: string
-          linkedin_url: string
-          image_url: string | null
-          status: ApplicationStatus
-          created_at: string
-        }
-        Insert: {
-          id?: number
-          name: string
-          email: string
-          role: string
-          message: string
-          linkedin_url: string
-          image_url?: string | null
-          status?: ApplicationStatus
-          created_at?: string
-        }
-        Update: {
-          id?: number
-          name?: string
-          email?: string
-          role?: string
-          message?: string
-          linkedin_url?: string
-          image_url?: string | null
-          status?: ApplicationStatus
-          created_at?: string
-        }
-        Relationships: []
-      }
       freelancers: {
         Row: {
           id: number
@@ -67,9 +31,7 @@ export type Database = {
           bio_en: string | null
           bio_so: string | null
           bio_ar: string | null
-          image_url: string | null
           email: string
-          linkedin_url: string
           message: string
         }
         Insert: {
@@ -89,9 +51,7 @@ export type Database = {
           bio_en?: string | null
           bio_so?: string | null
           bio_ar?: string | null
-          image_url?: string | null
           email: string
-          linkedin_url?: string
           message?: string
         }
         Update: {
@@ -111,9 +71,7 @@ export type Database = {
           bio_en?: string | null
           bio_so?: string | null
           bio_ar?: string | null
-          image_url?: string | null
           email?: string
-          linkedin_url?: string
           message?: string
         }
         Relationships: []

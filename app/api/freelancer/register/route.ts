@@ -87,19 +87,17 @@ export async function POST(req: NextRequest) {
       const legacyCompatibleInsert: Database["public"]["Tables"]["freelancers"]["Insert"] = {
         ...baseInsert,
         role: "pending-profile",
-        bio: "",
-        profile_image: "",
+        bio: null,
+        profile_image: null,
         phone: "",
         github: "",
-        image_url: "",
-        linkedin_url: "https://www.linkedin.com",
         message: "",
         title_en: "",
         title_so: "",
         title_ar: "",
-        bio_en: "",
-        bio_so: "",
-        bio_ar: "",
+        bio_en: null,
+        bio_so: null,
+        bio_ar: null,
       }
 
       const retryResult = await supabase.from("freelancers").insert(legacyCompatibleInsert)

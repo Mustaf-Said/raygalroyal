@@ -20,8 +20,6 @@ type Freelancer = {
   bio_en?: string | null
   bio_so?: string | null
   bio_ar?: string | null
-  image_url?: string | null
-  message?: string
 }
 
 export default function FreelancersPage() {
@@ -40,13 +38,9 @@ export default function FreelancersPage() {
   }
 
   const getLocalizedBio = (member: Freelancer) => {
-    if (member.bio && member.bio.trim().length > 0) {
-      return member.bio
-    }
-
     return member[`bio_${language}` as "bio_en" | "bio_so" | "bio_ar"]
       || member.bio_en
-      || member.message
+      || member.bio
       || "-"
   }
 
@@ -106,7 +100,7 @@ export default function FreelancersPage() {
                 >
                   <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-6">
                     <Image
-                      src={getSafeAvatarSrc(member.profile_image || member.image_url)}
+                      src={getSafeAvatarSrc(member.profile_image)}
                       alt={member.name || "Freelancer"}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -155,7 +149,7 @@ export default function FreelancersPage() {
 
               <div className="relative w-full aspect-square max-h-85 rounded-2xl overflow-hidden mb-6">
                 <Image
-                  src={getSafeAvatarSrc(selectedFreelancer.profile_image || selectedFreelancer.image_url)}
+                  src={getSafeAvatarSrc(selectedFreelancer.profile_image)}
                   alt={selectedFreelancer.name}
                   fill
                   className="object-cover"

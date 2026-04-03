@@ -68,18 +68,8 @@ BEFORE UPDATE ON project_orders
 FOR EACH ROW
 EXECUTE FUNCTION set_project_orders_updated_at();
 
--- Tables for freelancer application approval workflow.
-CREATE TABLE IF NOT EXISTS freelancer_applications (
-  id bigserial PRIMARY KEY,
-  name text NOT NULL,
-  email text NOT NULL,
-  role text NOT NULL,
-  message text NOT NULL,
-  linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com',
-  image_url text,
-  status text NOT NULL DEFAULT 'pending',
-  created_at timestamp WITH TIME ZONE DEFAULT now()
-);
+-- Single custom table for freelancer workflow.
+DROP TABLE IF EXISTS freelancer_applications;
 
 CREATE TABLE IF NOT EXISTS freelancers (
   id bigserial PRIMARY KEY,
@@ -98,20 +88,9 @@ CREATE TABLE IF NOT EXISTS freelancers (
   bio_en text,
   bio_so text,
   bio_ar text,
-  image_url text,
   email text NOT NULL,
-  linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com',
   message text NOT NULL DEFAULT ''
 );
-
-ALTER TABLE freelancer_applications
-ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com';
-
-ALTER TABLE freelancer_applications
-ADD COLUMN IF NOT EXISTS image_url text;
-
-ALTER TABLE freelancers
-ADD COLUMN IF NOT EXISTS image_url text;
 
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS user_id uuid;
@@ -135,9 +114,6 @@ ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS created_at timestamp WITH TIME ZONE DEFAULT now();
 
 ALTER TABLE freelancers
-ADD COLUMN IF NOT EXISTS linkedin_url text NOT NULL DEFAULT 'https://www.linkedin.com';
-
-ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS message text NOT NULL DEFAULT '';
 
 ALTER TABLE freelancers
@@ -158,10 +134,33 @@ ADD COLUMN IF NOT EXISTS bio_so text;
 ALTER TABLE freelancers
 ADD COLUMN IF NOT EXISTS bio_ar text;
 
--- Allow creating freelancer accounts before profile/application details are completed.
 ALTER TABLE freelancers
-ALTER COLUMN image_url DROP NOT NULL;
+ADD COLUMN IF NOT EXISTS email text NOT NULL DEFAULT '';
 
+ALTER TABLE freelancers
+DROP COLUMN IF EXISTS image_url;
+
+ALTER TABLE freelancers
+DROP COLUMN IF EXISTS linkedin_url;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.table_constraints
+    WHERE table_schema = 'public'
+      AND table_name = 'freelancers'
+      AND constraint_name = 'freelancers_user_id_fkey'
+  ) THEN
+    ALTER TABLE freelancers
+    ADD CONSTRAINT freelancers_user_id_fkey
+    FOREIGN KEY (user_id)
+    REFERENCES auth.users(id)
+    ON DELETE CASCADE;
+  END IF;
+END $$;
+
+-- Allow creating freelancer accounts before profile details are completed.
 ALTER TABLE freelancers
 ALTER COLUMN role DROP NOT NULL;
 
@@ -178,26 +177,15 @@ ALTER COLUMN github DROP NOT NULL;
 UPDATE freelancers
 SET
   bio = COALESCE(NULLIF(bio, ''), message),
-  profile_image = COALESCE(NULLIF(profile_image, ''), image_url),
-  github = COALESCE(NULLIF(github, ''), linkedin_url),
   title_en = COALESCE(NULLIF(title_en, ''), role),
   title_so = COALESCE(NULLIF(title_so, ''), role),
-  title_ar = COALESCE(NULLIF(title_ar, ''), role),
-  bio_en = COALESCE(NULLIF(bio_en, ''), message),
-  bio_so = COALESCE(NULLIF(bio_so, ''), message),
-  bio_ar = COALESCE(NULLIF(bio_ar, ''), message)
+  title_ar = COALESCE(NULLIF(title_ar, ''), role)
 WHERE
   bio IS NULL OR bio = '' OR
-  profile_image IS NULL OR profile_image = '' OR
-  github IS NULL OR github = '' OR
   title_en IS NULL OR title_en = '' OR
   title_so IS NULL OR title_so = '' OR
-  title_ar IS NULL OR title_ar = '' OR
-  bio_en IS NULL OR bio_en = '' OR
-  bio_so IS NULL OR bio_so = '' OR
-  bio_ar IS NULL OR bio_ar = '';
+  title_ar IS NULL OR title_ar = '';
 
-ALTER TABLE freelancer_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE freelancers ENABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS messages (
