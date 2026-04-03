@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import type { ComponentType, SVGProps } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
+import { GB, SO, SA } from "country-flag-icons/react/3x2"
 import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
 import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
@@ -26,6 +28,12 @@ export default function Header() {
     en: "English",
     so: "Somali",
     ar: "العربية",
+  }
+
+  const languageFlags: Record<Language, ComponentType<SVGProps<SVGSVGElement>>> = {
+    en: GB,
+    so: SO,
+    ar: SA,
   }
 
 
@@ -72,6 +80,8 @@ export default function Header() {
     { name: t.nav.faq, href: "/faq" },
     { name: t.nav.contact, href: "/contact" },
   ]
+
+  const ActiveLanguageFlag = languageFlags[language]
 
   return (
     <header
@@ -213,7 +223,7 @@ export default function Header() {
           </button>
 
           {/* LANGUAGE SWITCHER */}
-          <div className="relative" ref={languageMenuRef}>
+          <div className="relative" ref={languageMenuRef} dir="ltr">
             <button
               onClick={() => setLanguageMenuOpen((prev) => !prev)}
               className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
@@ -222,7 +232,7 @@ export default function Header() {
               aria-expanded={languageMenuOpen}
             >
               <Globe className="w-5 h-5" />
-              <span className="text-xs font-bold uppercase">{language}</span>
+              <ActiveLanguageFlag className="w-5 h-4 rounded-xs shadow-sm ring-1 ring-white/25" aria-hidden="true" />
               <ChevronDown className={cn("w-3 h-3 transition-transform", languageMenuOpen && "rotate-180")} />
             </button>
 
@@ -236,23 +246,28 @@ export default function Header() {
                   role="menu"
                 >
                   {SUPPORTED_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => {
-                        setLanguage(lang)
-                        setLanguageMenuOpen(false)
-                      }}
-                      className={cn(
-                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                        language === lang
-                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      )}
-                      role="menuitem"
-                    >
-                      <span className="font-semibold">{lang.toUpperCase()}</span>
-                      <span className="block text-xs opacity-80">{languageLabels[lang]}</span>
-                    </button>
+                    (() => {
+                      const Flag = languageFlags[lang]
+                      return (
+                        <button
+                          key={lang}
+                          onClick={() => {
+                            setLanguage(lang)
+                            setLanguageMenuOpen(false)
+                          }}
+                          className={cn(
+                            "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                            language === lang
+                              ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          )}
+                          role="menuitem"
+                        >
+                          <Flag className="w-5 h-4 rounded-xs shadow-sm ring-1 ring-white/25" aria-hidden="true" />
+                          <span className="block text-xs opacity-80">{languageLabels[lang]}</span>
+                        </button>
+                      )
+                    })()
                   ))}
                 </motion.div>
               )}

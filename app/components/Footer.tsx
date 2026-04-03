@@ -176,10 +176,10 @@ export default function Footer() {
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
-              {footerLegal.terms ?? t.footer.terms}
+              {language === "ar" ? "شروط الخدمة" : (footerLegal.terms ?? t.footer.terms)}
             </Link>
             <Link href="/cookies" className="hover:text-white transition-colors">
-              {footerLegal.cookies ?? t.footer.cookies}
+              {language === "ar" ? "سياسة ملفات تعريف الارتباط" : (footerLegal.cookies ?? t.footer.cookies)}
             </Link>
           </div>
         </div>
