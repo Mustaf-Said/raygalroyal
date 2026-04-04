@@ -47,7 +47,7 @@ export default function DomainCart({
 
           <button
             onClick={() => router.push(`/checkout?domain=${encodeURIComponent(selected.domain)}`)}
-            className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors"
+            className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors cursor-pointer"
           >
             {continueLabel}
           </button>

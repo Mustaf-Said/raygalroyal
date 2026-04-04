@@ -21,7 +21,7 @@ const so = {
   },
   hero: {
     domainPlaceholder: "Raadi magacaaga domainka ee ugu fiican...",
-    domainSearch: "Search Domain",
+    domainSearch: "Raadi Domain",
     domainHint: "Domain-ka ugu fiican wuxuu dadka u ogolaanayaa inay ogaadaan sababta aad online u tahay & soo jiidato fiiro gaar ah iyo booqdayaal badan.",
     badge: "Tayada Dijitaalka ah oo La Hubiyo",
     title: "Dhisidda Mustaqbalka Hal-abuurka Dijitaalka ah",
