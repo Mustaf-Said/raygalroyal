@@ -356,3 +356,13 @@ CREATE TABLE IF NOT EXISTS ssl_certificates (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_ssl_certificates_domain ON ssl_certificates(domain);
+
+-- Optional demand tracking for affiliate launch phase.
+CREATE TABLE IF NOT EXISTS domain_search_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_domain_search_logs_domain ON domain_search_logs(domain);
+CREATE INDEX IF NOT EXISTS idx_domain_search_logs_created_at ON domain_search_logs(created_at DESC);

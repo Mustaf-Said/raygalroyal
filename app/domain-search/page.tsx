@@ -7,6 +7,7 @@ import { useLanguage } from "@/app/components/LanguageProvider"
 import SearchBar from "@/app/components/domain-search/SearchBar"
 import DomainResultsList from "@/app/components/domain-search/DomainResultsList"
 import DomainCart from "@/app/components/domain-search/DomainCart"
+import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
 
 type DomainResult = {
   domain: string
@@ -114,7 +115,12 @@ function DomainSearchContent() {
 
   const handleBuy = (item: DomainResult) => {
     if (!item.available) return
-    setSelectedDomain(item)
+
+    try {
+      window.location.href = generateNamecheapAffiliateLink(item.domain)
+    } catch (affiliateError) {
+      setError(affiliateError instanceof Error ? affiliateError.message : "Could not redirect to Namecheap")
+    }
   }
 
   useEffect(() => {
@@ -134,6 +140,12 @@ function DomainSearchContent() {
       setError(null)
 
       try {
+        void fetch("/api/domain/search-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ domain: query }),
+        })
+
         const res = await fetch(`/api/domain/check?domain=${encodeURIComponent(query)}`)
         const payload = (await res.json()) as DomainResult[] | { error?: string }
 

@@ -1,6 +1,7 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
 
 type SelectedDomain = {
   domain: string
@@ -24,7 +25,18 @@ export default function DomainCart({
   priceLabel,
   continueLabel,
 }: DomainCartProps) {
-  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+
+  const handleContinue = () => {
+    if (!selected) return
+
+    try {
+      setError(null)
+      window.location.href = generateNamecheapAffiliateLink(selected.domain)
+    } catch (affiliateError) {
+      setError(affiliateError instanceof Error ? affiliateError.message : "Could not redirect to Namecheap")
+    }
+  }
 
   return (
     <aside className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 md:p-6 shadow-sm md:sticky md:top-28">
@@ -46,11 +58,13 @@ export default function DomainCart({
           </div>
 
           <button
-            onClick={() => router.push(`/checkout?domain=${encodeURIComponent(selected.domain)}`)}
+            onClick={handleContinue}
             className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors cursor-pointer"
           >
             {continueLabel}
           </button>
+
+          {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
         </>
       )}
     </aside>

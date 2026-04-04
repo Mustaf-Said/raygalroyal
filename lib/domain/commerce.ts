@@ -6,7 +6,6 @@ import {
   type HostingPlan,
 } from "@/lib/domain/constants"
 import { isValidFullDomain } from "@/lib/domain/validation"
-import { registerDomainWithNamecheap } from "@/lib/providers/namecheap"
 import { createHetznerHostingServer } from "@/lib/providers/hetzner"
 import { createZohoMailbox } from "@/lib/providers/zoho"
 import { issueSslCertificate } from "@/lib/providers/ssl"
@@ -205,17 +204,11 @@ export async function registerDomainForOrder(orderId: string) {
     return order
   }
 
-  const registered = await registerDomainWithNamecheap({
-    domain: order.domain,
-    customerEmail: order.user_email,
-    customerName: order.customer_name || "Customer",
-  })
-
   const { data, error } = await supabaseAdmin
     .from("orders")
     .update({
       status: "registered",
-      registrar_order_id: registered.registrarOrderId,
+      registrar_order_id: "affiliate-flow",
     })
     .eq("id", order.id)
     .select("*")
