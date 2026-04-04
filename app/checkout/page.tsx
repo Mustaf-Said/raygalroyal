@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/app/components/LanguageProvider"
 
@@ -11,10 +11,14 @@ function CheckoutContent() {
   const { language } = useLanguage()
 
   const domain = searchParams.get("domain") || ""
-  const priceValue = Number(searchParams.get("price") || "0")
+  const queryPrice = Number(searchParams.get("price") || "0")
 
   const [provider, setProvider] = useState<Provider>("stripe")
   const [email, setEmail] = useState("")
+  const [resolvedPrice, setResolvedPrice] = useState<number | null>(
+    Number.isFinite(queryPrice) && queryPrice > 0 ? queryPrice : null
+  )
+  const [priceLoading, setPriceLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,6 +34,7 @@ function CheckoutContent() {
         paypal: "الدفع عبر PayPal",
         payNow: "ادفع الآن",
         invalid: "بيانات الدفع غير مكتملة.",
+        resolvingPrice: "جاري جلب سعر النطاق...",
         processing: "جاري التحويل إلى الدفع...",
       }
     }
@@ -45,6 +50,7 @@ function CheckoutContent() {
         paypal: "Ku bixi PayPal",
         payNow: "Bixi Hadda",
         invalid: "Xogta lacag-bixinta way dhameystirnayn.",
+        resolvingPrice: "Waxaa socda helitaanka qiimaha domain-ka...",
         processing: "Waxaa laguu wareejinayaa lacag-bixinta...",
       }
     }
@@ -59,12 +65,51 @@ function CheckoutContent() {
       paypal: "Pay with PayPal",
       payNow: "Pay Now",
       invalid: "Checkout details are incomplete.",
+      resolvingPrice: "Resolving domain price...",
       processing: "Redirecting to payment...",
     }
   }, [language])
 
+  useEffect(() => {
+    if (!domain || (Number.isFinite(queryPrice) && queryPrice > 0)) {
+      return
+    }
+
+    let active = true
+
+    const loadPrice = async () => {
+      try {
+        setPriceLoading(true)
+        const label = domain.split(".")[0] || domain
+        const res = await fetch(`/api/domain/check?domain=${encodeURIComponent(label)}`)
+        const payload = (await res.json()) as Array<{ domain: string; price: number }> | { error?: string }
+
+        if (!res.ok || !Array.isArray(payload)) {
+          throw new Error((payload as { error?: string }).error || "Could not load domain price")
+        }
+
+        const exact = payload.find((item) => item.domain.toLowerCase() === domain.toLowerCase())
+        if (!exact) throw new Error("Could not resolve selected domain price")
+
+        if (active) setResolvedPrice(exact.price)
+      } catch (loadError) {
+        if (active) setError(loadError instanceof Error ? loadError.message : "Could not load price")
+      } finally {
+        if (active) setPriceLoading(false)
+      }
+    }
+
+    loadPrice()
+
+    return () => {
+      active = false
+    }
+  }, [domain, queryPrice])
+
   const handleCheckout = async () => {
-    if (!domain || !Number.isFinite(priceValue) || priceValue <= 0) {
+    const finalPrice = resolvedPrice
+
+    if (!domain || !Number.isFinite(finalPrice) || (finalPrice ?? 0) <= 0) {
       setError(copy.invalid)
       return
     }
@@ -78,7 +123,7 @@ function CheckoutContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           domain,
-          price: priceValue,
+          price: finalPrice,
           paymentProvider: provider,
           email,
           language,
@@ -110,9 +155,11 @@ function CheckoutContent() {
             </div>
             <div className="flex justify-between text-gray-700 dark:text-gray-300">
               <span>{copy.price}</span>
-              <span className="font-bold">${priceValue.toFixed(2)}</span>
+              <span className="font-bold">{resolvedPrice !== null ? `$${resolvedPrice.toFixed(2)}` : "-"}</span>
             </div>
           </div>
+
+          {priceLoading && <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">{copy.resolvingPrice}</p>}
 
           <div className="mb-5">
             <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">{copy.email}</label>
@@ -131,8 +178,8 @@ function CheckoutContent() {
               <button
                 onClick={() => setProvider("stripe")}
                 className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "stripe"
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                  ? "bg-blue-600 border-blue-600 text-white"
+                  : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                   }`}
               >
                 {copy.stripe}
@@ -140,8 +187,8 @@ function CheckoutContent() {
               <button
                 onClick={() => setProvider("paypal")}
                 className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "paypal"
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                  ? "bg-blue-600 border-blue-600 text-white"
+                  : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                   }`}
               >
                 {copy.paypal}
@@ -153,7 +200,7 @@ function CheckoutContent() {
 
           <button
             onClick={handleCheckout}
-            disabled={isSubmitting}
+            disabled={isSubmitting || priceLoading || resolvedPrice === null}
             className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 disabled:opacity-70"
           >
             {isSubmitting ? copy.processing : copy.payNow}
