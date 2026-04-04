@@ -171,10 +171,10 @@ function DomainSearchContent() {
   }, [query, copy.invalid, primaryDomain])
 
   return (
-    <section className="pt-40 md:pt-44 pb-16 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <section className="pt-24 md:pt-28">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-8 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 md:px-6 md:py-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-10">
             {[
               copy.stepChoose,
               copy.stepExtras,
@@ -232,7 +232,7 @@ function DomainSearchContent() {
           <div className="text-center text-gray-500 dark:text-gray-400">{copy.noResults}</div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
+        <div className="grid grid-cols-2 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
           <div>
             <div className="flex items-center justify-between mb-4 px-1">
               <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.sectionTitle}</h2>
