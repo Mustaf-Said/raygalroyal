@@ -129,3 +129,30 @@ export async function sendOrderConfirmationEmail({
     }
   }
 }
+
+export async function sendDomainOrderConfirmationEmail({
+  email,
+  orderId,
+  domain,
+  amount,
+  currency = "USD",
+  language = "en",
+}: {
+  email: string
+  orderId: string
+  domain: string
+  amount: string | number
+  currency?: string
+  language?: string
+}) {
+  const localizedLanguage = language === "so" ? "so" : language === "ar" ? "ar" : "en"
+
+  await sendOrderConfirmationEmail({
+    email,
+    orderId,
+    plan: `Domain: ${domain}`,
+    amount,
+    currency,
+    language: localizedLanguage,
+  })
+}
