@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useLanguage } from "./LanguageProvider"
-import ReviewCard from "./ReviewCard"
+/* import ReviewCard from "./ReviewCard" */
 import ReviewForm from "./ReviewForm"
 import ReviewsCarousel from "./ReviewsCarousel"
 

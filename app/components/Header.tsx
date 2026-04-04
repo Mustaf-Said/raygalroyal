@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import type { ComponentType, SVGProps } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
@@ -30,7 +29,7 @@ export default function Header() {
     ar: "العربية",
   }
 
-  const languageFlags: Record<Language, ComponentType<SVGProps<SVGSVGElement>>> = {
+  const languageFlags: Record<Language, typeof GB> = {
     en: GB,
     so: SO,
     ar: SA,
