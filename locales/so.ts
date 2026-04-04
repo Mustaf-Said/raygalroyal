@@ -21,7 +21,7 @@ const so = {
   },
   hero: {
     domainPlaceholder: "Raadi magacaaga domainka ee ugu fiican...",
-    domainSearch: "Search Domain",
+    domainSearch: "Raadi Domain",
     domainHint: "Domain-ka ugu fiican wuxuu dadka u ogolaanayaa inay ogaadaan sababta aad online u tahay & soo jiidato fiiro gaar ah iyo booqdayaal badan.",
     badge: "Tayada Dijitaalka ah oo La Hubiyo",
     title: "Dhisidda Mustaqbalka Hal-abuurka Dijitaalka ah",
@@ -223,7 +223,7 @@ const so = {
     error: "Wax baa khaldamay. Fadlan isku day markale.",
     whatsapp: "Nagala hadal WhatsApp",
     office: "Xafiis",
-    location: "19 Royal Street, London, UK",
+    location: "Dalbogatan 10, 412 50 Boras, Sweden",
     mobile: "+46722889588",
     replyWithin: "Waxaan kuugu soo jawaabi doonaa 24 saacadood gudahood.",
     placeholders: {

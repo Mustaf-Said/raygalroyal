@@ -303,3 +303,66 @@ WHERE
     admin_response_so IS NULL OR admin_response_so = '' OR
     admin_response_ar IS NULL OR admin_response_ar = ''
   ));
+
+-- Phase 2/3 SaaS domain commerce tables.
+CREATE TABLE IF NOT EXISTS orders (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  price numeric NOT NULL,
+  user_email text NOT NULL,
+  payment_provider text NOT NULL,
+  status text NOT NULL DEFAULT 'pending',
+  payment_id text,
+  currency text DEFAULT 'USD',
+  total_price numeric,
+  customer_name text,
+  extras jsonb DEFAULT '{}'::jsonb,
+  registrar_order_id text,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_domain_paid_or_registered
+ON orders (domain)
+WHERE status IN ('paid', 'registered');
+
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+
+CREATE TABLE IF NOT EXISTS hosting_accounts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  server_id text NOT NULL,
+  plan text NOT NULL,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_hosting_accounts_domain ON hosting_accounts(domain);
+
+CREATE TABLE IF NOT EXISTS email_accounts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  email_address text NOT NULL,
+  provider text NOT NULL DEFAULT 'zoho',
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_email_accounts_email_address ON email_accounts(email_address);
+
+CREATE TABLE IF NOT EXISTS ssl_certificates (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  status text NOT NULL DEFAULT 'pending',
+  issued_at timestamp WITH TIME ZONE,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ssl_certificates_domain ON ssl_certificates(domain);
+
+-- Optional demand tracking for affiliate launch phase.
+CREATE TABLE IF NOT EXISTS domain_search_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain text NOT NULL,
+  created_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_domain_search_logs_domain ON domain_search_logs(domain);
+CREATE INDEX IF NOT EXISTS idx_domain_search_logs_created_at ON domain_search_logs(created_at DESC);

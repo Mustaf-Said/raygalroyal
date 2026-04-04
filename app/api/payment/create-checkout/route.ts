@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import {
+  calculateExtrasPrice,
   createPendingDomainOrder,
-  ensureDomainNotAlreadyPaid,
+  type OrderExtras,
   type PaymentProvider,
-} from "@/lib/domain/domainOrders"
-import { isValidDomainLabel } from "@/lib/domain/domainSearch"
+} from "@/lib/domain/commerce"
+import { isValidFullDomain } from "@/lib/domain/validation"
 
 type CreateCheckoutBody = {
   domain?: string
@@ -13,41 +14,55 @@ type CreateCheckoutBody = {
   paymentProvider?: PaymentProvider
   email?: string
   language?: string
+  customerName?: string
+  customer?: {
+    email?: string
+    name?: string
+  }
+  extras?: OrderExtras
 }
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null
 
-const parseDomainLabel = (fullDomain: string) => fullDomain.split(".")[0]?.toLowerCase() || ""
-
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as CreateCheckoutBody
+
     const domain = (body.domain || "").trim().toLowerCase()
-    const price = Number(body.price)
+    const domainPrice = Number(body.price)
     const paymentProvider = body.paymentProvider
 
-    if (!domain || !Number.isFinite(price) || price <= 0 || !paymentProvider) {
-      return NextResponse.json({ error: "Missing or invalid checkout fields" }, { status: 400 })
+    const customerEmail = body.customer?.email || body.email || ""
+    const customerName = body.customer?.name || body.customerName || "Customer"
+    const extras = body.extras
+
+    if (!isValidFullDomain(domain)) {
+      return NextResponse.json({ error: "Invalid domain" }, { status: 400 })
     }
 
-    const label = parseDomainLabel(domain)
-    if (!isValidDomainLabel(label)) {
-      return NextResponse.json({ error: "Invalid domain" }, { status: 400 })
+    if (!Number.isFinite(domainPrice) || domainPrice <= 0) {
+      return NextResponse.json({ error: "Invalid domain price" }, { status: 400 })
     }
 
     if (paymentProvider !== "stripe" && paymentProvider !== "paypal") {
       return NextResponse.json({ error: "Unsupported payment provider" }, { status: 400 })
     }
 
-    await ensureDomainNotAlreadyPaid(domain)
+    if (!customerEmail || !customerEmail.includes("@")) {
+      return NextResponse.json({ error: "A valid customer email is required" }, { status: 400 })
+    }
+
+    const extrasPrice = calculateExtrasPrice(extras)
+    const totalPrice = Number((domainPrice + extrasPrice).toFixed(2))
 
     const order = await createPendingDomainOrder({
       domain,
-      price,
+      domainPrice,
       paymentProvider,
-      customerEmail: body.email,
-      language: body.language || "en",
+      userEmail: customerEmail,
+      customerName,
+      extras,
     })
 
     const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
@@ -85,13 +100,14 @@ export async function POST(req: NextRequest) {
               custom_id: order.id,
               amount: {
                 currency_code: "USD",
-                value: price.toFixed(2),
+                value: totalPrice.toFixed(2),
               },
+              description: `Domain ${domain} + extras`,
             },
           ],
           application_context: {
             return_url: `${origin}/payment-success?orderId=${order.id}&provider=paypal&domain=${encodeURIComponent(domain)}`,
-            cancel_url: `${origin}/checkout?domain=${encodeURIComponent(domain)}&price=${price}`,
+            cancel_url: `${origin}/checkout?domain=${encodeURIComponent(domain)}&price=${domainPrice}`,
           },
         }),
       })
@@ -114,9 +130,9 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       success_url: `${origin}/payment-success?orderId=${order.id}&provider=stripe&session_id={CHECKOUT_SESSION_ID}&domain=${encodeURIComponent(domain)}`,
-      cancel_url: `${origin}/checkout?domain=${encodeURIComponent(domain)}&price=${price}`,
+      cancel_url: `${origin}/checkout?domain=${encodeURIComponent(domain)}&price=${domainPrice}`,
       client_reference_id: order.id,
-      customer_email: body.email || undefined,
+      customer_email: customerEmail,
       metadata: {
         orderId: order.id,
         domain,
@@ -127,9 +143,10 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Domain registration: ${domain}`,
+              name: `Domain + services: ${domain}`,
+              description: `Domain: $${domainPrice.toFixed(2)} | Extras: $${extrasPrice.toFixed(2)}`,
             },
-            unit_amount: Math.round(price * 100),
+            unit_amount: Math.round(totalPrice * 100),
           },
           quantity: 1,
         },

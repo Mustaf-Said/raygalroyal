@@ -48,7 +48,7 @@ export default function DomainResultRow({
           </p>
         </div>
 
-        <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 min-w-[210px]">
+        <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 min-w-52.5">
           <div className="text-lg font-bold text-gray-900 dark:text-white">${price}</div>
           <button
             disabled={!available}
@@ -56,7 +56,7 @@ export default function DomainResultRow({
             className={[
               "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
               available
-                ? "bg-blue-600 text-white hover:bg-blue-500"
+                ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
                 : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
             ].join(" ")}
           >

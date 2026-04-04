@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
-import { markDomainOrderPaid, type PaymentProvider } from "@/lib/domain/domainOrders"
-import { sendDomainOrderConfirmationEmail } from "@/lib/emails"
+import {
+  fulfillPaidOrder,
+  markDomainOrderPaid,
+  type PaymentProvider,
+} from "@/lib/domain/commerce"
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null
@@ -91,18 +94,21 @@ async function confirmManualPayment(body: ConfirmBody) {
     currency,
   })
 
-  if (updated.customerEmail) {
-    await sendDomainOrderConfirmationEmail({
-      email: updated.customerEmail,
-      orderId: updated.id,
-      domain: updated.domain,
-      amount: updated.amount,
-      currency: updated.currency,
-      language: updated.language || "en",
-    })
-  }
+  const fulfilled = await fulfillPaidOrder(orderId)
 
-  return NextResponse.json({ success: true, order: updated })
+  return NextResponse.json({
+    success: true,
+    order: {
+      id: updated.id,
+      domain: updated.domain,
+      status: updated.status,
+    },
+    fulfillment: {
+      hosting: fulfilled.hosting,
+      emailAccounts: fulfilled.emailAccounts.length,
+      ssl: fulfilled.ssl,
+    },
+  })
 }
 
 async function handleStripeWebhook(req: NextRequest) {
@@ -140,6 +146,8 @@ async function handleStripeWebhook(req: NextRequest) {
         amount,
         currency,
       })
+
+      await fulfillPaidOrder(orderId)
     }
   }
 
