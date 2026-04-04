@@ -154,6 +154,126 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          id: string
+          domain: string
+          price: number
+          user_email: string
+          payment_provider: string
+          status: string
+          payment_id: string | null
+          currency: string | null
+          total_price: number | null
+          customer_name: string | null
+          extras: Json | null
+          registrar_order_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          domain: string
+          price: number
+          user_email: string
+          payment_provider: string
+          status?: string
+          payment_id?: string | null
+          currency?: string | null
+          total_price?: number | null
+          customer_name?: string | null
+          extras?: Json | null
+          registrar_order_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          domain?: string
+          price?: number
+          user_email?: string
+          payment_provider?: string
+          status?: string
+          payment_id?: string | null
+          currency?: string | null
+          total_price?: number | null
+          customer_name?: string | null
+          extras?: Json | null
+          registrar_order_id?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      hosting_accounts: {
+        Row: {
+          id: string
+          domain: string
+          server_id: string
+          plan: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          domain: string
+          server_id: string
+          plan: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          domain?: string
+          server_id?: string
+          plan?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      email_accounts: {
+        Row: {
+          id: string
+          domain: string
+          email_address: string
+          provider: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          domain: string
+          email_address: string
+          provider?: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          domain?: string
+          email_address?: string
+          provider?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      ssl_certificates: {
+        Row: {
+          id: string
+          domain: string
+          status: string
+          issued_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          domain: string
+          status?: string
+          issued_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          domain?: string
+          status?: string
+          issued_at?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           id: string
