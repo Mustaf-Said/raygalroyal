@@ -22,6 +22,9 @@ const en = {
   hero: {
     badge: "Digital Excellence Delivered",
     title: "Building the Future of Digital Innovation",
+    domainPlaceholder: "Search for your perfect domain name...",
+    domainSearch: "Search Domain",
+    domainHint: "The perfect domain lets people know why you're online & grab more attention and visitors.",
     description:
       "Raygal Royal is a premier digital agency crafting high-performance, scalable, and visually stunning web & mobile solutions for global businesses.",
     ctaPrimary: "Start Your Project",

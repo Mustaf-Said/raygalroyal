@@ -2,11 +2,25 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight, Play, Search } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
+import { useState } from "react"
 
 export default function Hero() {
   const { t } = useLanguage()
+  const [domain, setDomain] = useState("")
+
+  const handleDomainSearch = () => {
+    if (!domain.trim()) return
+    window.open(
+      `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain.trim())}`,
+      "_blank"
+    )
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleDomainSearch()
+  }
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -52,6 +66,47 @@ export default function Hero() {
             {t.hero.description}
           </p>
 
+          {/* DOMAIN SEARCH FIELD */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mb-3 max-w-xl mx-auto"
+          >
+            <div className="flex items-center bg-white dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5 px-4 py-2 gap-2 transition-all focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:shadow-violet-200/40 dark:focus-within:shadow-violet-900/30 focus-within:shadow-xl">
+              <Search className="w-5 h-5 text-violet-500 shrink-0" />
+              <input
+                type="text"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t.hero.domainPlaceholder ?? "Search for your perfect domain name..."}
+                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
+              />
+              <button
+                onClick={handleDomainSearch}
+                className="shrink-0 px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                  boxShadow: "0 0 16px rgba(124,58,237,0.35)",
+                }}
+              >
+                {t.hero.domainSearch ?? "Search Domain"}
+              </button>
+            </div>
+          </motion.div>
+
+          {/* DOMAIN HINT */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className="text-xs text-gray-400 dark:text-gray-600 mb-10 tracking-wide"
+          >
+            {t.hero.domainHint ?? "Try: yourbusiness.com · .se · .io · .dev"}
+          </motion.p>
+
+          {/* CTA BUTTONS */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/contact"
@@ -62,10 +117,8 @@ export default function Hero() {
                 border: "1px solid rgba(255,255,255,0.15)",
               }}
             >
-              {/* Hover shimmer */}
               <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
                 style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
-              {/* Glow on hover */}
               <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md -z-10"
                 style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }} />
               <span className="relative z-10">{t.hero.ctaPrimary}</span>
