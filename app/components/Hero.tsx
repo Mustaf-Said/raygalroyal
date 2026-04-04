@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ArrowRight, Play, Search } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { useState } from "react"
@@ -9,13 +10,11 @@ import { useState } from "react"
 export default function Hero() {
   const { t } = useLanguage()
   const [domain, setDomain] = useState("")
+  const router = useRouter()
 
   const handleDomainSearch = () => {
     if (!domain.trim()) return
-    window.open(
-      `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain.trim())}`,
-      "_blank"
-    )
+    router.push(`/domain-search?query=${encodeURIComponent(domain.trim())}`)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
