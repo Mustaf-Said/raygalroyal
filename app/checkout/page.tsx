@@ -130,21 +130,19 @@ function CheckoutContent() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setProvider("stripe")}
-                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${
-                  provider === "stripe"
+                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "stripe"
                     ? "bg-blue-600 border-blue-600 text-white"
                     : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                }`}
+                  }`}
               >
                 {copy.stripe}
               </button>
               <button
                 onClick={() => setProvider("paypal")}
-                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${
-                  provider === "paypal"
+                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "paypal"
                     ? "bg-blue-600 border-blue-600 text-white"
                     : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                }`}
+                  }`}
               >
                 {copy.paypal}
               </button>
