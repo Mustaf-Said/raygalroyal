@@ -1,9 +1,9 @@
-import "../styles/globals.css"
-import type { Metadata } from "next"
-import { LanguageProvider } from "./components/LanguageProvider"
-import { ThemeProvider } from "./components/ThemeProvider"
-import { ModalProvider } from "./components/ModalProvider"
-import LayoutWrapper from "./components/LayoutWrapper"
+import "../styles/globals.css";
+import type { Metadata } from "next";
+import { LanguageProvider } from "./components/LanguageProvider";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { ModalProvider } from "./components/ModalProvider";
+import LayoutWrapper from "./components/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
@@ -14,21 +14,19 @@ export const metadata: Metadata = {
       "impact-site-verification": "76817790-a843-4faf-9db0-ebf09e60592e",
     },
   },
-}
-
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-
       <head>
-
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
       (function() {
         try {
           var root = document.documentElement;
@@ -45,20 +43,19 @@ export default function RootLayout({
           document.documentElement.classList.add('dark');
         }
       })()
-    `}} />
-        <meta name='impact-site-verification' content='76817790-a843-4faf-9db0-ebf09e60592e'></meta>
+    `,
+          }}
+        />
       </head>
       <body className="font-sans antialiased transition-colors duration-300">
         <LanguageProvider>
           <ThemeProvider>
             <ModalProvider>
-              <LayoutWrapper>
-                {children}
-              </LayoutWrapper>
+              <LayoutWrapper>{children}</LayoutWrapper>
             </ModalProvider>
           </ThemeProvider>
         </LanguageProvider>
       </body>
     </html>
-  )
+  );
 }
