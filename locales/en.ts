@@ -553,6 +553,7 @@ const en = {
     payWithPayPal: "Pay with PayPal",
     redirecting: "Redirecting...",
     errors: {
+      invalidEmail: "Please write a correct email address (example: name@email.com)",
       detailsSaveFailed: "Failed to create order",
       detailsSaveContinueWarning: "We could not save your project details right now, but you can continue to payment.",
       selectPackage: "Please select a package before continuing.",

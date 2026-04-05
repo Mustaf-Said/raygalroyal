@@ -11,6 +11,7 @@ type PackageKey = "support" | "basic" | "pro" | "enterprise"
 
 const PACKAGE_KEYS: PackageKey[] = ["support", "basic", "pro", "enterprise"]
 const MIN_SUPPORT_AMOUNT = 10
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -39,6 +40,8 @@ export default function OrderFlow({
   const [selectedService, setSelectedService] = useState<string | null>(preselectedService)
   const [projectDetails, setProjectDetails] = useState("")
   const [customerEmail, setCustomerEmail] = useState("")
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [emailTouched, setEmailTouched] = useState(false)
   const [selectedPackage, setSelectedPackage] = useState<string | null>(preselectedPackage)
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -65,6 +68,19 @@ export default function OrderFlow({
 
   const steps: Step[] = ["service", "details", "package", "payment"]
   const currentStepIndex = steps.indexOf(step)
+  const trimmedEmail = customerEmail.trim()
+  const isEmailValid = EMAIL_REGEX.test(trimmedEmail)
+
+  const validateEmail = (value: string) => {
+    const normalized = value.trim()
+    if (!normalized || !EMAIL_REGEX.test(normalized)) {
+      setEmailError(t.order.errors.invalidEmail)
+      return false
+    }
+
+    setEmailError(null)
+    return true
+  }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -74,7 +90,16 @@ export default function OrderFlow({
 
   const handleNext = async () => {
     if (step === "service" && selectedService) setStep("details")
-    else if (step === "details" && projectDetails.length > 10 && customerEmail.includes("@")) setStep("package")
+    else if (step === "details") {
+      setEmailTouched(true)
+      const emailOk = validateEmail(customerEmail)
+
+      if (!emailOk || projectDetails.length <= 10) {
+        return
+      }
+
+      setStep("package")
+    }
     else if (step === "package" && selectedPackage) {
       if (selectedPackage === "support") {
         const parsedCustomAmount = Number(customAmount)
@@ -241,6 +266,8 @@ export default function OrderFlow({
     setSelectedService(null)
     setProjectDetails("")
     setCustomerEmail("")
+    setEmailError(null)
+    setEmailTouched(false)
     setSelectedPackage(null)
     setFile(null)
     setUploadWarning(null)
@@ -346,10 +373,27 @@ export default function OrderFlow({
                       <input
                         type="email"
                         value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        onChange={(e) => {
+                          setCustomerEmail(e.target.value)
+                          if (emailTouched) {
+                            validateEmail(e.target.value)
+                          }
+                        }}
+                        onBlur={() => {
+                          setEmailTouched(true)
+                          validateEmail(customerEmail)
+                        }}
                         placeholder={t.order.placeholders.email}
-                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                        className={cn(
+                          "w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                          emailError
+                            ? "border-red-500 focus:ring-red-500"
+                            : "border-gray-100 dark:border-gray-800 focus:ring-blue-600"
+                        )}
                       />
+                      {emailError && (
+                        <p className="text-sm text-red-600 dark:text-red-400">{emailError}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -560,7 +604,7 @@ export default function OrderFlow({
                 disabled={
                   isUploading ||
                   (step === "service" && !selectedService) ||
-                  (step === "details" && (projectDetails.length < 10 || !customerEmail.includes("@"))) ||
+                  (step === "details" && (projectDetails.length < 10 || !isEmailValid)) ||
                   (step === "package" && !selectedPackage)
                 }
                 className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-35 justify-center"
