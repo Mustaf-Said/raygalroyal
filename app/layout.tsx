@@ -1,4 +1,4 @@
-import "../public/globals.css"
+import "../styles/globals.css"
 import type { Metadata } from "next"
 import { LanguageProvider } from "./components/LanguageProvider"
 import { ThemeProvider } from "./components/ThemeProvider"
