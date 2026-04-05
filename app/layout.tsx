@@ -1,4 +1,4 @@
-import "@/styles/globals.css"
+import "../public/globals.css"
 import type { Metadata } from "next"
 import { LanguageProvider } from "./components/LanguageProvider"
 import { ThemeProvider } from "./components/ThemeProvider"
@@ -9,7 +9,13 @@ export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
   description:
     "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
+  verification: {
+    other: {
+      "impact-site-verification": "76817790-a843-4faf-9db0-ebf09e60592e",
+    },
+  },
 }
+
 
 export default function RootLayout({
   children,
