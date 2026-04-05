@@ -1,10 +1,10 @@
 import "../public/globals.css"
+import Script from "next/script"
 import type { Metadata } from "next"
 import { LanguageProvider } from "./components/LanguageProvider"
 import { ThemeProvider } from "./components/ThemeProvider"
 import { ModalProvider } from "./components/ModalProvider"
 import LayoutWrapper from "./components/LayoutWrapper"
-
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
   description:
@@ -25,29 +25,28 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
 
-
-      <script dangerouslySetInnerHTML={{
-        __html: `
-      (function() {
-        try {
-          var root = document.documentElement;
-          var s = localStorage.getItem('raygalroyal-theme');
-          // ✅ Light theme ONLY if explicitly stored, default to DARK
-          if (s === 'light') {
-            root.classList.remove('dark');
-            root.classList.add('light');
-          } else {
-            root.classList.add('dark');
-            root.classList.remove('light');
-          }
-        } catch(e) {
-          document.documentElement.classList.add('dark');
-        }
-      })()
-    `}} />
-
-
       <body className="font-sans antialiased transition-colors duration-300">
+        <Script id="theme-script" strategy="beforeInteractive">
+          {`
+(function() {
+  try {
+    var root = document.documentElement;
+    var s = localStorage.getItem('raygalroyal-theme');
+
+    if (s === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    }
+
+  } catch(e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`}
+        </Script>
         <LanguageProvider>
           <ThemeProvider>
             <ModalProvider>
