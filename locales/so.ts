@@ -223,8 +223,8 @@ const so = {
     error: "Wax baa khaldamay. Fadlan isku day markale.",
     whatsapp: "Nagala hadal WhatsApp",
     office: "Xafiis",
-    location: "Dalbogatan 10, 412 50 Boras, Sweden",
-    mobile: "+46722889588",
+    location: "SILVERDALE Wadada, HAYES UB3 3AZ, London UK",
+    mobile: "Contact WhatsApp",
     replyWithin: "Waxaan kuugu soo jawaabi doonaa 24 saacadood gudahood.",
     placeholders: {
       name: "John Doe",

@@ -223,8 +223,8 @@ const en = {
     error: "Something went wrong. Please try again.",
     whatsapp: "Chat on WhatsApp",
     office: "Office",
-    location: "Dalbogatan 10, 412 50 Boras, Sweden",
-    mobile: "+46722889588",
+    location: "SILVERDALE ROAD, HAYES UB3 3AZ, London UK",
+    mobile: "Contact WhatsApp",
     replyWithin: "We'll get back to you within 24 hours.",
     placeholders: {
       name: "John Doe",
