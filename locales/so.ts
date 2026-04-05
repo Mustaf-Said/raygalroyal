@@ -43,7 +43,7 @@ const so = {
   services: {
     title: "Adeegyadayada",
     subtitle: "Xalal dijitaal ah oo dhamaystiran oo ku haboon baahida ganacsigaaga.",
-    learnMore: "Wax Dheeraad Ah",
+    learnMore: "Bilow iminka",
     cta: {
       title: "Diyaar ma u tahay inaad dhisto wax cajiib ah?",
       subtitle: "Dooro adeeg oo aan ku bilowno safarkaaga dijitaalka ah.",

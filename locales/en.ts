@@ -43,7 +43,7 @@ const en = {
   services: {
     title: "Our Services",
     subtitle: "Comprehensive digital solutions tailored to your business needs.",
-    learnMore: "Learn More",
+    learnMore: "Get Started",
     cta: {
       title: "Ready to build something amazing?",
       subtitle: "Select a service and let's get started on your digital journey.",

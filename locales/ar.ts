@@ -44,7 +44,7 @@ const arOverrides = {
   services: {
     title: "خدماتنا",
     subtitle: "حلول رقمية شاملة ومصممة حسب احتياجات عملك.",
-    learnMore: "اعرف المزيد",
+    learnMore: "ابدأ الآن",
     items: {
       web: {
         title: "تطوير الويب",
