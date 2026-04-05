@@ -129,7 +129,7 @@ export default function Footer() {
             <ul className="space-y-6">
               <li className="flex items-start gap-4 text-gray-400">
 
-                <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <MapPin className="w-6 h-6 text-blue-600 shrink-0" />
                 <span>{t.contact.location}</span>
               </li>
               <li className="flex items-center gap-4 text-gray-400">
@@ -141,7 +141,7 @@ export default function Footer() {
 
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 flex-shrink-0"
+                    className="w-6 h-6 shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                     style={{ color: '#25D366' }}
@@ -172,10 +172,10 @@ export default function Footer() {
             © {year} Raygal Royal. {t.footer.rights}
           </p>
           <div className="flex gap-8 text-sm text-gray-500">
-            <Link href="/privacy" className="hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/terms-of-service" className="hover:text-white transition-colors">
               {language === "ar" ? "شروط الخدمة" : (footerLegal.terms ?? t.footer.terms)}
             </Link>
             <Link href="/cookies" className="hover:text-white transition-colors">
