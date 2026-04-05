@@ -25,10 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
 
-      <head>
-        <meta name='impact-site-verification' content='76817790-a843-4faf-9db0-ebf09e60592e'></meta>
-        <script dangerouslySetInnerHTML={{
-          __html: `
+
+      <script dangerouslySetInnerHTML={{
+        __html: `
       (function() {
         try {
           var root = document.documentElement;
@@ -47,7 +46,7 @@ export default function RootLayout({
       })()
     `}} />
 
-      </head>
+
       <body className="font-sans antialiased transition-colors duration-300">
         <LanguageProvider>
           <ThemeProvider>
