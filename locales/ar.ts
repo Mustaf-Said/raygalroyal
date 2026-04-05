@@ -279,6 +279,7 @@ const arOverrides = {
     payWithPayPal: "ادفع عبر PayPal",
     redirecting: "جارٍ التحويل...",
     errors: {
+      invalidEmail: "يرجى كتابة عنوان بريد إلكتروني صحيح (مثال: name@email.com)",
       detailsSaveFailed: "تعذر إنشاء الطلب",
       detailsSaveContinueWarning: "تعذر حفظ تفاصيل مشروعك حالياً، لكن يمكنك متابعة الدفع.",
       selectPackage: "يرجى اختيار باقة قبل المتابعة.",

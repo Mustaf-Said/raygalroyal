@@ -556,6 +556,7 @@ const so = {
     payWithPayPal: "Ku bixi PayPal",
     redirecting: "Waa laguu wareejinayaa...",
     errors: {
+      invalidEmail: "Fadlan geli cinwaan email sax ah (tusaale: name@email.com)",
       detailsSaveFailed: "Lama abuuri karin dalabka",
       detailsSaveContinueWarning: "Faahfaahinta mashruuca lama kaydin karin hadda, laakiin waxaad sii wadan kartaa lacag-bixinta.",
       selectPackage: "Fadlan dooro xirmo ka hor intaadan sii wadin.",
