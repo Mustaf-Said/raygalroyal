@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { CreditCard, MessageSquareText, Users } from "lucide-react"
+import { CreditCard, MessageSquareText, Settings2, Users } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
@@ -88,7 +88,7 @@ export default function AdminOrders() {
 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Link href="/admin/payments" className="p-6 rounded-2xl bg-blue-600 text-white font-bold flex items-center gap-3">
             <CreditCard className="w-5 h-5" />
             Payments
@@ -100,6 +100,10 @@ export default function AdminOrders() {
           <Link href="/admin/freelancers" className="p-6 rounded-2xl bg-purple-600 text-white font-bold flex items-center gap-3">
             <Users className="w-5 h-5" />
             Freelancer Applications
+          </Link>
+          <Link href="/admin/domain-add-ons" className="p-6 rounded-2xl bg-emerald-600 text-white font-bold flex items-center gap-3">
+            <Settings2 className="w-5 h-5" />
+            Domain Add-ons
           </Link>
         </div>
       </div>
