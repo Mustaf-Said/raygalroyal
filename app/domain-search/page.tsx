@@ -7,7 +7,6 @@ import { useLanguage } from "@/app/components/LanguageProvider"
 import SearchBar from "@/app/components/domain-search/SearchBar"
 import DomainResultsList from "@/app/components/domain-search/DomainResultsList"
 import DomainCart from "@/app/components/domain-search/DomainCart"
-import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
 
 type DomainResult = {
   domain: string
@@ -15,113 +14,149 @@ type DomainResult = {
   price: number
 }
 
+type AddOnService = {
+  id: string
+  name: string
+  price: number
+}
+
+type AddOnPricing = {
+  ssl: number
+  hosting: number
+  email: number
+}
+
+type AddOnEnabled = {
+  ssl: boolean
+  hosting: boolean
+  email: boolean
+}
+
+const DEFAULT_ADD_ON_PRICING: AddOnPricing = {
+  ssl: 9.99,
+  hosting: 24.99,
+  email: 14.99,
+}
+
+const DEFAULT_ADD_ON_ENABLED: AddOnEnabled = {
+  ssl: true,
+  hosting: true,
+  email: true,
+}
+
 function DomainSearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const query = (searchParams.get("query") || "").trim()
-  const { language } = useLanguage()
+  const { t } = useLanguage()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<DomainResult[]>([])
   const [searchInput, setSearchInput] = useState(query)
   const [selectedDomain, setSelectedDomain] = useState<DomainResult | null>(null)
+  const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
+  const [addOnPricing, setAddOnPricing] = useState<AddOnPricing>(DEFAULT_ADD_ON_PRICING)
+  const [addOnEnabled, setAddOnEnabled] = useState<AddOnEnabled>(DEFAULT_ADD_ON_ENABLED)
 
-  const copy = useMemo(() => {
-    if (language === "ar") {
-      return {
-        title: "اختر النطاق",
-        subtitle: "نتائج البحث عن",
-        searchPlaceholder: "ابحث عن نطاق جديد...",
-        searchButton: "بحث",
-        sectionTitle: "النطاقات المقترحة",
-        priceColumn: "السعر السنوي (USD)",
-        searching: "جاري فحص النطاقات...",
-        noResults: "لم يتم العثور على نتائج.",
-        unavailable: "محجوز",
-        available: "متاح",
-        buy: "شراء",
-        invalid: "يرجى إدخال اسم نطاق صالح.",
-        cartTitle: "السلة",
-        cartEmpty: "اختر نطاقاً متاحاً لإضافته إلى السلة.",
-        domainLabel: "النطاق",
-        priceLabel: "السعر",
-        continue: "متابعة",
-        stepChoose: "اختر النطاق",
-        stepExtras: "إضافات",
-        stepDetails: "بيانات العميل",
-        stepPayment: "الدفع",
-      }
-    }
+  const copy = t.domainSearch
 
-    if (language === "so") {
-      return {
-        title: "Dooro Domain",
-        subtitle: "Natiijooyinka",
-        searchPlaceholder: "Raadi domain cusub...",
-        searchButton: "Raadi",
-        sectionTitle: "Domain-yada Caanka ah",
-        priceColumn: "Qiimaha Sannadlaha (USD)",
-        searching: "Waxaa socda hubinta domain-yada...",
-        noResults: "Wax natiijo ah lama helin.",
-        unavailable: "La qaatay",
-        available: "La heli karo",
-        buy: "Iibso",
-        invalid: "Fadlan geli magac domain sax ah.",
-        cartTitle: "Gaadhigaaga",
-        cartEmpty: "Dooro domain la heli karo si aad ugu darto gaadhiga.",
-        domainLabel: "Domain",
-        priceLabel: "Qiimaha",
-        continue: "Sii wad",
-        stepChoose: "Dooro Domain",
-        stepExtras: "Adeegyo Dheeri ah",
-        stepDetails: "Faahfaahinta Macaamiisha",
-        stepPayment: "Lacag-bixin",
-      }
-    }
-
-    return {
-      title: "Choose a Domain",
-      subtitle: "Results for",
-      searchPlaceholder: "Search for another domain...",
-      searchButton: "Search",
-      sectionTitle: "Popular domain names",
-      priceColumn: "Yearly fee in USD",
-      searching: "Checking domain availability...",
-      noResults: "No results found.",
-      unavailable: "Taken",
-      available: "Available",
-      buy: "Buy",
-      invalid: "Please enter a valid domain name.",
-      cartTitle: "Your Cart",
-      cartEmpty: "Select an available domain to add it to your cart.",
-      domainLabel: "Domain",
-      priceLabel: "Price",
-      continue: "Continue",
-      stepChoose: "Choose domain",
-      stepExtras: "Add extras",
-      stepDetails: "Customer details",
-      stepPayment: "Payment",
-    }
-  }, [language])
+  const addOnServices = useMemo<AddOnService[]>(() => {
+    return [
+      { id: "ssl", name: copy.addOnSsl, price: addOnPricing.ssl },
+      { id: "hosting", name: copy.addOnHosting, price: addOnPricing.hosting },
+      { id: "email", name: copy.addOnEmail, price: addOnPricing.email },
+    ].filter((service) => {
+      if (service.id === "ssl") return addOnEnabled.ssl
+      if (service.id === "hosting") return addOnEnabled.hosting
+      if (service.id === "email") return addOnEnabled.email
+      return true
+    })
+  }, [addOnEnabled.email, addOnEnabled.hosting, addOnEnabled.ssl, addOnPricing.email, addOnPricing.hosting, addOnPricing.ssl, copy.addOnEmail, copy.addOnHosting, copy.addOnSsl])
 
   const primaryDomain = useMemo(() => `${query.toLowerCase()}.com`, [query])
 
   const handleSearch = () => {
     const nextQuery = searchInput.trim()
     if (!nextQuery) return
+
     router.push(`/domain-search?query=${encodeURIComponent(nextQuery)}`)
   }
 
   const handleBuy = (item: DomainResult) => {
     if (!item.available) return
 
-    try {
-      window.location.href = generateNamecheapAffiliateLink(item.domain)
-    } catch (affiliateError) {
-      setError(affiliateError instanceof Error ? affiliateError.message : "Could not redirect to Namecheap")
-    }
+    setError(null)
+    setSelectedDomain(item)
   }
+
+  const handleToggleAddOn = (id: string) => {
+    setSelectedAddOnIds((prev) => (prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]))
+  }
+
+  useEffect(() => {
+    let active = true
+
+    const loadAddOnPricing = async () => {
+      try {
+        const res = await fetch("/api/domain/add-ons")
+        const payload = (await res.json()) as {
+          data?: Array<{ id?: string; price?: number; enabled?: boolean }>
+        }
+
+        if (!res.ok || !Array.isArray(payload.data)) {
+          return
+        }
+
+        const nextPricing = { ...DEFAULT_ADD_ON_PRICING }
+        const nextEnabled = { ...DEFAULT_ADD_ON_ENABLED }
+
+        for (const item of payload.data) {
+          if (!item?.enabled) continue
+
+          if (item.id === "ssl" && Number.isFinite(item.price)) {
+            nextPricing.ssl = Number(item.price)
+          }
+          if (item.id === "ssl" && typeof item.enabled === "boolean") {
+            nextEnabled.ssl = item.enabled
+          }
+
+          if (item.id === "hosting" && Number.isFinite(item.price)) {
+            nextPricing.hosting = Number(item.price)
+          }
+          if (item.id === "hosting" && typeof item.enabled === "boolean") {
+            nextEnabled.hosting = item.enabled
+          }
+
+          if (item.id === "email" && Number.isFinite(item.price)) {
+            nextPricing.email = Number(item.price)
+          }
+          if (item.id === "email" && typeof item.enabled === "boolean") {
+            nextEnabled.email = item.enabled
+          }
+        }
+
+        if (active) {
+          setAddOnPricing(nextPricing)
+          setAddOnEnabled(nextEnabled)
+          setSelectedAddOnIds((prev) => prev.filter((id) => {
+            if (id === "ssl") return nextEnabled.ssl
+            if (id === "hosting") return nextEnabled.hosting
+            if (id === "email") return nextEnabled.email
+            return false
+          }))
+        }
+      } catch {
+        // Keep defaults when pricing endpoint is unavailable.
+      }
+    }
+
+    loadAddOnPricing()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!query) {
@@ -269,6 +304,11 @@ function DomainSearchContent() {
               domainLabel={copy.domainLabel}
               priceLabel={copy.priceLabel}
               continueLabel={copy.continue}
+              addOnsTitle={copy.addOnsTitle}
+              addOns={addOnServices}
+              selectedAddOnIds={selectedAddOnIds}
+              totalLabel={copy.totalLabel}
+              onToggleAddOn={handleToggleAddOn}
             />
           </div>
         </div>

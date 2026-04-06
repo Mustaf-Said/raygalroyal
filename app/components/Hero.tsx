@@ -13,8 +13,10 @@ export default function Hero() {
   const router = useRouter()
 
   const handleDomainSearch = () => {
-    if (!domain.trim()) return
-    router.push(`/domain-search?query=${encodeURIComponent(domain.trim())}`)
+    const nextDomain = domain.trim()
+    if (!nextDomain) return
+
+    router.push(`/domain-search?query=${encodeURIComponent(nextDomain)}`)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

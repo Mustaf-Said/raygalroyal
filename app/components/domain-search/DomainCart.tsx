@@ -8,6 +8,12 @@ type SelectedDomain = {
   price: number
 }
 
+type AddOnService = {
+  id: string
+  name: string
+  price: number
+}
+
 type DomainCartProps = {
   selected: SelectedDomain | null
   title: string
@@ -15,6 +21,11 @@ type DomainCartProps = {
   domainLabel: string
   priceLabel: string
   continueLabel: string
+  addOnsTitle: string
+  addOns: AddOnService[]
+  selectedAddOnIds: string[]
+  totalLabel: string
+  onToggleAddOn: (id: string) => void
 }
 
 export default function DomainCart({
@@ -24,8 +35,18 @@ export default function DomainCart({
   domainLabel,
   priceLabel,
   continueLabel,
+  addOnsTitle,
+  addOns,
+  selectedAddOnIds,
+  totalLabel,
+  onToggleAddOn,
 }: DomainCartProps) {
   const [error, setError] = useState<string | null>(null)
+
+  const selectedAddOns = addOns.filter((service) => selectedAddOnIds.includes(service.id))
+  const addOnsTotal = selectedAddOns.reduce((sum, service) => sum + service.price, 0)
+  const domainTotal = selected?.price ?? 0
+  const grandTotal = domainTotal + addOnsTotal
 
   const handleContinue = () => {
     if (!selected) return
@@ -54,6 +75,37 @@ export default function DomainCart({
             <div className="flex justify-between gap-4 text-gray-700 dark:text-gray-300">
               <span>{priceLabel}</span>
               <span className="font-bold">${selected.price.toFixed(2)}</span>
+            </div>
+
+            <div className="pt-1">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{addOnsTitle}</h3>
+              <div className="space-y-2">
+                {addOns.map((service) => {
+                  const isSelected = selectedAddOnIds.includes(service.id)
+                  return (
+                    <label
+                      key={service.id}
+                      className="flex items-center justify-between gap-3 p-2 rounded-lg border border-gray-200 dark:border-gray-800"
+                    >
+                      <span className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggleAddOn(service.id)}
+                          className="accent-blue-600"
+                        />
+                        {service.name}
+                      </span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">${service.price.toFixed(2)}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-4 text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-800">
+              <span className="font-bold">{totalLabel}</span>
+              <span className="font-black">${grandTotal.toFixed(2)}</span>
             </div>
           </div>
 

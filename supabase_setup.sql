@@ -366,3 +366,18 @@ CREATE TABLE IF NOT EXISTS domain_search_logs (
 
 CREATE INDEX IF NOT EXISTS idx_domain_search_logs_domain ON domain_search_logs(domain);
 CREATE INDEX IF NOT EXISTS idx_domain_search_logs_created_at ON domain_search_logs(created_at DESC);
+
+-- Backend-managed pricing and visibility for domain-search add-ons.
+CREATE TABLE IF NOT EXISTS domain_add_ons (
+  id text PRIMARY KEY CHECK (id IN ('ssl', 'hosting', 'email')),
+  price numeric NOT NULL CHECK (price >= 0),
+  enabled boolean NOT NULL DEFAULT true,
+  updated_at timestamp WITH TIME ZONE DEFAULT now()
+);
+
+INSERT INTO domain_add_ons (id, price, enabled)
+VALUES
+  ('ssl', 9.99, true),
+  ('hosting', 24.99, true),
+  ('email', 14.99, true)
+ON CONFLICT (id) DO NOTHING;
