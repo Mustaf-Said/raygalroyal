@@ -68,6 +68,13 @@ const arOverrides = {
     addOnHosting: "استضافة",
     addOnEmail: "بريد إلكتروني احترافي",
     totalLabel: "الإجمالي",
+    aiSuggestionsTitle: "اقتراحات نطاق بالذكاء الاصطناعي",
+    checkPrice: "تحقق من السعر",
+    premiumCheckPrice: "نطاق مميز - تحقق من السعر",
+    estimated: "تقديري",
+    pricingLive: "سعر مباشر",
+    pricingEstimated: "سعر تقديري",
+    pricingPremium: "نطاق مميز",
   },
   services: {
     title: "خدماتنا",

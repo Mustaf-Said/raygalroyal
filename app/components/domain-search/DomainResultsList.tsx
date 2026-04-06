@@ -6,6 +6,10 @@ type DomainResult = {
   domain: string
   available: boolean
   price: number
+  priceLabel: string
+  buyDisabled?: boolean
+  pricingTagLabel?: string
+  pricingTagTone?: "live" | "estimated" | "premium"
 }
 
 type DomainResultsListProps = {
@@ -34,12 +38,15 @@ export default function DomainResultsList({
           key={result.domain}
           domain={result.domain}
           available={result.available}
-          price={result.price}
+          priceLabel={result.priceLabel}
+          pricingTagLabel={result.pricingTagLabel}
+          pricingTagTone={result.pricingTagTone}
           isPrimary={result.domain === primaryDomain}
           isSelected={selectedDomain === result.domain}
           availableLabel={availableLabel}
           unavailableLabel={unavailableLabel}
           buyLabel={buyLabel}
+          buyDisabled={result.buyDisabled}
           onBuy={() => onBuy(result)}
         />
       ))}

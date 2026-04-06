@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
         domain: result.domain,
         availability: result.available,
         price: result.price,
+        isPremium: result.isPremium,
+        pricingStatus: result.pricingStatus,
       })
     }
 
@@ -41,6 +43,8 @@ export async function GET(req: NextRequest) {
       domain: item.domain,
       available: item.available,
       price: item.price,
+      isPremium: item.isPremium,
+      pricingStatus: item.pricingStatus,
     }))
 
     return NextResponse.json(results)

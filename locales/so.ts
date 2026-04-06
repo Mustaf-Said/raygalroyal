@@ -67,6 +67,13 @@ const so = {
     addOnHosting: "Hosting",
     addOnEmail: "Email Ganacsi",
     totalLabel: "Wadarta",
+    aiSuggestionsTitle: "Talooyin Domain oo AI",
+    checkPrice: "Hubi qiimaha",
+    premiumCheckPrice: "Domain premium ah - hubi qiimaha",
+    estimated: "Qiyaas",
+    pricingLive: "Qiime toos ah",
+    pricingEstimated: "Qiime qiyaas ah",
+    pricingPremium: "Domain premium ah",
   },
   services: {
     title: "Adeegyadayada",

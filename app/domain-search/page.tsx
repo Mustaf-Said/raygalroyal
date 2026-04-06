@@ -12,6 +12,19 @@ type DomainResult = {
   domain: string
   available: boolean
   price: number
+  priceLabel: string
+  buyDisabled?: boolean
+  pricingTagLabel?: string
+  pricingTagTone?: "live" | "estimated" | "premium"
+}
+
+type DomainApiResult = {
+  domain: string
+  available?: boolean
+  availability?: boolean
+  price: number | null
+  isPremium?: boolean
+  pricingStatus?: "live" | "check_price" | "premium_check" | "estimated"
 }
 
 type AddOnService = {
@@ -44,6 +57,44 @@ const DEFAULT_ADD_ON_ENABLED: AddOnEnabled = {
   email: true,
 }
 
+const AI_PREFIXES = ["get", "my", "try", "go", "the"]
+const AI_SUFFIXES = ["hq", "app", "online", "site"]
+
+function sanitizeKeyword(value: string): string {
+  const base = value.trim().toLowerCase().split(".")[0] || ""
+  return base.replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "")
+}
+
+function generateAiDomainCandidates(keyword: string, existing: Set<string>): string[] {
+  const root = sanitizeKeyword(keyword)
+  if (!root) return []
+
+  const candidates = new Set<string>([
+    `${root}.ai`,
+    `${root}.app`,
+    `${root}.dev`,
+    `get${root}.com`,
+    `${root}hq.com`,
+    `my${root}.com`,
+    `${root}online.com`,
+  ])
+
+  for (const prefix of AI_PREFIXES) {
+    candidates.add(`${prefix}${root}.com`)
+  }
+
+  for (const suffix of AI_SUFFIXES) {
+    candidates.add(`${root}${suffix}.com`)
+  }
+
+  return Array.from(candidates)
+    .map((value) => value.toLowerCase())
+    .filter((value, index, arr) => arr.indexOf(value) === index)
+    .filter((value) => !existing.has(value))
+    .filter((value) => /^(?!-)[a-z0-9-]{1,63}(?:\.[a-z0-9-]{1,63})+$/i.test(value))
+    .slice(0, 12)
+}
+
 function DomainSearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -53,6 +104,7 @@ function DomainSearchContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<DomainResult[]>([])
+  const [aiSuggestions, setAiSuggestions] = useState<DomainResult[]>([])
   const [searchInput, setSearchInput] = useState(query)
   const [selectedDomain, setSelectedDomain] = useState<DomainResult | null>(null)
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
@@ -60,6 +112,43 @@ function DomainSearchContent() {
   const [addOnEnabled, setAddOnEnabled] = useState<AddOnEnabled>(DEFAULT_ADD_ON_ENABLED)
 
   const copy = t.domainSearch
+
+  const toDomainResult = (item: DomainApiResult): DomainResult => {
+    const isAvailable = item.available ?? item.availability ?? false
+    const numericPrice = Number(item.price)
+    const hasNumericPrice = Number.isFinite(numericPrice) && numericPrice > 0
+    const pricingStatus = item.pricingStatus || "check_price"
+
+    let priceLabel = copy.checkPrice
+    let pricingTagLabel: string | undefined
+    let pricingTagTone: "live" | "estimated" | "premium" | undefined
+
+    if (pricingStatus === "premium_check") {
+      priceLabel = copy.premiumCheckPrice
+      pricingTagLabel = copy.pricingPremium
+      pricingTagTone = "premium"
+    } else if (pricingStatus === "estimated") {
+      priceLabel = hasNumericPrice
+        ? `$${Number(numericPrice).toFixed(2)} (${copy.estimated})`
+        : `${copy.checkPrice} (${copy.estimated})`
+      pricingTagLabel = copy.pricingEstimated
+      pricingTagTone = "estimated"
+    } else if (pricingStatus === "live" && hasNumericPrice) {
+      priceLabel = `$${Number(numericPrice).toFixed(2)}`
+      pricingTagLabel = copy.pricingLive
+      pricingTagTone = "live"
+    }
+
+    return {
+      domain: item.domain,
+      available: isAvailable,
+      price: hasNumericPrice ? Number(numericPrice) : 0,
+      priceLabel,
+      buyDisabled: !isAvailable || !hasNumericPrice,
+      pricingTagLabel,
+      pricingTagTone,
+    }
+  }
 
   const addOnServices = useMemo<AddOnService[]>(() => {
     return [
@@ -84,7 +173,7 @@ function DomainSearchContent() {
   }
 
   const handleBuy = (item: DomainResult) => {
-    if (!item.available) return
+    if (item.buyDisabled ?? !item.available) return
 
     setError(null)
     setSelectedDomain(item)
@@ -162,6 +251,7 @@ function DomainSearchContent() {
     if (!query) {
       setError(copy.invalid)
       setResults([])
+      setAiSuggestions([])
       setSelectedDomain(null)
       return
     }
@@ -182,20 +272,41 @@ function DomainSearchContent() {
         })
 
         const res = await fetch(`/api/domain/check?domain=${encodeURIComponent(query)}`)
-        const payload = (await res.json()) as DomainResult[] | { error?: string }
+        const payload = (await res.json()) as DomainApiResult[] | { error?: string }
 
         if (!res.ok || !Array.isArray(payload)) {
           throw new Error((payload as { error?: string }).error || "Search failed")
         }
 
+        const normalizedResults = payload.map(toDomainResult)
+
+        const existingDomains = new Set(normalizedResults.map((item) => item.domain.toLowerCase()))
+        const aiCandidateDomains = generateAiDomainCandidates(query, existingDomains)
+
+        const aiSuggestionResponses = await Promise.all(
+          aiCandidateDomains.map(async (domain) => {
+            const checkRes = await fetch(`/api/domain/check?domain=${encodeURIComponent(domain)}`)
+            const checkPayload = (await checkRes.json()) as DomainApiResult | { error?: string }
+
+            if (!checkRes.ok || Array.isArray(checkPayload) || !("domain" in checkPayload)) {
+              return null
+            }
+
+            return toDomainResult(checkPayload)
+          })
+        )
+
+        const normalizedSuggestions = aiSuggestionResponses.filter((item): item is DomainResult => item !== null)
+
         if (active) {
-          setResults(payload)
+          setResults(normalizedResults)
+          setAiSuggestions(normalizedSuggestions)
           setSelectedDomain((prev) => {
-            if (prev && payload.some((item) => item.domain === prev.domain && item.available)) {
+            if (prev && normalizedResults.some((item) => item.domain === prev.domain && !item.buyDisabled)) {
               return prev
             }
 
-            const defaultPrimary = payload.find((item) => item.domain === primaryDomain && item.available)
+            const defaultPrimary = normalizedResults.find((item) => item.domain === primaryDomain && !item.buyDisabled)
             return defaultPrimary ?? null
           })
         }
@@ -203,6 +314,7 @@ function DomainSearchContent() {
         if (active) {
           setError(fetchError instanceof Error ? fetchError.message : "Search failed")
           setResults([])
+          setAiSuggestions([])
           setSelectedDomain(null)
         }
       } finally {
@@ -294,6 +406,25 @@ function DomainSearchContent() {
               buyLabel={copy.buy}
               onBuy={handleBuy}
             />
+
+            {!loading && !error && aiSuggestions.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4 px-1">
+                  <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.aiSuggestionsTitle}</h2>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
+                </div>
+
+                <DomainResultsList
+                  results={aiSuggestions}
+                  selectedDomain={selectedDomain?.domain ?? null}
+                  primaryDomain=""
+                  availableLabel={copy.available}
+                  unavailableLabel={copy.unavailable}
+                  buyLabel={copy.buy}
+                  onBuy={handleBuy}
+                />
+              </div>
+            )}
           </div>
 
           <div>

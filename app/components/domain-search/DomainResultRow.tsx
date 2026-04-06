@@ -3,26 +3,34 @@
 type DomainResultRowProps = {
   domain: string
   available: boolean
-  price: number
+  priceLabel: string
+  pricingTagLabel?: string
+  pricingTagTone?: "live" | "estimated" | "premium"
   isPrimary: boolean
   isSelected: boolean
   availableLabel: string
   unavailableLabel: string
   buyLabel: string
+  buyDisabled?: boolean
   onBuy: () => void
 }
 
 export default function DomainResultRow({
   domain,
   available,
-  price,
+  priceLabel,
+  pricingTagLabel,
+  pricingTagTone,
   isPrimary,
   isSelected,
   availableLabel,
   unavailableLabel,
   buyLabel,
+  buyDisabled,
   onBuy,
 }: DomainResultRowProps) {
+  const disableBuy = buyDisabled ?? !available
+
   return (
     <div
       className={[
@@ -46,21 +54,35 @@ export default function DomainResultRow({
           <p className={available ? "text-emerald-500" : "text-red-400"}>
             {available ? availableLabel : unavailableLabel}
           </p>
+          {pricingTagLabel ? (
+            <span
+              className={[
+                "inline-flex mt-2 text-[11px] px-2 py-1 rounded-full font-semibold",
+                pricingTagTone === "premium"
+                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                  : pricingTagTone === "estimated"
+                    ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+              ].join(" ")}
+            >
+              {pricingTagLabel}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 min-w-52.5">
-          <div className="text-lg font-bold text-gray-900 dark:text-white">${price}</div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white text-right">{priceLabel}</div>
           <button
-            disabled={!available}
+            disabled={disableBuy}
             onClick={onBuy}
             className={[
               "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
-              available
+              !disableBuy
                 ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
                 : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
             ].join(" ")}
           >
-            {available ? buyLabel : unavailableLabel}
+            {!disableBuy ? buyLabel : unavailableLabel}
           </button>
         </div>
       </div>

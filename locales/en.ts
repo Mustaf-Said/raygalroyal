@@ -67,6 +67,13 @@ const en = {
     addOnHosting: "Web Hosting",
     addOnEmail: "Business Email",
     totalLabel: "Total",
+    aiSuggestionsTitle: "AI Domain Suggestions",
+    checkPrice: "Check price",
+    premiumCheckPrice: "Premium domain - check price",
+    estimated: "Estimated",
+    pricingLive: "Live price",
+    pricingEstimated: "Estimated price",
+    pricingPremium: "Premium domain",
   },
   services: {
     title: "Our Services",
