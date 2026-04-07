@@ -72,7 +72,11 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_PAYPAL_CHECKOUT_URL=
 
 # Namecheap affiliate checkout
-# Optional: if empty, users still redirect to Namecheap without affiliate attribution.
+# Optional full affiliate base URL (recommended)
+# Example: https://namecheap.pxf.io/c/7160302/1632743/5618
+NEXT_PUBLIC_NAMECHEAP_AFFILIATE_URL=
+
+# Legacy variable (optional)
 NEXT_PUBLIC_NAMECHEAP_AFFILIATE_ID=
 ```
 

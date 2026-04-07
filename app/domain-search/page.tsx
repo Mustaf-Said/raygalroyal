@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { useLanguage } from "@/app/components/LanguageProvider"
@@ -11,7 +11,10 @@ import DomainCart from "@/app/components/domain-search/DomainCart"
 type DomainResult = {
   domain: string
   available: boolean
+  availabilityStatus: "available" | "taken" | "premium" | "unknown"
+  statusLabel: string
   price: number
+  cartPriceLabel?: string
   priceLabel: string
   buyDisabled?: boolean
   pricingTagLabel?: string
@@ -22,6 +25,7 @@ type DomainApiResult = {
   domain: string
   available?: boolean
   availability?: boolean
+  availabilityStatus?: "available" | "taken" | "premium" | "unknown"
   price: number | null
   isPremium?: boolean
   pricingStatus?: "live" | "check_price" | "premium_check" | "estimated"
@@ -30,31 +34,7 @@ type DomainApiResult = {
 type AddOnService = {
   id: string
   name: string
-  price: number
-}
-
-type AddOnPricing = {
-  ssl: number
-  hosting: number
-  email: number
-}
-
-type AddOnEnabled = {
-  ssl: boolean
-  hosting: boolean
-  email: boolean
-}
-
-const DEFAULT_ADD_ON_PRICING: AddOnPricing = {
-  ssl: 9.99,
-  hosting: 24.99,
-  email: 14.99,
-}
-
-const DEFAULT_ADD_ON_ENABLED: AddOnEnabled = {
-  ssl: true,
-  hosting: true,
-  email: true,
+  priceLabel: string
 }
 
 const AI_PREFIXES = ["get", "my", "try", "go", "the"]
@@ -95,6 +75,10 @@ function generateAiDomainCandidates(keyword: string, existing: Set<string>): str
     .slice(0, 12)
 }
 
+function isDomainApiResult(value: unknown): value is DomainApiResult {
+  return typeof value === "object" && value !== null && "domain" in value
+}
+
 function DomainSearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -108,62 +92,83 @@ function DomainSearchContent() {
   const [searchInput, setSearchInput] = useState(query)
   const [selectedDomain, setSelectedDomain] = useState<DomainResult | null>(null)
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
-  const [addOnPricing, setAddOnPricing] = useState<AddOnPricing>(DEFAULT_ADD_ON_PRICING)
-  const [addOnEnabled, setAddOnEnabled] = useState<AddOnEnabled>(DEFAULT_ADD_ON_ENABLED)
-
   const copy = t.domainSearch
 
-  const toDomainResult = (item: DomainApiResult): DomainResult => {
-    const isAvailable = item.available ?? item.availability ?? false
+  const toDomainResult = useCallback((item: DomainApiResult): DomainResult => {
+    const availabilityFlag = item.available ?? item.availability
+    const availabilityStatus =
+      item.availabilityStatus
+      ?? (item.isPremium ? "premium" : availabilityFlag === true ? "available" : availabilityFlag === false ? "taken" : "unknown")
     const numericPrice = Number(item.price)
     const hasNumericPrice = Number.isFinite(numericPrice) && numericPrice > 0
     const pricingStatus = item.pricingStatus || "check_price"
+    const hasPremiumPrice = availabilityStatus === "premium" && hasNumericPrice
+    const canBuy = availabilityStatus === "available" || hasPremiumPrice
+    const isPremiumStatus = availabilityStatus === "premium"
 
     let priceLabel = copy.checkPrice
     let pricingTagLabel: string | undefined
     let pricingTagTone: "live" | "estimated" | "premium" | undefined
 
     if (pricingStatus === "premium_check") {
-      priceLabel = copy.premiumCheckPrice
+      if (hasNumericPrice) {
+        priceLabel = `$${Number(numericPrice).toFixed(2)}`
+      } else {
+        priceLabel = copy.premiumCheckPrice
+      }
       pricingTagLabel = copy.pricingPremium
       pricingTagTone = "premium"
     } else if (pricingStatus === "estimated") {
-      priceLabel = hasNumericPrice
-        ? `$${Number(numericPrice).toFixed(2)} (${copy.estimated})`
-        : `${copy.checkPrice} (${copy.estimated})`
-      pricingTagLabel = copy.pricingEstimated
-      pricingTagTone = "estimated"
+      if (hasNumericPrice) {
+        priceLabel = `$${Number(numericPrice).toFixed(2)} (${copy.estimated})`
+        pricingTagLabel = copy.pricingEstimated
+        pricingTagTone = "estimated"
+      } else {
+        priceLabel = copy.checkPrice
+      }
     } else if (pricingStatus === "live" && hasNumericPrice) {
       priceLabel = `$${Number(numericPrice).toFixed(2)}`
       pricingTagLabel = copy.pricingLive
       pricingTagTone = "live"
     }
 
+    const statusLabel =
+      availabilityStatus === "available"
+        ? copy.available
+        : availabilityStatus === "taken"
+          ? copy.unavailable
+          : availabilityStatus === "premium"
+            ? (hasNumericPrice ? copy.pricingPremium : copy.premiumCheckPrice)
+            : copy.checkPrice
+
     return {
       domain: item.domain,
-      available: isAvailable,
+      available: canBuy,
+      availabilityStatus,
+      statusLabel,
       price: hasNumericPrice ? Number(numericPrice) : 0,
+      cartPriceLabel: hasNumericPrice ? undefined : (availabilityStatus === "premium" ? copy.premiumCheckPrice : copy.checkPrice),
       priceLabel,
-      buyDisabled: !isAvailable || !hasNumericPrice,
+      buyDisabled: !canBuy,
       pricingTagLabel,
       pricingTagTone,
     }
-  }
+  }, [copy.available, copy.checkPrice, copy.estimated, copy.premiumCheckPrice, copy.pricingEstimated, copy.pricingLive, copy.pricingPremium, copy.unavailable])
 
   const addOnServices = useMemo<AddOnService[]>(() => {
     return [
-      { id: "ssl", name: copy.addOnSsl, price: addOnPricing.ssl },
-      { id: "hosting", name: copy.addOnHosting, price: addOnPricing.hosting },
-      { id: "email", name: copy.addOnEmail, price: addOnPricing.email },
-    ].filter((service) => {
-      if (service.id === "ssl") return addOnEnabled.ssl
-      if (service.id === "hosting") return addOnEnabled.hosting
-      if (service.id === "email") return addOnEnabled.email
-      return true
-    })
-  }, [addOnEnabled.email, addOnEnabled.hosting, addOnEnabled.ssl, addOnPricing.email, addOnPricing.hosting, addOnPricing.ssl, copy.addOnEmail, copy.addOnHosting, copy.addOnSsl])
+      { id: "ssl", name: copy.addOnSsl, priceLabel: copy.priceAvailableAtRegistrar },
+      { id: "hosting", name: copy.addOnHosting, priceLabel: copy.priceAvailableAtRegistrar },
+      { id: "email", name: copy.addOnEmail, priceLabel: copy.priceAvailableAtRegistrar },
+      { id: "dns", name: copy.addOnDns, priceLabel: copy.priceAvailableAtRegistrar },
+      { id: "vpn", name: copy.addOnVpn, priceLabel: copy.priceAvailableAtRegistrar },
+    ]
+  }, [copy.addOnDns, copy.addOnEmail, copy.addOnHosting, copy.addOnSsl, copy.addOnVpn, copy.priceAvailableAtRegistrar])
 
-  const primaryDomain = useMemo(() => `${query.toLowerCase()}.com`, [query])
+  const primaryDomain = useMemo(() => {
+    const normalized = query.toLowerCase()
+    return normalized.includes(".") ? normalized : `${normalized}.com`
+  }, [query])
 
   const handleSearch = () => {
     const nextQuery = searchInput.trim()
@@ -182,70 +187,6 @@ function DomainSearchContent() {
   const handleToggleAddOn = (id: string) => {
     setSelectedAddOnIds((prev) => (prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]))
   }
-
-  useEffect(() => {
-    let active = true
-
-    const loadAddOnPricing = async () => {
-      try {
-        const res = await fetch("/api/domain/add-ons")
-        const payload = (await res.json()) as {
-          data?: Array<{ id?: string; price?: number; enabled?: boolean }>
-        }
-
-        if (!res.ok || !Array.isArray(payload.data)) {
-          return
-        }
-
-        const nextPricing = { ...DEFAULT_ADD_ON_PRICING }
-        const nextEnabled = { ...DEFAULT_ADD_ON_ENABLED }
-
-        for (const item of payload.data) {
-          if (!item?.enabled) continue
-
-          if (item.id === "ssl" && Number.isFinite(item.price)) {
-            nextPricing.ssl = Number(item.price)
-          }
-          if (item.id === "ssl" && typeof item.enabled === "boolean") {
-            nextEnabled.ssl = item.enabled
-          }
-
-          if (item.id === "hosting" && Number.isFinite(item.price)) {
-            nextPricing.hosting = Number(item.price)
-          }
-          if (item.id === "hosting" && typeof item.enabled === "boolean") {
-            nextEnabled.hosting = item.enabled
-          }
-
-          if (item.id === "email" && Number.isFinite(item.price)) {
-            nextPricing.email = Number(item.price)
-          }
-          if (item.id === "email" && typeof item.enabled === "boolean") {
-            nextEnabled.email = item.enabled
-          }
-        }
-
-        if (active) {
-          setAddOnPricing(nextPricing)
-          setAddOnEnabled(nextEnabled)
-          setSelectedAddOnIds((prev) => prev.filter((id) => {
-            if (id === "ssl") return nextEnabled.ssl
-            if (id === "hosting") return nextEnabled.hosting
-            if (id === "email") return nextEnabled.email
-            return false
-          }))
-        }
-      } catch {
-        // Keep defaults when pricing endpoint is unavailable.
-      }
-    }
-
-    loadAddOnPricing()
-
-    return () => {
-      active = false
-    }
-  }, [])
 
   useEffect(() => {
     if (!query) {
@@ -272,13 +213,23 @@ function DomainSearchContent() {
         })
 
         const res = await fetch(`/api/domain/check?domain=${encodeURIComponent(query)}`)
-        const payload = (await res.json()) as DomainApiResult[] | { error?: string }
+        const payload = (await res.json()) as DomainApiResult[] | DomainApiResult | { error?: string }
 
-        if (!res.ok || !Array.isArray(payload)) {
+        if (!res.ok) {
           throw new Error((payload as { error?: string }).error || "Search failed")
         }
 
-        const normalizedResults = payload.map(toDomainResult)
+        const payloadItems = Array.isArray(payload)
+          ? payload
+          : isDomainApiResult(payload)
+            ? [payload]
+            : []
+
+        if (payloadItems.length === 0) {
+          throw new Error((payload as { error?: string }).error || "Search failed")
+        }
+
+        const normalizedResults = payloadItems.map(toDomainResult)
 
         const existingDomains = new Set(normalizedResults.map((item) => item.domain.toLowerCase()))
         const aiCandidateDomains = generateAiDomainCandidates(query, existingDomains)
@@ -327,7 +278,7 @@ function DomainSearchContent() {
     return () => {
       active = false
     }
-  }, [query, copy.invalid, primaryDomain])
+  }, [query, copy.invalid, primaryDomain, toDomainResult])
 
   return (
     <section className="pt-24 md:pt-28">
@@ -401,8 +352,6 @@ function DomainSearchContent() {
               results={results}
               selectedDomain={selectedDomain?.domain ?? null}
               primaryDomain={primaryDomain}
-              availableLabel={copy.available}
-              unavailableLabel={copy.unavailable}
               buyLabel={copy.buy}
               onBuy={handleBuy}
             />
@@ -418,8 +367,6 @@ function DomainSearchContent() {
                   results={aiSuggestions}
                   selectedDomain={selectedDomain?.domain ?? null}
                   primaryDomain=""
-                  availableLabel={copy.available}
-                  unavailableLabel={copy.unavailable}
                   buyLabel={copy.buy}
                   onBuy={handleBuy}
                 />
@@ -429,11 +376,15 @@ function DomainSearchContent() {
 
           <div>
             <DomainCart
-              selected={selectedDomain ? { domain: selectedDomain.domain, price: selectedDomain.price } : null}
+              selected={selectedDomain
+                ? { domain: selectedDomain.domain, price: selectedDomain.price, priceLabel: selectedDomain.cartPriceLabel }
+                : null}
               title={copy.cartTitle}
               empty={copy.cartEmpty}
               domainLabel={copy.domainLabel}
               priceLabel={copy.priceLabel}
+              checkPriceLabel={copy.checkPrice}
+              registrarPriceLabel={copy.priceAvailableAtRegistrar}
               continueLabel={copy.continue}
               addOnsTitle={copy.addOnsTitle}
               addOns={addOnServices}

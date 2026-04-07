@@ -6,12 +6,13 @@ import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
 type SelectedDomain = {
   domain: string
   price: number
+  priceLabel?: string
 }
 
 type AddOnService = {
   id: string
   name: string
-  price: number
+  priceLabel: string
 }
 
 type DomainCartProps = {
@@ -20,6 +21,8 @@ type DomainCartProps = {
   empty: string
   domainLabel: string
   priceLabel: string
+  checkPriceLabel: string
+  registrarPriceLabel: string
   continueLabel: string
   addOnsTitle: string
   addOns: AddOnService[]
@@ -34,6 +37,8 @@ export default function DomainCart({
   empty,
   domainLabel,
   priceLabel,
+  checkPriceLabel,
+  registrarPriceLabel,
   continueLabel,
   addOnsTitle,
   addOns,
@@ -43,10 +48,12 @@ export default function DomainCart({
 }: DomainCartProps) {
   const [error, setError] = useState<string | null>(null)
 
-  const selectedAddOns = addOns.filter((service) => selectedAddOnIds.includes(service.id))
-  const addOnsTotal = selectedAddOns.reduce((sum, service) => sum + service.price, 0)
-  const domainTotal = selected?.price ?? 0
-  const grandTotal = domainTotal + addOnsTotal
+  const hasSelectedAddOns = selectedAddOnIds.length > 0
+  const hasDomainNumericPrice = Boolean(selected && Number.isFinite(selected.price) && selected.price > 0)
+  const domainPriceLabel = selected
+    ? (hasDomainNumericPrice ? `$${selected.price.toFixed(2)}` : (selected.priceLabel || checkPriceLabel))
+    : checkPriceLabel
+  const totalPriceLabel = hasSelectedAddOns ? registrarPriceLabel : domainPriceLabel
 
   const handleContinue = () => {
     if (!selected) return
@@ -74,7 +81,7 @@ export default function DomainCart({
             </div>
             <div className="flex justify-between gap-4 text-gray-700 dark:text-gray-300">
               <span>{priceLabel}</span>
-              <span className="font-bold">${selected.price.toFixed(2)}</span>
+              <span className="font-bold">{domainPriceLabel}</span>
             </div>
 
             <div className="pt-1">
@@ -96,7 +103,9 @@ export default function DomainCart({
                         />
                         {service.name}
                       </span>
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">${service.price.toFixed(2)}</span>
+                      <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 text-right">
+                        {service.priceLabel}
+                      </span>
                     </label>
                   )
                 })}
@@ -105,7 +114,7 @@ export default function DomainCart({
 
             <div className="flex justify-between gap-4 text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-800">
               <span className="font-bold">{totalLabel}</span>
-              <span className="font-black">${grandTotal.toFixed(2)}</span>
+              <span className="font-black">{totalPriceLabel}</span>
             </div>
           </div>
 

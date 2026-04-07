@@ -3,13 +3,13 @@
 type DomainResultRowProps = {
   domain: string
   available: boolean
+  availabilityStatus: "available" | "taken" | "premium" | "unknown"
+  statusLabel: string
   priceLabel: string
   pricingTagLabel?: string
   pricingTagTone?: "live" | "estimated" | "premium"
   isPrimary: boolean
   isSelected: boolean
-  availableLabel: string
-  unavailableLabel: string
   buyLabel: string
   buyDisabled?: boolean
   onBuy: () => void
@@ -18,13 +18,13 @@ type DomainResultRowProps = {
 export default function DomainResultRow({
   domain,
   available,
+  availabilityStatus,
+  statusLabel,
   priceLabel,
   pricingTagLabel,
   pricingTagTone,
   isPrimary,
   isSelected,
-  availableLabel,
-  unavailableLabel,
   buyLabel,
   buyDisabled,
   onBuy,
@@ -51,8 +51,16 @@ export default function DomainResultRow({
               </span>
             ) : null}
           </h3>
-          <p className={available ? "text-emerald-500" : "text-red-400"}>
-            {available ? availableLabel : unavailableLabel}
+          <p
+            className={
+              availabilityStatus === "available"
+                ? "text-emerald-500"
+                : availabilityStatus === "taken"
+                  ? "text-red-400"
+                  : "text-amber-500"
+            }
+          >
+            {statusLabel}
           </p>
           {pricingTagLabel ? (
             <span
@@ -82,7 +90,7 @@ export default function DomainResultRow({
                 : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
             ].join(" ")}
           >
-            {!disableBuy ? buyLabel : unavailableLabel}
+            {!disableBuy ? buyLabel : statusLabel}
           </button>
         </div>
       </div>

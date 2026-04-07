@@ -1,7 +1,7 @@
 export const DOMAIN_LABEL_REGEX = /^(?!-)[a-z0-9-]{1,63}(?<!-)$/i
 export const FULL_DOMAIN_REGEX = /^(?!-)(?:[a-z0-9-]{1,63}\.)+[a-z]{2,63}$/i
 
-export const SUPPORTED_TLDS = [".com", ".net", ".io", ".co", ".co.uk", ".org"] as const
+export const SUPPORTED_TLDS = [".com", ".net", ".io", ".co", ".co.uk", ".org", ".to", ".london"] as const
 
 export type SupportedTld = (typeof SUPPORTED_TLDS)[number]
 
@@ -12,6 +12,8 @@ export const DOMAIN_BASE_PRICES: Record<SupportedTld, number> = {
   ".co": 28,
   ".co.uk": 14,
   ".org": 11,
+  ".to": 34,
+  ".london": 33,
 }
 
 export const HOSTING_PLAN_PRICES = {
