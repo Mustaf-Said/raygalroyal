@@ -74,7 +74,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mb-3 max-w-xl mx-auto"
           >
-            <div className="flex items-center bg-white dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5 px-4 py-2 gap-2 transition-all focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:shadow-violet-200/40 dark:focus-within:shadow-violet-900/30 focus-within:shadow-xl">
+            <div className="flex items-center bg-white dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5 px-2 py-2 gap-2 transition-all focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:shadow-violet-200/40 dark:focus-within:shadow-violet-900/30 focus-within:shadow-xl">
               <Search className="w-5 h-5 text-violet-500 shrink-0" />
               <input
                 type="text"
@@ -82,11 +82,11 @@ export default function Hero() {
                 onChange={(e) => setDomain(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t.hero.domainPlaceholder ?? "Search for your perfect domain name..."}
-                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
+                className=" flex-1 min-w-0 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
               />
               <button
                 onClick={handleDomainSearch}
-                className="shrink-0 px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                className="shrink-0 px-4 sm:px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap"
                 style={{
                   background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
                   boxShadow: "0 0 16px rgba(124,58,237,0.35)",
