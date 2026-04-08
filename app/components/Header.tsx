@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
+import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock, LogOut } from "lucide-react"
 import { GB, SO, SA } from "country-flag-icons/react/3x2"
 import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
 import type { Language } from "@/locales"
@@ -255,7 +255,8 @@ export default function Header() {
           ) : (
             <button
               onClick={() => void handleLogout()}
-              className="px-2 py-1 sm:px-4 sm:py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm sm:text-base font-semibold hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+              <LogOut className="w-4 h-4" />
               Logout
             </button>
           )}

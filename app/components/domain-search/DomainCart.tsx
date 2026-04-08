@@ -67,7 +67,7 @@ export default function DomainCart({
   }
 
   return (
-    <aside className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 md:p-6 shadow-sm md:sticky md:top-28">
+    <aside className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 md:p-6 shadow-sm md:sticky md:top-28 cart-inner">
       <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-5">{title}</h2>
 
       {!selected ? (

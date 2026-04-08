@@ -1,8 +1,10 @@
 "use client"
 
+
+import { motion, AnimatePresence } from "framer-motion"
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Loader2 } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 import { useLanguage } from "@/app/components/LanguageProvider"
 import SearchBar from "@/app/components/domain-search/SearchBar"
 import DomainResultsList from "@/app/components/domain-search/DomainResultsList"
@@ -93,7 +95,7 @@ function DomainSearchContent() {
   const [selectedDomain, setSelectedDomain] = useState<DomainResult | null>(null)
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
   const copy = t.domainSearch
-
+  const [cartOpen, setCartOpen] = useState(false)
   const toDomainResult = useCallback((item: DomainApiResult): DomainResult => {
     const availabilityFlag = item.available ?? item.availability
     const availabilityStatus =
@@ -180,6 +182,7 @@ function DomainSearchContent() {
 
     setError(null)
     setSelectedDomain(item)
+    setCartOpen(true)
   }
 
   const handleToggleAddOn = (id: string) => {
@@ -339,8 +342,66 @@ function DomainSearchContent() {
         {!loading && !error && results.length === 0 && (
           <div className="text-center text-gray-500 dark:text-gray-400">{copy.noResults}</div>
         )}
+        {/* chenged grid-cols-2 */}
+        {/* MOBILE CART LIGHTBOX */}
+        <AnimatePresence>
+          {cartOpen && selectedDomain && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setCartOpen(false)}
+                className="fixed inset-0 bg-black/70 z-40 md:hidden"
+              />
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                className="fixed inset-x-0 bottom-0 z-50 md:hidden rounded-t-3xl overflow-hidden"
+              >
+                {/* drag handle bar */}
+                <div className="bg-gray-900 pt-3 pb-1 flex justify-center">
+                  <div className="w-10 h-1 rounded-full bg-gray-700" />
+                </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
+                {/* header row with X */}
+                <div className="bg-gray-900 flex items-center justify-between px-5 py-3 border-b border-gray-800">
+                  <h2 className="text-lg font-black text-white">{copy.cartTitle}</h2>
+                  <button
+                    onClick={() => setCartOpen(false)}
+                    className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* scrollable cart body */}
+                <div className="bg-gray-900 max-h-[78dvh] overflow-y-auto px-5 pb-10 pt-4">
+                  <DomainCart
+                    selected={{ domain: selectedDomain.domain, price: selectedDomain.price, priceLabel: selectedDomain.cartPriceLabel }}
+                    title=""
+                    empty={copy.cartEmpty}
+                    domainLabel={copy.domainLabel}
+                    priceLabel={copy.priceLabel}
+                    checkPriceLabel={copy.checkPrice}
+                    registrarPriceLabel={copy.priceAvailableAtRegistrar}
+                    continueLabel={copy.continue}
+                    addOnsTitle={copy.addOnsTitle}
+                    addOns={addOnServices}
+                    selectedAddOnIds={selectedAddOnIds}
+                    totalLabel={copy.totalLabel}
+                    onToggleAddOn={handleToggleAddOn}
+                  />
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* MAIN GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
           <div>
             <div className="flex items-center justify-between mb-4 px-1">
               <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.sectionTitle}</h2>
@@ -353,14 +414,12 @@ function DomainSearchContent() {
               buyLabel={copy.buy}
               onBuy={handleBuy}
             />
-
             {!loading && !error && aiSuggestions.length > 0 && (
               <div className="mt-8">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.aiSuggestionsTitle}</h2>
                   <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
                 </div>
-
                 <DomainResultsList
                   results={aiSuggestions}
                   selectedDomain={selectedDomain?.domain ?? null}
@@ -372,7 +431,8 @@ function DomainSearchContent() {
             )}
           </div>
 
-          <div>
+          {/* Desktop only — sticky sidebar cart */}
+          <div className="hidden md:block md:sticky md:top-28">
             <DomainCart
               selected={selectedDomain
                 ? { domain: selectedDomain.domain, price: selectedDomain.price, priceLabel: selectedDomain.cartPriceLabel }
