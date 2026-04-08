@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
 import { GB, SO, SA } from "country-flag-icons/react/3x2"
@@ -10,13 +11,18 @@ import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
 import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
+import { clearAdminAuth, getAdminAccessToken } from "@/lib/adminClientAuth"
+import { clearFreelancerAuth, getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 export default function Header() {
+  const router = useRouter()
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
   const [authMenuOpen, setAuthMenuOpen] = useState(false)
+  const [authRole, setAuthRole] = useState<"admin" | "freelancer" | null>(null)
   const languageMenuRef = useRef<HTMLDivElement | null>(null)
   const authMenuRef = useRef<HTMLDivElement | null>(null)
   const { language, setLanguage, t } = useLanguage()
@@ -58,6 +64,42 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", onClickOutside)
   }, [])
 
+  useEffect(() => {
+    const syncAuthState = () => {
+      const adminToken = getAdminAccessToken()
+      const freelancerToken = getFreelancerAccessToken()
+
+      if (adminToken) {
+        setAuthRole("admin")
+      } else if (freelancerToken) {
+        setAuthRole("freelancer")
+      } else {
+        setAuthRole(null)
+      }
+    }
+
+    syncAuthState()
+    window.addEventListener("storage", syncAuthState)
+    window.addEventListener("focus", syncAuthState)
+    return () => {
+      window.removeEventListener("storage", syncAuthState)
+      window.removeEventListener("focus", syncAuthState)
+    }
+  }, [pathname])
+
+  const handleLogout = async () => {
+    if (authRole === "admin") {
+      await fetch("/api/admin/logout", { method: "POST" })
+      clearAdminAuth()
+    } else if (authRole === "freelancer") {
+      clearFreelancerAuth()
+    }
+
+    setAuthRole(null)
+    setAuthMenuOpen(false)
+    setMenuOpen(false)
+    router.push("/")
+  }
 
   const navLinks = [
     { name: t.nav.home, href: "/" },
@@ -169,46 +211,55 @@ export default function Header() {
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
           {/* ADMIN BUTTON */}
-          <div className="relative" ref={authMenuRef}>
-            <button
-              onClick={() => setAuthMenuOpen((prev) => !prev)}
-              className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              title="Logins"
-              aria-haspopup="menu"
-              aria-expanded={authMenuOpen}
-            >
-              <Lock className="w-5 h-5" />
-            </button>
+          {!authRole ? (
+            <div className="relative" ref={authMenuRef}>
+              <button
+                onClick={() => setAuthMenuOpen((prev) => !prev)}
+                className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                title="Logins"
+                aria-haspopup="menu"
+                aria-expanded={authMenuOpen}
+              >
+                <Lock className="w-5 h-5" />
+              </button>
 
-            <AnimatePresence>
-              {authMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
-                  role="menu"
-                >
-                  <Link
-                    href="/admin/orders"
-                    onClick={() => setAuthMenuOpen(false)}
-                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    role="menuitem"
+              <AnimatePresence>
+                {authMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                    role="menu"
                   >
-                    Admin Login
-                  </Link>
-                  <Link
-                    href="/freelancer/login"
-                    onClick={() => setAuthMenuOpen(false)}
-                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    role="menuitem"
-                  >
-                    Freelancer Login
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    <Link
+                      href="/admin/login"
+                      onClick={() => setAuthMenuOpen(false)}
+                      className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      role="menuitem"
+                    >
+                      Admin Login
+                    </Link>
+                    <Link
+                      href="/freelancer/login"
+                      onClick={() => setAuthMenuOpen(false)}
+                      className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      role="menuitem"
+                    >
+                      Freelancer Login
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <button
+              onClick={() => void handleLogout()}
+              className="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 font-semibold hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+            >
+              Logout
+            </button>
+          )}
 
           {/* THEME TOGGLE */}
           <button
@@ -322,22 +373,33 @@ export default function Header() {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                href="/admin/orders"
-                onClick={() => setMenuOpen(false)}
-                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
-              >
-                <Lock className="w-4 h-4" />
-                Admin Login
-              </Link>
-              <Link
-                href="/freelancer/login"
-                onClick={() => setMenuOpen(false)}
-                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
-              >
-                <Lock className="w-4 h-4" />
-                Freelancer Login
-              </Link>
+              {!authRole ? (
+                <>
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Lock className="w-4 h-4" />
+                    Admin Login
+                  </Link>
+                  <Link
+                    href="/freelancer/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Lock className="w-4 h-4" />
+                    Freelancer Login
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={() => void handleLogout()}
+                  className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors text-left"
+                >
+                  Logout
+                </button>
+              )}
               <button
                 onClick={() => {
                   openOrderModal();
