@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+import { clearAdminAuth, getAdminAuthHeaders, getAdminUserId } from "@/lib/adminClientAuth"
 import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 type ApplicationStatus = "pending" | "approved" | "rejected"
@@ -65,11 +65,8 @@ export default function AdminFreelancersPage() {
   )
 
   const getHeaders = useCallback(async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.access_token) {
+    const headers = getAdminAuthHeaders()
+    if (!headers.Authorization) {
       if (getFreelancerAccessToken()) {
         router.push("/freelancer/dashboard")
       } else {
@@ -78,7 +75,6 @@ export default function AdminFreelancersPage() {
       return null
     }
 
-    const headers = { Authorization: `Bearer ${session.access_token}` }
     const adminCheck = await fetch("/api/freelancers?admin=1", { cache: "no-store", headers })
 
     if (adminCheck.status === 403) {
@@ -87,12 +83,12 @@ export default function AdminFreelancersPage() {
     }
 
     if (!adminCheck.ok) {
-      await supabase.auth.signOut()
+      clearAdminAuth()
       router.push("/admin/login")
       return null
     }
 
-    setAdminUserId(session.user.id)
+    setAdminUserId(getAdminUserId() ?? "")
     return headers
   }, [router])
 

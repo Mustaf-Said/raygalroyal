@@ -104,8 +104,6 @@ function DomainSearchContent() {
     const pricingStatus = item.pricingStatus || "check_price"
     const hasPremiumPrice = availabilityStatus === "premium" && hasNumericPrice
     const canBuy = availabilityStatus === "available" || hasPremiumPrice
-    const isPremiumStatus = availabilityStatus === "premium"
-
     let priceLabel = copy.checkPrice
     let pricingTagLabel: string | undefined
     let pricingTagTone: "live" | "estimated" | "premium" | undefined

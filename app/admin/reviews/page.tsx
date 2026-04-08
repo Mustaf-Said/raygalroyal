@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+import { clearAdminAuth, getAdminAuthHeaders } from "@/lib/adminClientAuth"
 import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 type ReviewStatus = "pending" | "approved"
@@ -33,11 +33,8 @@ export default function AdminReviewsPage() {
   const [messageDrafts, setMessageDrafts] = useState<Record<string, Draft>>({})
 
   const getHeaders = useCallback(async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.access_token) {
+    const headers = getAdminAuthHeaders()
+    if (!headers.Authorization) {
       if (getFreelancerAccessToken()) {
         router.push("/freelancer/dashboard")
       } else {
@@ -46,7 +43,6 @@ export default function AdminReviewsPage() {
       return null
     }
 
-    const headers = { Authorization: `Bearer ${session.access_token}` }
     const adminCheck = await fetch("/api/freelancers?admin=1", { cache: "no-store", headers })
 
     if (adminCheck.status === 403) {
@@ -55,7 +51,7 @@ export default function AdminReviewsPage() {
     }
 
     if (!adminCheck.ok) {
-      await supabase.auth.signOut()
+      clearAdminAuth()
       router.push("/admin/login")
       return null
     }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { CreditCard, MessageSquareText, Settings2, Users } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { clearAdminAuth, getAdminAuthHeaders } from "@/lib/adminClientAuth"
 import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 export default function AdminOrders() {
@@ -12,11 +12,8 @@ export default function AdminOrders() {
   const [checking, setChecking] = useState(true)
 
   const ensureAdminAccess = useCallback(async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.access_token) {
+    const headers = getAdminAuthHeaders()
+    if (!headers.Authorization) {
       if (getFreelancerAccessToken()) {
         router.push("/freelancer/dashboard")
       } else {
@@ -27,7 +24,7 @@ export default function AdminOrders() {
 
     const response = await fetch("/api/freelancers?admin=1", {
       cache: "no-store",
-      headers: { Authorization: `Bearer ${session.access_token}` },
+      headers,
     })
 
     if (response.status === 403) {
@@ -36,7 +33,7 @@ export default function AdminOrders() {
     }
 
     if (!response.ok) {
-      await supabase.auth.signOut()
+      clearAdminAuth()
       router.push("/admin/login")
       return false
     }
@@ -77,7 +74,8 @@ export default function AdminOrders() {
 
             <button
               onClick={async () => {
-                await supabase.auth.signOut()
+                await fetch("/api/admin/logout", { method: "POST" })
+                clearAdminAuth()
                 router.push("/admin/login")
               }}
               className="px-5 py-2 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition"
