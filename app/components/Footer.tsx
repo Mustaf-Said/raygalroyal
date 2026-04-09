@@ -4,7 +4,7 @@ import Link from "next/link"
 import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
-
+import Image from "next/image"
 export default function Footer() {
   const { t, language } = useLanguage()
   const year = new Date().getFullYear()
@@ -41,18 +41,34 @@ export default function Footer() {
           <div className="space-y-8">
             <Link href="/" className="flex items-center gap-2 group">
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
-                  boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                }}
+                className="w-10 h-10  flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden rounded-r-full"
+              /*  style={{
+                 background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                 boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                 border: "1px solid rgba(255,255,255,0.15)",
+               }} */
               >
-                <span
+                {/*     <span
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-                  style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }}
-                />
-                <span className="relative hover:rotate-360 transition-transform z-10">R</span>
+                style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} 
+                  /> */}
+                <span className="relative hover:rotate-360 transition-transform z-10">
+                  <Image
+                    src="/logoB.png"
+                    alt="RaygalRoyal logo"
+                    width={36}
+                    height={36}
+                    className="hidden dark:block"
+                  />
+                  <Image
+                    src="/logoW.png"
+                    alt="RaygalRoyal logo"
+                    width={36}
+                    height={36}
+                    className="block dark:hidden"
+                  />
+
+                </span>
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-500 dark:text-white">
                 {language === "ar" ? (
