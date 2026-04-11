@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import type { Database, ReviewStatus } from "@/lib/database.types"
+import { sendAdminNotification } from "@/lib/email/sendAdminNotification"
 
 type ReviewInsert = Database["public"]["Tables"]["reviews"]["Insert"]
 
@@ -157,6 +158,8 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    await sendAdminNotification({ type: "review" })
 
     return NextResponse.json({ success: true, data }, { status: 201 })
   } catch {
