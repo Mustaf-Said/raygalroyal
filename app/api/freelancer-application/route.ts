@@ -78,31 +78,7 @@ const uploadProfileImage = async (imageDataUrl: string, imageName: string) => {
   return data.publicUrl
 }
 
-export async function GET(req: NextRequest) {
-  const auth = await requireUserFromRequest(req)
-  if (!auth.ok) {
-    return auth.response
-  }
-
-  const { data, error } = await supabase
-    .from("freelancers")
-    .select("id, user_id, name, role, bio, profile_image, phone, github, status, email")
-    .eq("user_id", auth.user.id)
-    .limit(1)
-    .maybeSingle()
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-
-  if (!data) {
-    return NextResponse.json({ error: "Freelancer profile not found" }, { status: 404 })
-  }
-
-  return NextResponse.json({ data })
-}
-
-export async function PATCH(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const auth = await requireUserFromRequest(req)
   if (!auth.ok) {
     return auth.response
@@ -150,7 +126,6 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "No update fields provided" }, { status: 400 })
     }
 
-    // Any freelancer profile edit requires admin re-approval before public display.
     updatePayload.status = "pending"
 
     const { error } = await supabase
@@ -166,29 +141,6 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: "Failed to update freelancer profile" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to submit freelancer application" }, { status: 500 })
   }
-}
-
-export async function DELETE(req: NextRequest) {
-  const auth = await requireUserFromRequest(req)
-  if (!auth.ok) {
-    return auth.response
-  }
-
-  const { error: deleteProfileError } = await supabase
-    .from("freelancers")
-    .delete()
-    .eq("user_id", auth.user.id)
-
-  if (deleteProfileError) {
-    return NextResponse.json({ error: deleteProfileError.message }, { status: 500 })
-  }
-
-  const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(auth.user.id)
-  if (deleteAuthError) {
-    return NextResponse.json({ error: deleteAuthError.message }, { status: 500 })
-  }
-
-  return NextResponse.json({ success: true })
 }

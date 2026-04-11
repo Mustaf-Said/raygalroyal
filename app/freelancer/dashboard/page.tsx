@@ -133,8 +133,8 @@ export default function FreelancerDashboardPage() {
         throw new Error("Please upload a profile image.")
       }
 
-      const response = await fetch("/api/freelancer/update", {
-        method: "PATCH",
+      const response = await fetch("/api/freelancer-application", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...getFreelancerAuthHeaders(),
