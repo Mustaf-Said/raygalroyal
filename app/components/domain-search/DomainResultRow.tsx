@@ -1,5 +1,7 @@
 "use client"
 
+import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
+
 type DomainResultRowProps = {
   domain: string
   available: boolean
@@ -30,6 +32,8 @@ export default function DomainResultRow({
   onBuy,
 }: DomainResultRowProps) {
   const disableBuy = buyDisabled ?? !available
+  const showMakeOffer = availabilityStatus === "taken" || availabilityStatus === "unknown"
+  const makeOfferUrl = showMakeOffer ? generateNamecheapAffiliateLink(domain) : null
 
   return (
     <div
@@ -79,19 +83,37 @@ export default function DomainResultRow({
         </div>
 
         <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 min-w-52.5">
-          <div className="text-lg font-bold text-gray-900 dark:text-white text-right">{priceLabel}</div>
-          <button
-            disabled={disableBuy}
-            onClick={onBuy}
-            className={[
-              "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
-              !disableBuy
-                ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
-            ].join(" ")}
-          >
-            {!disableBuy ? buyLabel : statusLabel}
-          </button>
+          {/* Price label — hidden for taken/unknown since they have no price */}
+          {!showMakeOffer && (
+            <div className="text-lg font-bold text-gray-900 dark:text-white text-right">
+              {priceLabel}
+            </div>
+          )}
+
+          {showMakeOffer && makeOfferUrl ? (
+            /* Make offer — opens Namecheap via affiliate link, commission tracked */
+            <a
+              href={makeOfferUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer ml-auto"
+            >
+              Make offer
+            </a>
+          ) : (
+            <button
+              disabled={disableBuy}
+              onClick={onBuy}
+              className={[
+                "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
+                !disableBuy
+                  ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
+              ].join(" ")}
+            >
+              {!disableBuy ? buyLabel : statusLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>

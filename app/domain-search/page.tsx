@@ -96,6 +96,7 @@ function DomainSearchContent() {
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
   const copy = t.domainSearch
   const [cartOpen, setCartOpen] = useState(false)
+
   const toDomainResult = useCallback((item: DomainApiResult): DomainResult => {
     const availabilityFlag = item.available ?? item.availability
     const availabilityStatus =
@@ -106,6 +107,26 @@ function DomainSearchContent() {
     const pricingStatus = item.pricingStatus || "check_price"
     const hasPremiumPrice = availabilityStatus === "premium" && hasNumericPrice
     const canBuy = availabilityStatus === "available" || hasPremiumPrice
+
+    // Taken and unknown domains — show no price, no button label
+    if (availabilityStatus === "taken" || availabilityStatus === "unknown") {
+      const statusLabel =
+        availabilityStatus === "taken" ? copy.unavailable : copy.checkPrice
+
+      return {
+        domain: item.domain,
+        available: false,
+        availabilityStatus,
+        statusLabel,
+        price: 0,
+        cartPriceLabel: undefined,
+        priceLabel: "",           // no price label shown
+        buyDisabled: true,
+        pricingTagLabel: undefined,
+        pricingTagTone: undefined,
+      }
+    }
+
     let priceLabel = copy.checkPrice
     let pricingTagLabel: string | undefined
     let pricingTagTone: "live" | "estimated" | "premium" | undefined
@@ -135,11 +156,9 @@ function DomainSearchContent() {
     const statusLabel =
       availabilityStatus === "available"
         ? copy.available
-        : availabilityStatus === "taken"
-          ? copy.unavailable
-          : availabilityStatus === "premium"
-            ? (hasNumericPrice ? copy.pricingPremium : copy.premiumCheckPrice)
-            : copy.checkPrice
+        : availabilityStatus === "premium"
+          ? (hasNumericPrice ? copy.pricingPremium : copy.premiumCheckPrice)
+          : copy.checkPrice
 
     return {
       domain: item.domain,
@@ -342,7 +361,7 @@ function DomainSearchContent() {
         {!loading && !error && results.length === 0 && (
           <div className="text-center text-gray-500 dark:text-gray-400">{copy.noResults}</div>
         )}
-        {/* chenged grid-cols-2 */}
+
         {/* MOBILE CART LIGHTBOX */}
         <AnimatePresence>
           {cartOpen && selectedDomain && (
