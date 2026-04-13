@@ -603,6 +603,7 @@ const en = {
     redirecting: "Redirecting...",
     errors: {
       invalidEmail: "Please write a correct email address (example: name@email.com)",
+      invalidProjectDetails: "Please write at least 10 characters in Project Details.",
       detailsSaveFailed: "Failed to create order",
       detailsSaveContinueWarning: "We could not save your project details right now, but you can continue to payment.",
       selectPackage: "Please select a package before continuing.",
