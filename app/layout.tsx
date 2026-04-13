@@ -6,6 +6,11 @@ import { ModalProvider } from "./components/ModalProvider";
 import LayoutWrapper from "./components/LayoutWrapper";
 import OrganizationSchema from "./components/seo/OrganizationSchema";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
 
