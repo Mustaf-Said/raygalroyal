@@ -148,15 +148,17 @@ export default function Header() {
               <Image
                 src="/logoW.png"
                 alt="RaygalRoyal logo"
-                width={36}
-                height={36}
+                width={120}
+                height={40}
+                style={{ width: "auto", height: "auto" }}
                 className="block dark:hidden"
               />
               <Image
                 src="/logoB.png"
                 alt="RaygalRoyal logo"
-                width={36}
-                height={36}
+                width={120}
+                height={40}
+                style={{ width: "auto", height: "auto" }}
                 className="hidden dark:block"
               />
             </span>
