@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ModalProvider } from "./components/ModalProvider";
@@ -74,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased transition-colors duration-300">
+      <body className={`${inter.className} font-sans antialiased transition-colors duration-300`}>
         <OrganizationSchema
           name="Raygal Royal"
           url="https://raygalroyal.com"
