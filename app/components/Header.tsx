@@ -148,15 +148,17 @@ export default function Header() {
               <Image
                 src="/logoW.png"
                 alt="RaygalRoyal logo"
-                width={36}
-                height={36}
+                width={1200}
+                height={700}
+                priority
                 className="block dark:hidden"
               />
               <Image
                 src="/logoB.png"
                 alt="RaygalRoyal logo"
-                width={36}
-                height={36}
+                width={1200}
+                height={700}
+                priority
                 className="hidden dark:block"
               />
             </span>
@@ -196,6 +198,7 @@ export default function Header() {
                       >
                         {link.dropdown.map((item) => (
                           <button
+                            aria-label="Open menu"
                             key={item.name}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -229,6 +232,7 @@ export default function Header() {
           {!authRole ? (
             <div className="relative" ref={authMenuRef}>
               <button
+                aria-label="Open menu"
                 onClick={() => setAuthMenuOpen((prev) => !prev)}
                 className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 title="Logins"
@@ -269,6 +273,7 @@ export default function Header() {
             </div>
           ) : (
             <button
+              aria-label="Open menu"
               onClick={() => void handleLogout()}
               className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
               <LogOut className="w-4 h-4" />
@@ -278,6 +283,7 @@ export default function Header() {
 
           {/* THEME TOGGLE */}
           <button
+            aria-label="Open menu"
             onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={t.toggle.theme}
@@ -290,6 +296,7 @@ export default function Header() {
           {/* LANGUAGE SWITCHER */}
           <div className="relative" ref={languageMenuRef} dir="ltr">
             <button
+              aria-label="Open menu"
               onClick={() => setLanguageMenuOpen((prev) => !prev)}
               className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               title={t.toggle.label}
@@ -315,6 +322,7 @@ export default function Header() {
                       const Flag = languageFlags[lang]
                       return (
                         <button
+                          aria-label="Open menu"
                           key={lang}
                           onClick={() => {
                             setLanguage(lang)
@@ -341,6 +349,7 @@ export default function Header() {
 
           {/* START PROJECT CTA */}
           <button
+            aria-label="Open menu"
             onClick={() => openOrderModal()}
             className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group"
             style={{
@@ -360,6 +369,7 @@ export default function Header() {
 
           {/* MOBILE MENU TOGGLE */}
           <button
+            aria-label="Open menu"
             onClick={() => setMenuOpen(!menuOpen)}
             className="lg:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
@@ -409,6 +419,7 @@ export default function Header() {
                 </>
               ) : (
                 <button
+                  aria-label="Open menu"
                   onClick={() => void handleLogout()}
                   className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors text-left"
                 >
@@ -416,6 +427,7 @@ export default function Header() {
                 </button>
               )}
               <button
+                aria-label="Open menu"
                 onClick={() => {
                   openOrderModal();
                   setMenuOpen(false);

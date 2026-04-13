@@ -313,6 +313,7 @@ export default function OrderFlow({
               </div>
             </div>
             <button
+              aria-label="Open menu"
               onClick={() => { onClose(); reset(); }}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             >

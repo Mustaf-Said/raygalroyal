@@ -1,43 +1,46 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ModalProvider } from "./components/ModalProvider";
 import LayoutWrapper from "./components/LayoutWrapper";
 import OrganizationSchema from "./components/seo/OrganizationSchema";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Raygal Royal | Digital Solutions Agency",
+
   description:
     "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
+
   metadataBase: new URL("https://raygalroyal.com"),
+
+  icons: {
+    icon: "/logoB.png",
+    shortcut: "/logoB.png",
+    apple: "/logoB.png",
+  },
+
   openGraph: {
     title: "Raygal Royal | Digital Solutions Agency",
     description:
-      "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
+      "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications.",
     url: "https://raygalroyal.com",
     siteName: "Raygal Royal",
     type: "website",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/logoB.png",
         width: 1200,
         height: 630,
         alt: "Raygal Royal",
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Raygal Royal | Digital Solutions Agency",
-    description:
-      "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
-    images: ["/twitter-image"],
-  },
-  verification: {
-    other: {
-      "impact-site-verification": "76817790-a843-4faf-9db0-ebf09e60592e",
-    },
   },
 };
 
@@ -72,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased transition-colors duration-300">
+      <body className={`${inter.className} font-sans antialiased transition-colors duration-300`}>
         <OrganizationSchema
           name="Raygal Royal"
           url="https://raygalroyal.com"
