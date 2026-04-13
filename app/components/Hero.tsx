@@ -85,6 +85,7 @@ export default function Hero() {
                 className=" flex-1 min-w-0 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
               />
               <button
+                aria-label="Open menu"
                 onClick={handleDomainSearch}
                 className="shrink-0 px-4 sm:px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap"
                 style={{
