@@ -350,22 +350,22 @@ function DomainSearchContent() {
         </div>
 
         {loading && (
-          <div className="mb-8 overflow-hidden rounded-3xl border border-blue-500/20 bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
+          <div className="mb-8 overflow-hidden rounded-3xl border border-blue-500/20 dark:border-blue-500/20 bg-linear-to-br from-white via-gray-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] dark:shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-4">
-                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 ring-1 ring-inset ring-blue-400/20">
-                  <div className="absolute inset-0 rounded-2xl bg-blue-400/10 animate-pulse" />
-                  <Loader2 className="relative h-6 w-6 animate-spin text-blue-300" />
+                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 dark:bg-blue-500/15 ring-1 ring-inset ring-blue-400/20 dark:ring-blue-400/20">
+                  <div className="absolute inset-0 rounded-2xl bg-blue-400/10 dark:bg-blue-400/10 animate-pulse" />
+                  <Loader2 className="relative h-6 w-6 animate-spin text-blue-600 dark:text-blue-300" />
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-200/70">
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-600 dark:text-blue-200/70">
                     {copy.searching}
                   </p>
-                  <h2 className="mt-2 text-2xl md:text-3xl font-black text-white">
+                  <h2 className="mt-2 text-2xl md:text-3xl font-black text-gray-900 dark:text-white">
                     {copy.loadingTitle} &quot;{query}&quot;
                   </h2>
-                  <p className="mt-2 max-w-2xl text-sm md:text-base text-slate-300">
+                  <p className="mt-2 max-w-2xl text-sm md:text-base text-gray-600 dark:text-slate-300">
                     {copy.loadingDescription}
                   </p>
                 </div>
@@ -375,15 +375,15 @@ function DomainSearchContent() {
                 {loadingSteps.map((step, index) => (
                   <div
                     key={step}
-                    className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-center"
+                    className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 px-3 py-3 text-center"
                   >
-                    <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/15 text-blue-200">
+                    <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-200">
                       {index === 2 ? <Sparkles className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                     </div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-200">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-700 dark:text-slate-200">
                       {copy.loadingStepLabel} {index + 1}
                     </p>
-                    <p className="mt-1 text-[11px] leading-tight text-slate-400">
+                    <p className="mt-1 text-[11px] leading-tight text-gray-500 dark:text-slate-400">
                       {step}
                     </p>
                   </div>
@@ -393,55 +393,55 @@ function DomainSearchContent() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)]">
               <div className="space-y-4">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 p-4">
                   <div className="flex items-center justify-between gap-4">
-                    <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
-                    <div className="h-4 w-20 rounded-full bg-white/10 animate-pulse" />
+                    <div className="h-4 w-32 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
+                    <div className="h-4 w-20 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
                   </div>
                 </div>
 
                 {loadingResultCards.map((card) => (
                   <div
                     key={card}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5"
+                    className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 p-4 md:p-5"
                   >
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
                       <div className="space-y-3">
-                        <div className="h-6 w-56 rounded-full bg-white/10 animate-pulse" />
-                        <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
-                        <div className="h-5 w-20 rounded-full bg-blue-400/20 animate-pulse" />
+                        <div className="h-6 w-56 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
+                        <div className="h-4 w-32 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
+                        <div className="h-5 w-20 rounded-full bg-blue-200 dark:bg-blue-400/20 animate-pulse" />
                       </div>
 
                       <div className="flex items-center justify-between gap-3 md:justify-end md:min-w-52.5">
-                        <div className="h-6 w-24 rounded-full bg-white/10 animate-pulse" />
-                        <div className="h-10 w-28 rounded-xl bg-white/10 animate-pulse" />
+                        <div className="h-6 w-24 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
+                        <div className="h-10 w-28 rounded-xl bg-gray-200 dark:bg-white/10 animate-pulse" />
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <div className="mb-5 h-6 w-28 rounded-full bg-white/10 animate-pulse" />
+              <div className="rounded-3xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 p-5">
+                <div className="mb-5 h-6 w-28 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
                 <div className="space-y-3">
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                    <div className="h-4 w-24 rounded-full bg-white/10 animate-pulse" />
+                  <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-slate-950/40 p-4">
+                    <div className="h-4 w-24 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
                     <div className="mt-4 space-y-3">
                       {loadingAddOns.map((item) => (
-                        <div key={item} className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-3 py-3">
+                        <div key={item} className="flex items-center justify-between gap-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-3">
                           <div>
-                            <div className="h-4 w-24 rounded-full bg-white/10 animate-pulse" />
-                            <div className="mt-2 h-3 w-32 rounded-full bg-white/10 animate-pulse" />
+                            <div className="h-4 w-24 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
+                            <div className="mt-2 h-3 w-32 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
                           </div>
-                          <div className="h-5 w-10 rounded-full bg-white/10 animate-pulse" />
+                          <div className="h-5 w-10 rounded-full bg-gray-200 dark:bg-white/10 animate-pulse" />
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-blue-500/10 p-4">
-                    <div className="h-4 w-20 rounded-full bg-white/10 animate-pulse" />
-                    <div className="mt-3 h-10 w-full rounded-xl bg-white/10 animate-pulse" />
+                  <div className="rounded-2xl border border-blue-200 dark:border-white/10 bg-blue-50 dark:bg-blue-500/10 p-4">
+                    <div className="h-4 w-20 rounded-full bg-blue-200 dark:bg-white/10 animate-pulse" />
+                    <div className="mt-3 h-10 w-full rounded-xl bg-blue-200 dark:bg-white/10 animate-pulse" />
                   </div>
                 </div>
               </div>
