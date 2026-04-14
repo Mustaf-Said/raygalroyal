@@ -1,6 +1,7 @@
 "use client"
 
 import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
+import { useLanguage } from "@/app/components/LanguageProvider"
 
 type DomainResultRowProps = {
   domain: string
@@ -31,6 +32,7 @@ export default function DomainResultRow({
   buyDisabled,
   onBuy,
 }: DomainResultRowProps) {
+  const { t } = useLanguage()
   const disableBuy = buyDisabled ?? !available
   const showMakeOffer = availabilityStatus === "taken" || availabilityStatus === "unknown"
   const makeOfferUrl = showMakeOffer ? generateNamecheapAffiliateLink(domain) : null
@@ -98,7 +100,7 @@ export default function DomainResultRow({
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer ml-auto"
             >
-              Make offer
+              {t.domainSearch.makeOffer}
             </a>
           ) : (
             <button

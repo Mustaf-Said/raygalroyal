@@ -81,15 +81,7 @@ function isDomainApiResult(value: unknown): value is DomainApiResult {
   return typeof value === "object" && value !== null && "domain" in value
 }
 
-const loadingSteps = [
-  "Live availability",
-  "Price checks",
-  "AI suggestions",
-]
-
 const loadingResultCards = [1, 2, 3, 4]
-
-const loadingAddOns = ["SSL", "Hosting", "Email"]
 
 function DomainSearchContent() {
   const router = useRouter()
@@ -106,6 +98,8 @@ function DomainSearchContent() {
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([])
   const copy = t.domainSearch
   const [cartOpen, setCartOpen] = useState(false)
+  const loadingSteps = [copy.loadingStepLiveAvailability, copy.loadingStepPriceChecks, copy.loadingStepAiSuggestions]
+  const loadingAddOns = [copy.addOnSsl, copy.addOnHosting, copy.addOnEmail]
 
   const toDomainResult = useCallback((item: DomainApiResult): DomainResult => {
     const availabilityFlag = item.available ?? item.availability
@@ -369,10 +363,10 @@ function DomainSearchContent() {
                     {copy.searching}
                   </p>
                   <h2 className="mt-2 text-2xl md:text-3xl font-black text-white">
-                    Scanning options for &quot;{query}&quot;
+                    {copy.loadingTitle} &quot;{query}&quot;
                   </h2>
                   <p className="mt-2 max-w-2xl text-sm md:text-base text-slate-300">
-                    Comparing availability, pricing, and alternatives in real time. The best matches will appear here in a moment.
+                    {copy.loadingDescription}
                   </p>
                 </div>
               </div>
@@ -387,7 +381,7 @@ function DomainSearchContent() {
                       {index === 2 ? <Sparkles className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                     </div>
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-200">
-                      Step {index + 1}
+                      {copy.loadingStepLabel} {index + 1}
                     </p>
                     <p className="mt-1 text-[11px] leading-tight text-slate-400">
                       {step}
