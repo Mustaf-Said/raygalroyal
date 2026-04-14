@@ -4,7 +4,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Loader2, X } from "lucide-react"
+import { Loader2, Search, Sparkles, X } from "lucide-react"
 import { useLanguage } from "@/app/components/LanguageProvider"
 import SearchBar from "@/app/components/domain-search/SearchBar"
 import DomainResultsList from "@/app/components/domain-search/DomainResultsList"
@@ -80,6 +80,16 @@ function generateAiDomainCandidates(keyword: string, existing: Set<string>): str
 function isDomainApiResult(value: unknown): value is DomainApiResult {
   return typeof value === "object" && value !== null && "domain" in value
 }
+
+const loadingSteps = [
+  "Live availability",
+  "Price checks",
+  "AI suggestions",
+]
+
+const loadingResultCards = [1, 2, 3, 4]
+
+const loadingAddOns = ["SSL", "Hosting", "Email"]
 
 function DomainSearchContent() {
   const router = useRouter()
@@ -346,9 +356,102 @@ function DomainSearchContent() {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-300 mb-8">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>{copy.searching}</span>
+          <div className="mb-8 overflow-hidden rounded-3xl border border-blue-500/20 bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 ring-1 ring-inset ring-blue-400/20">
+                  <div className="absolute inset-0 rounded-2xl bg-blue-400/10 animate-pulse" />
+                  <Loader2 className="relative h-6 w-6 animate-spin text-blue-300" />
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-200/70">
+                    {copy.searching}
+                  </p>
+                  <h2 className="mt-2 text-2xl md:text-3xl font-black text-white">
+                    Scanning options for &quot;{query}&quot;
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm md:text-base text-slate-300">
+                    Comparing availability, pricing, and alternatives in real time. The best matches will appear here in a moment.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 md:min-w-80">
+                {loadingSteps.map((step, index) => (
+                  <div
+                    key={step}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-center"
+                  >
+                    <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/15 text-blue-200">
+                      {index === 2 ? <Sparkles className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+                    </div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-200">
+                      Step {index + 1}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-tight text-slate-400">
+                      {step}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)]">
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
+                    <div className="h-4 w-20 rounded-full bg-white/10 animate-pulse" />
+                  </div>
+                </div>
+
+                {loadingResultCards.map((card) => (
+                  <div
+                    key={card}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5"
+                  >
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+                      <div className="space-y-3">
+                        <div className="h-6 w-56 rounded-full bg-white/10 animate-pulse" />
+                        <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
+                        <div className="h-5 w-20 rounded-full bg-blue-400/20 animate-pulse" />
+                      </div>
+
+                      <div className="flex items-center justify-between gap-3 md:justify-end md:min-w-52.5">
+                        <div className="h-6 w-24 rounded-full bg-white/10 animate-pulse" />
+                        <div className="h-10 w-28 rounded-xl bg-white/10 animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div className="mb-5 h-6 w-28 rounded-full bg-white/10 animate-pulse" />
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                    <div className="h-4 w-24 rounded-full bg-white/10 animate-pulse" />
+                    <div className="mt-4 space-y-3">
+                      {loadingAddOns.map((item) => (
+                        <div key={item} className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-3 py-3">
+                          <div>
+                            <div className="h-4 w-24 rounded-full bg-white/10 animate-pulse" />
+                            <div className="mt-2 h-3 w-32 rounded-full bg-white/10 animate-pulse" />
+                          </div>
+                          <div className="h-5 w-10 rounded-full bg-white/10 animate-pulse" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-blue-500/10 p-4">
+                    <div className="h-4 w-20 rounded-full bg-white/10 animate-pulse" />
+                    <div className="mt-3 h-10 w-full rounded-xl bg-white/10 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -420,57 +523,59 @@ function DomainSearchContent() {
         </AnimatePresence>
 
         {/* MAIN GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
-          <div>
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.sectionTitle}</h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
-            </div>
-            <DomainResultsList
-              results={results}
-              selectedDomain={selectedDomain?.domain ?? null}
-              primaryDomain={primaryDomain}
-              buyLabel={copy.buy}
-              onBuy={handleBuy}
-            />
-            {!loading && !error && aiSuggestions.length > 0 && (
-              <div className="mt-8">
-                <div className="flex items-center justify-between mb-4 px-1">
-                  <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.aiSuggestionsTitle}</h2>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
-                </div>
-                <DomainResultsList
-                  results={aiSuggestions}
-                  selectedDomain={selectedDomain?.domain ?? null}
-                  primaryDomain=""
-                  buyLabel={copy.buy}
-                  onBuy={handleBuy}
-                />
+        {loading ? null : (
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
+            <div>
+              <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.sectionTitle}</h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
               </div>
-            )}
-          </div>
+              <DomainResultsList
+                results={results}
+                selectedDomain={selectedDomain?.domain ?? null}
+                primaryDomain={primaryDomain}
+                buyLabel={copy.buy}
+                onBuy={handleBuy}
+              />
+              {!loading && !error && aiSuggestions.length > 0 && (
+                <div className="mt-8">
+                  <div className="flex items-center justify-between mb-4 px-1">
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">{copy.aiSuggestionsTitle}</h2>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{copy.priceColumn}</span>
+                  </div>
+                  <DomainResultsList
+                    results={aiSuggestions}
+                    selectedDomain={selectedDomain?.domain ?? null}
+                    primaryDomain=""
+                    buyLabel={copy.buy}
+                    onBuy={handleBuy}
+                  />
+                </div>
+              )}
+            </div>
 
-          {/* Desktop only — sticky sidebar cart */}
-          <div className="hidden md:block md:sticky md:top-28">
-            <DomainCart
-              selected={selectedDomain
-                ? { domain: selectedDomain.domain, price: selectedDomain.price, priceLabel: selectedDomain.cartPriceLabel }
-                : null}
-              title={copy.cartTitle}
-              empty={copy.cartEmpty}
-              domainLabel={copy.domainLabel}
-              priceLabel={copy.priceLabel}
-              checkPriceLabel={copy.checkPrice}
-              registrarPriceLabel={copy.priceAvailableAtRegistrar}
-              continueLabel={copy.continue}
-              addOnsTitle={copy.addOnsTitle}
-              addOns={addOnServices}
-              selectedAddOnIds={selectedAddOnIds}
-              totalLabel={copy.totalLabel}
-              onToggleAddOn={handleToggleAddOn}
-            />
+            {/* Desktop only — sticky sidebar cart */}
+            <div className="hidden md:block md:sticky md:top-28">
+              <DomainCart
+                selected={selectedDomain
+                  ? { domain: selectedDomain.domain, price: selectedDomain.price, priceLabel: selectedDomain.cartPriceLabel }
+                  : null}
+                title={copy.cartTitle}
+                empty={copy.cartEmpty}
+                domainLabel={copy.domainLabel}
+                priceLabel={copy.priceLabel}
+                checkPriceLabel={copy.checkPrice}
+                registrarPriceLabel={copy.priceAvailableAtRegistrar}
+                continueLabel={copy.continue}
+                addOnsTitle={copy.addOnsTitle}
+                addOns={addOnServices}
+                selectedAddOnIds={selectedAddOnIds}
+                totalLabel={copy.totalLabel}
+                onToggleAddOn={handleToggleAddOn}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   )
