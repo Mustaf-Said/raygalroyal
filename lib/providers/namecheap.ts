@@ -8,8 +8,10 @@ type NamecheapCheckResult = {
 }
 
 const NAMECHEAP_API_BASE = "https://api.namecheap.com/xml.response"
-const RDAP_LOOKUP_BASE = "https://rdap.org/domain"
 const NAMECHEAP_PUBLIC_RESULTS_BASE = "https://r.jina.ai/http://www.namecheap.com/domains/registration/results/"
+
+// In-memory TLD pricing cache — persists for the lifetime of the process
+const pricingCache = new Map<string, number>()
 
 function parseXmlAttr(xml: string, element: string, attr: string): string | null {
   const pattern = new RegExp(`<${element}[^>]*${attr}="([^"]+)"[^>]*>`, "i")
@@ -53,9 +55,28 @@ function parseTagAttr(tag: string, attr: string): string | null {
   return match?.[1] ?? null
 }
 
+function getNamecheapCredentials() {
+  return {
+    apiUser: process.env.NAMECHEAP_API_USER,
+    apiKey: process.env.NAMECHEAP_API_KEY,
+    userName: process.env.NAMECHEAP_USERNAME,
+    clientIp: process.env.NAMECHEAP_CLIENT_IP,
+  }
+}
+
+function hasNamecheapCredentials() {
+  const creds = getNamecheapCredentials()
+  return Boolean(creds.apiUser && creds.apiKey && creds.userName && creds.clientIp)
+}
+
 async function fetchLiveDomainRegistrationPrice(domain: string): Promise<number | null> {
   const tld = getDomainTld(domain)
   if (!tld) return null
+
+  // Return cached price immediately — no API call needed
+  if (pricingCache.has(tld)) {
+    return pricingCache.get(tld)!
+  }
 
   const creds = getNamecheapCredentials()
 
@@ -86,10 +107,7 @@ async function fetchLiveDomainRegistrationPrice(domain: string): Promise<number 
     const name = parseTagAttr(tag, "Name")?.toLowerCase() || ""
     const normalizedName = name.startsWith(".") ? name.slice(1) : name
 
-    if (normalizedName !== tld) {
-      continue
-    }
-
+    // Cache every TLD price we encounter while we have the response
     const candidateValues = [
       parseTagAttr(tag, "YourPrice"),
       parseTagAttr(tag, "Price"),
@@ -99,50 +117,15 @@ async function fetchLiveDomainRegistrationPrice(domain: string): Promise<number 
     for (const candidate of candidateValues) {
       const parsed = Number(candidate)
       if (Number.isFinite(parsed) && parsed >= 0) {
-        return parsed
+        if (!pricingCache.has(normalizedName)) {
+          pricingCache.set(normalizedName, parsed)
+        }
+        break
       }
     }
   }
 
-  return null
-}
-
-function getNamecheapCredentials() {
-  return {
-    apiUser: process.env.NAMECHEAP_API_USER,
-    apiKey: process.env.NAMECHEAP_API_KEY,
-    userName: process.env.NAMECHEAP_USERNAME,
-    clientIp: process.env.NAMECHEAP_CLIENT_IP,
-  }
-}
-
-function hasNamecheapCredentials() {
-  const creds = getNamecheapCredentials()
-  return Boolean(creds.apiUser && creds.apiKey && creds.userName && creds.clientIp)
-}
-
-async function resolveAvailabilityViaRdap(domain: string): Promise<"available" | "taken" | "unknown"> {
-  try {
-    const response = await fetch(`${RDAP_LOOKUP_BASE}/${encodeURIComponent(domain)}`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        Accept: "application/rdap+json, application/json;q=0.9, */*;q=0.8",
-      },
-    })
-
-    if (response.status === 404) {
-      return "available"
-    }
-
-    if (response.ok) {
-      return "taken"
-    }
-
-    return "unknown"
-  } catch {
-    return "unknown"
-  }
+  return pricingCache.get(tld) ?? null
 }
 
 type PublicDomainInfo = {
@@ -183,17 +166,14 @@ async function fetchPublicDomainInfo(domain: string): Promise<PublicDomainInfo> 
     let availabilityStatus: "available" | "taken" | "premium" | "unknown" = "unknown"
 
     if (/REGISTERED IN \d{4}/i.test(section)) {
-      // Domain is registered
       availabilityStatus = "taken"
     } else if (/\$[\d,]+\.\d{2}\/yr/i.test(section)) {
-      // Domain has a price listed and is not registered, so it's available
       availabilityStatus = "available"
     }
 
     // Extract price from the section
     let price: number | null = null
 
-    // Look for pattern: $XX.XX/yr
     const priceMatch = section.match(/\$([\d,]+\.\d{2})\/yr/i)
     if (priceMatch?.[1]) {
       const parsed = Number(priceMatch[1].replace(/,/g, ""))
@@ -202,7 +182,7 @@ async function fetchPublicDomainInfo(domain: string): Promise<PublicDomainInfo> 
       }
     }
 
-    // Check if premium (premium marker or very high price)
+    // Check if premium
     const isPremiumMarker = /premium|minimum \d+-year/i.test(section)
     if (isPremiumMarker && price !== null) {
       availabilityStatus = "premium"
@@ -216,10 +196,9 @@ async function fetchPublicDomainInfo(domain: string): Promise<PublicDomainInfo> 
 
 export async function checkDomainAvailability(domain: string): Promise<NamecheapCheckResult> {
   if (!hasNamecheapCredentials()) {
-    // Without API credentials, fetch from public Namecheap results page
+    // Without API credentials, fall back to public Namecheap results page scraping
     const publicInfo = await fetchPublicDomainInfo(domain)
 
-    // If we got public info with either availability or price, use it
     if (publicInfo.availabilityStatus !== "unknown" || publicInfo.price !== null) {
       return {
         domain,
@@ -231,12 +210,11 @@ export async function checkDomainAvailability(domain: string): Promise<Namecheap
       }
     }
 
-    // Fallback to RDAP if public page parsing completely failed
-    const rdapStatus = await resolveAvailabilityViaRdap(domain)
+    // Public page parsing failed — return unknown (RDAP removed)
     return {
       domain,
-      available: rdapStatus === "unknown" ? undefined : rdapStatus === "available",
-      availabilityStatus: rdapStatus,
+      available: undefined,
+      availabilityStatus: "unknown",
       price: null,
       isPremium: false,
       pricingStatus: "check_price",
@@ -266,13 +244,10 @@ export async function checkDomainAvailability(domain: string): Promise<Namecheap
 
   const availableFlag = parseXmlFlag(xml)
   const isPremium = parseDomainCheckIsPremium(xml)
+
   if (isPremium) {
-    let premiumPrice = parseXmlNumberAttr(xml, "DomainCheckResult", "PremiumRegistrationPrice")
-    // If API doesn't return premium price, try to get it from public page
-    if (premiumPrice === null) {
-      const publicInfo = await fetchPublicDomainInfo(domain)
-      premiumPrice = publicInfo.price
-    }
+    // Try to get premium price from the XML response itself first — no extra request
+    const premiumPrice = parseXmlNumberAttr(xml, "DomainCheckResult", "PremiumRegistrationPrice")
 
     return {
       domain,
@@ -287,29 +262,18 @@ export async function checkDomainAvailability(domain: string): Promise<Namecheap
   const availabilityStatus =
     availableFlag === true ? "available" : availableFlag === false ? "taken" : "unknown"
 
-  if (availabilityStatus === "unknown") {
-    const rdapStatus = await resolveAvailabilityViaRdap(domain)
-    if (rdapStatus !== "unknown") {
+  // Only fetch price when the domain is actually available — skip for taken/unknown
+  if (availabilityStatus === "available") {
+    const livePrice = await fetchLiveDomainRegistrationPrice(domain)
+    if (livePrice !== null) {
       return {
         domain,
-        available: rdapStatus === "available",
-        availabilityStatus: rdapStatus,
-        price: null,
+        available: availableFlag,
+        availabilityStatus,
+        price: Number(livePrice.toFixed(2)),
         isPremium,
-        pricingStatus: "check_price",
+        pricingStatus: "live",
       }
-    }
-  }
-
-  const livePrice = await fetchLiveDomainRegistrationPrice(domain)
-  if (livePrice !== null) {
-    return {
-      domain,
-      available: availableFlag,
-      availabilityStatus,
-      price: Number(livePrice.toFixed(2)),
-      isPremium,
-      pricingStatus: "live",
     }
   }
 
@@ -319,6 +283,6 @@ export async function checkDomainAvailability(domain: string): Promise<Namecheap
     availabilityStatus,
     price: null,
     isPremium,
-    pricingStatus: "estimated",
+    pricingStatus: "check_price",
   }
 }
