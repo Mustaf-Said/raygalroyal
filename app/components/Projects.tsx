@@ -9,19 +9,19 @@ import { useLanguage } from "./LanguageProvider"
 const PROJECTS_DATA = [
   {
     key: "ecommerce",
-    image: "/images/projekt/1.jpg",
+    image: "/images/projekt/ecommerce.jpg",
     categoryKey: "ecommerce",
     tech: ["Next.js", "Stripe", "Tailwind"],
   },
   {
     key: "fintech",
-    image: "/images/projekt/2.jpg",
+    image: "/images/projekt/financial.jpg",
     categoryKey: "fintech",
     tech: ["React", "D3.js", "Node.js"],
   },
   {
     key: "healthcare",
-    image: "/images/projekt/3.jpg",
+    image: "/images/projekt/patient.jpg",
     categoryKey: "healthcare",
     tech: ["TypeScript", "Next.js", "Firebase"],
   },
