@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { getAdminAccessToken } from "@/lib/adminClientAuth"
 import {
   clearFreelancerAuth,
   getFreelancerAccessToken,
@@ -35,14 +35,12 @@ export default function FreelancerMessagesPage() {
     setError(null)
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+      const adminToken = getAdminAccessToken()
 
-      if (session?.access_token) {
+      if (adminToken) {
         const adminCheck = await fetch("/api/freelancers?admin=1", {
           cache: "no-store",
-          headers: { Authorization: `Bearer ${session.access_token}` },
+          headers: { Authorization: `Bearer ${adminToken}` },
         })
 
         if (adminCheck.ok) {

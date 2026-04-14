@@ -5,12 +5,21 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Play, Search } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Hero() {
   const { t } = useLanguage()
   const [domain, setDomain] = useState("")
+  const [loadVideo, setLoadVideo] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setLoadVideo(true)
+    }, 900)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [])
 
   const handleDomainSearch = () => {
     const nextDomain = domain.trim()
@@ -32,9 +41,11 @@ export default function Hero() {
           loop
           muted
           playsInline
+          preload="none"
+          aria-hidden="true"
           className="w-full h-full object-cover opacity-40 dark:opacity-30"
         >
-          <source src="/videos/coding.mp4" type="video/mp4" />
+          {loadVideo ? <source src="/videos/coding.mp4" type="video/mp4" /> : null}
         </video>
         <div className="absolute inset-0 bg-linear-to-b from-white via-white/80 to-white dark:from-gray-950 dark:via-gray-950/80 dark:to-gray-950" />
       </div>

@@ -4,7 +4,6 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { CheckCircle2, Package, CreditCard, ChevronRight, Loader2 } from "lucide-react"
 import { translations, type Language } from "@/locales"
-import { supabase } from "@/lib/supabase"
 
 type Order = {
   id: string
@@ -27,6 +26,19 @@ function PayPalSuccessContent() {
   const [loading, setLoading] = useState(true)
   const [order, setOrder] = useState<Order | null>(null)
   const [lang, setLang] = useState<Language>("en")
+
+  const fetchOrder = async (id: string) => {
+    const response = await fetch(`/api/payment/order?orderId=${encodeURIComponent(id)}`, {
+      cache: "no-store",
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const json = (await response.json().catch(() => null)) as { order?: Order } | null
+    return json?.order ?? null
+  }
 
   useEffect(() => {
     if (!orderID) return
@@ -65,16 +77,13 @@ function PayPalSuccessContent() {
             throw new Error(confirmData.error || translations.en.order.errors.confirmPaymentFailed)
           }
 
-          // Fetch updated order details
-          const { data } = await supabase
-            .from("project_orders")
-            .select("*")
-            .eq("id", orderId)
-            .single()
-
-          if (data) {
-            setOrder(data)
-            setLang(isLanguage(data.language) ? data.language : "en")
+          // Fetch updated order details via backend API
+          if (orderId) {
+            const orderData = await fetchOrder(orderId)
+            if (orderData) {
+              setOrder(orderData)
+              setLang(isLanguage(orderData.language) ? orderData.language : "en")
+            }
           }
         } else {
           throw new Error(captureData.error || translations.en.order.errors.captureFailed)

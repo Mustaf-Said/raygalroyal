@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
-
 @import 'tailwindcss';
 /* ✅ Custom variants for dark/light mode */
 @variant dark (&:where(.dark, .dark *));
@@ -39,7 +37,7 @@ body,
 }
 
 .abril-fatface-regular {
-  font-family: 'Abril Fatface', serif;
+  font-family: serif;
   font-weight: 400;
   font-style: normal;
 }

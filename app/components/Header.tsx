@@ -148,17 +148,17 @@ export default function Header() {
               <Image
                 src="/logoW.png"
                 alt="RaygalRoyal logo"
-                width={1200}
-                height={700}
-                priority
+                width={40}
+                height={40}
+                sizes="40px"
                 className="block dark:hidden"
               />
               <Image
                 src="/logoB.png"
                 alt="RaygalRoyal logo"
-                width={1200}
-                height={700}
-                priority
+                width={40}
+                height={40}
+                sizes="40px"
                 className="hidden dark:block"
               />
             </span>
