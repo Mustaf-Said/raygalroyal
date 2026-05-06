@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, /* MessageSquare */ Phone, Send, CheckCircle2 } from "lucide-react"
+import { Mail, /* MessageSquare */ Phone, Send, CheckCircle2, ArrowDown, MessageCircle } from "lucide-react"
 import { useLanguage } from "../components/LanguageProvider"
 import { useState } from "react"
 
@@ -72,35 +72,32 @@ export default function Contact() {
             </p>
 
             <div className="space-y-8">
-              <div className="flex items-center gap-6 group">
-                <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                  <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{t.contact.email}</div>
-                  <a href="mailto:info@raygalroyal.com" className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 transition-colors">info@raygalroyal.com</a>
+              <div className="space-y-5">
+                {/* Animated pulse icon */}
+                <a href="tel:+46722889588" className="flex items-center gap-3 w-fit group">
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <div className="absolute inset-0 rounded-full bg-blue-100 dark:bg-blue-900/30 animate-ping opacity-40" />
+                    <div className="relative w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                      <MessageCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-blue-500 transition-colors">Direct line</span>
+                </a>
+
+                {/* Message */}
+                <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                  Write your message here and we&apos;ll get back to you quickly —
+                  <span className="font-semibold text-blue-600 dark:text-blue-400"> or reach us by email</span>
+                  {" "}listed in the footer below.
+                </p>
+
+                {/* Footer hint */}
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 w-fit">
+                  <ArrowDown className="w-4 h-4 text-gray-400 animate-bounce" />
+                  <span className="text-sm text-gray-400">Scroll to footer for email contact</span>
                 </div>
               </div>
 
-              {/* <div className="flex items-center gap-6 group">
-                <div className="w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
-                  <MessageSquare className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{t.contact.whatsapp}</div>
-                  <a href="https://wa.me/46722889588" target="_blank" className="text-xl font-bold text-gray-900 dark:text-white hover:text-green-600 transition-colors">+46 72 288 95 88</a>
-                </div>
-              </div>
- */}
-              <div className="flex items-center gap-6 group">
-                <div className="w-14 h-14 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{t.contact.office}</div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">{t.contact.location}</div>
-                </div>
-              </div>
             </div>
           </motion.div>
 
