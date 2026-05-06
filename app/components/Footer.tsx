@@ -1,12 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
+import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin, Building2 } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
 import Image from "next/image"
+import { useState } from "react"
+import ContactPopup from "./ContactPopup"
+
 export default function Footer() {
   const { t, language } = useLanguage()
+  const [showContactPopup, setShowContactPopup] = useState(false)
   const year = new Date().getFullYear()
   const footerLegal = t.footer as typeof t.footer & {
     privacy?: string
@@ -170,20 +174,24 @@ export default function Footer() {
 
               <li className="flex items-center gap-4 text-gray-400">
                 <Mail className="w-6 h-6 text-blue-600 shrink-0" />
-                <a
-                  href="mailto:support@raygalroyal.com"
-                  className="hover:text-blue-500 transition-colors"
+                <button
+                  onClick={() => setShowContactPopup(true)}
+                  className="hover:text-blue-500 transition-colors text-left"
                 >
                   support@raygalroyal.com
-                </a>
+                </button>
               </li>
 
-              <li className="flex items-center gap-4 text-gray-400">
-                <Mail className="w-6 h-6 text-blue-600 shrink-0" />
-                <a href="mailto:jobs@raygalroyal.com"
-                  className="hover:text-blue-500 transition-colors">
-                  jobs@raygalroyal.com
-                </a>
+              <li className="flex items-start gap-4 text-gray-400">
+                <Building2 className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+                <div className="hover:text-blue-500 transition-colors text-left">
+                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">
+                    {t.contact.office}
+                  </div>
+                  <div className="text-gray-600">
+                    {t.contact.location}
+                  </div>
+                </div>
               </li>
             </ul>
           </div>
@@ -207,6 +215,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </footer >
+      <ContactPopup isOpen={showContactPopup} onClose={() => setShowContactPopup(false)} />
+    </footer>
   )
 }
