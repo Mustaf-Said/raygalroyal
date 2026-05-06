@@ -147,10 +147,19 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-8">{t.footer.contact}</h3>
             <ul className="space-y-6">
-              <li className="flex items-start gap-4 text-gray-400">
+              {/* <li className="flex items-start gap-4 text-gray-400">
 
                 <MapPin className="w-6 h-6 text-blue-600 shrink-0" />
                 <span>{t.contact.location}</span>
+              </li> */}
+              <li className="flex items-center gap-4 text-gray-400">
+                <Mail className="w-6 h-6 text-blue-600 shrink-0" />
+                <button
+                  onClick={() => setShowContactPopup(true)}
+                  className="hover:text-blue-500 transition-colors text-left"
+                >
+                  support@raygalroyal.com
+                </button>
               </li>
               <li className="flex items-center gap-4 text-gray-400">
                 <Link
@@ -171,27 +180,25 @@ export default function Footer() {
                   <span>{t.contact.mobile}</span>
                 </Link>
               </li>
-
               <li className="flex items-center gap-4 text-gray-400">
                 <Mail className="w-6 h-6 text-blue-600 shrink-0" />
                 <button
                   onClick={() => setShowContactPopup(true)}
                   className="hover:text-blue-500 transition-colors text-left"
                 >
-                  support@raygalroyal.com
+                  jobs@raygalroyal.com
                 </button>
               </li>
-
               <li className="flex items-start gap-4 text-gray-400">
-                <Building2 className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
-                <div className="hover:text-blue-500 transition-colors text-left">
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">
-                    {t.contact.office}
-                  </div>
-                  <div className="text-gray-600">
-                    {t.contact.location}
-                  </div>
-                </div>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Marklandsgatan+25,+41477+Gothenborg,+Sweden"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-4 group"
+                >
+                  <MapPin className="w-6 h-6 text-blue-600 shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <span className="group-hover:text-blue-400 transition-colors">{t.contact.location}</span>
+                </a>
               </li>
             </ul>
           </div>

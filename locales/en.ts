@@ -279,7 +279,7 @@ const en = {
     error: "Something went wrong. Please try again.",
     whatsapp: "Chat on WhatsApp",
     office: "Office",
-    location: "Vaglangdsgatan 115, 50741 Boras, Sweden",
+    location: "Marklandsgatan 25, 41477 Gothenborg, Sweden",
     mobile: "Contact WhatsApp",
     replyWithin: "We'll get back to you within 24 hours.",
     placeholders: {
