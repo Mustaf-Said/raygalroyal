@@ -74,15 +74,15 @@ export default function Contact() {
             <div className="space-y-8">
               <div className="space-y-5">
                 {/* Animated pulse icon */}
-                <div className="flex items-center gap-3">
+                <a href="tel:+46722889588" className="flex items-center gap-3 w-fit group">
                   <div className="relative w-10 h-10 flex-shrink-0">
                     <div className="absolute inset-0 rounded-full bg-blue-100 dark:bg-blue-900/30 animate-ping opacity-40" />
-                    <div className="relative w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                    <div className="relative w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
                       <MessageCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Direct line</span>
-                </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-blue-500 transition-colors">Direct line</span>
+                </a>
 
                 {/* Message */}
                 <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
