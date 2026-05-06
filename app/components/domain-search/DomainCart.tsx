@@ -60,7 +60,7 @@ export default function DomainCart({
 
     try {
       setError(null)
-      window.open(generateNamecheapAffiliateLink(selected.domain), "_blank", "noopener,noreferrer")
+      window.location.href = generateNamecheapAffiliateLink(selected.domain)
     } catch (affiliateError) {
       setError(affiliateError instanceof Error ? affiliateError.message : "Could not redirect to Namecheap")
     }
