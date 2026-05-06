@@ -1,11 +1,11 @@
 "use client"
-
+import { SomalilandFlag } from './SomalilandFlag'
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock, LogOut } from "lucide-react"
-import { GB, SO, SA } from "country-flag-icons/react/3x2"
+import { GB, SA } from "country-flag-icons/react/3x2"
 import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
 import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { clearAdminAuth, getAdminAccessToken } from "@/lib/adminClientAuth"
 import { clearFreelancerAuth, getFreelancerAccessToken } from "@/lib/freelancerAuth"
 import Image from "next/image"
+
 export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
@@ -35,9 +36,10 @@ export default function Header() {
     ar: "العربية",
   }
 
-  const languageFlags: Record<Language, typeof GB> = {
+  // Ändra typen på languageFlags
+  const languageFlags: Record<Language, React.ComponentType<{ className?: string; title?: string }>> = {
     en: GB,
-    so: SO,
+    so: SomalilandFlag,  // ← direkt, ingen wrapper behövs!
     ar: SA,
   }
 
