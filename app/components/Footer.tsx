@@ -176,7 +176,14 @@ export default function Footer() {
                 >
                   support@raygalroyal.com
                 </a>
+              </li>
 
+              <li className="flex items-center gap-4 text-gray-400">
+                <Mail className="w-6 h-6 text-blue-600 shrink-0" />
+                <a href="mailto:jobs@raygalroyal.com"
+                  className="hover:text-blue-500 transition-colors">
+                  jobs@raygalroyal.com
+                </a>
               </li>
             </ul>
           </div>
