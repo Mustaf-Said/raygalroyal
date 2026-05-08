@@ -266,6 +266,10 @@ const so = {
         q: "Intee in le'eg ayay ammaan yihiin mashaariicda aad dhistaan?",
         a: "Amniga waa mudnaantayada. Waxaan raacnaa hab-shaqeedka ugu fiican ee warshadaha, waxaan hirgelinaa SSL, sireynta xogta, iyo hantidhowrka amniga joogtada ah.",
       },
+      {
+        q: "Ma bixisaan dhameystir ammaan ah oo lacag bixinta ah?",
+        a: "Waxaan ku dhejinnaa alwaaxaha lacag bixinta caalamiga ah si loo hubiyo in macaamiishaadu ay si ammaan ah oo fudud u bixin karaan.",
+      },
     ],
   },
   contact: {
@@ -659,14 +663,14 @@ const so = {
     scrollToTop: "Kor ugu noqo",
   },
   paymentIntegration: {
-    title: "Isku-darka Lacag-bixinta Ammaan ah",
-    subtitle: "Waxaan isku darnaa albaabada lacag-bixinta ee heer caalami ah si macaamiishaadu si ammaan ah oo fudud u bixiyaan.",
-    cardDetails: "Faahfaahinta Kaarka",
-    payWithStripe: "Ku bixi Stripe",
-    secureStripe: "Lacag-bixin Stripe ammaan ah",
-    oneClickCheckout: "Hal guji ku bixinta",
-    paypalDescription: "Lacag-bixin degdeg ah oo ammaan ah adigoo isticmaalaya akoonkaaga PayPal.",
-    protectedByPaypal: "Waxaa ilaalinaya PayPal",
+    sectionTitle: "Mashaariicda Muhiimka ah",
+    sectionSubtitle: "Xulashada madasha aanu naqshadeynnay oo aanu dhisannay.",
+    live: "Waa Socda",
+    inProgress: "Horumarinta ayaa socota",
+    internship: "Tababar",
+    marketplacePlatform: "Suuq Dijitaal",
+    governmentPlatform: "Madasha Dowladda",
+    visitSite: "Booqo Websaytka",
   },
   about: {
     badge: "Hay'adeena",

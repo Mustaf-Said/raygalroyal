@@ -266,6 +266,10 @@ const en = {
         q: "How secure are the platforms you build?",
         a: "Security is our priority. We follow industry best practices, implement SSL, data encryption, and regular security audits.",
       },
+      {
+        q: "Do you offer secure payment integration?",
+        a: "We integrate world-class payment gateways to ensure your customers can pay safely and easily.",
+      },
     ],
   },
   contact: {
@@ -656,14 +660,14 @@ const en = {
     scrollToTop: "Scroll to top",
   },
   paymentIntegration: {
-    title: "Secure Payment Integration",
-    subtitle: "We integrate world-class payment gateways to ensure your customers can pay safely and easily.",
-    cardDetails: "Card Details",
-    payWithStripe: "Pay with Stripe",
-    secureStripe: "Secure Stripe checkout",
-    oneClickCheckout: "Checkout with one click",
-    paypalDescription: "Fast and secure checkout using your PayPal account.",
-    protectedByPaypal: "Protected by PayPal",
+    sectionTitle: "Featured Projects",
+    sectionSubtitle: "A selection of platforms we have designed and built.",
+    live: "Live",
+    inProgress: "In Progress",
+    internship: "Internship",
+    marketplacePlatform: "Marketplace Platform",
+    governmentPlatform: "Government Platform",
+    visitSite: "Visit Site",
   },
   about: {
     badge: "Our Agency",

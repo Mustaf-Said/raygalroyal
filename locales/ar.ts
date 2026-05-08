@@ -260,6 +260,10 @@ const arOverrides = {
         q: "ما مدى أمان المنصات التي تبنونها؟",
         a: "الأمان أولوية لدينا. نتبع أفضل ممارسات الصناعة ونطبق SSL وتشفير البيانات وتدقيقات أمنية دورية.",
       },
+      {
+        q: "هل تقدمون تكاملاً آمناً مع بوابات الدفع؟",
+        a: "نقوم بدمج بوابات الدفع العالمية لضمان تمكن عملائكم من الدفع بأمان وسهولة.",
+      },
     ],
   },
   contact: {
@@ -371,14 +375,14 @@ const arOverrides = {
     scrollToTop: "العودة للأعلى",
   },
   paymentIntegration: {
-    title: "تكامل دفع آمن",
-    subtitle: "نقوم بدمج بوابات دفع عالمية لضمان دفع آمن وسهل لعملائك.",
-    cardDetails: "تفاصيل البطاقة",
-    payWithStripe: "ادفع عبر Stripe",
-    secureStripe: "دفع Stripe آمن",
-    oneClickCheckout: "الدفع بنقرة واحدة",
-    paypalDescription: "دفع سريع وآمن باستخدام حساب PayPal الخاص بك.",
-    protectedByPaypal: "محمي بواسطة PayPal",
+    sectionTitle: "مشاريعنا المميزة",
+    sectionSubtitle: "مجموعة من المنصات التي صمّمناها وطوّرناها.",
+    live: "مباشر",
+    inProgress: "قيد التطوير",
+    internship: "تدريب عملي",
+    marketplacePlatform: "منصة سوق تجاري",
+    governmentPlatform: "منصة حكومية",
+    visitSite: "زيارة الموقع",
   },
   about: {
     badge: "وكالتنا",

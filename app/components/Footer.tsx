@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin, Building2 } from "lucide-react"
+import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin, Building2, CreditCard, ShoppingCart } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
 import Image from "next/image"
@@ -209,6 +209,18 @@ export default function Footer() {
           <p className="text-gray-500 text-sm">
             © {year} Raygal Royal. {t.footer.rights}
           </p>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 text-gray-500 text-xs border border-gray-800 rounded-full px-3 py-1.5">
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Stripe</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-gray-500 text-xs border border-gray-800 rounded-full px-3 py-1.5">
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span>PayPal</span>
+            </div>
+          </div>
+
           <div className="flex gap-8 text-sm text-gray-500">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
