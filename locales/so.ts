@@ -663,8 +663,8 @@ const so = {
     scrollToTop: "Kor ugu noqo",
   },
   paymentIntegration: {
-    sectionTitle: "Mashaariicda Muhiimka ah",
-    sectionSubtitle: "Xulashada madasha aanu naqshadeynnay oo aanu dhisannay.",
+    sectionTitle: "Mashaariicda Aanu Dhisannay",
+    sectionSubtitle: "Madasha dhabta ah oo kooxdayadu naqshadaysay, dhisay oo bilaabay.",
     live: "Waa Socda",
     inProgress: "Horumarinta ayaa socota",
     internship: "Tababar",

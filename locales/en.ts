@@ -660,8 +660,8 @@ const en = {
     scrollToTop: "Scroll to top",
   },
   paymentIntegration: {
-    sectionTitle: "Featured Projects",
-    sectionSubtitle: "A selection of platforms we have designed and built.",
+    sectionTitle: "Projects We've Delivered",
+    sectionSubtitle: "Real platforms designed, built and launched by our team.",
     live: "Live",
     inProgress: "In Progress",
     internship: "Internship",

@@ -210,18 +210,18 @@ export default function Footer() {
             © {year} Raygal Royal. {t.footer.rights}
           </p>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-gray-500 text-xs border border-gray-800 rounded-full px-3 py-1.5">
-              <CreditCard className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-white text-xs font-bold bg-[#635BFF] rounded-xl px-4 py-2.5 shadow-lg shadow-[#635BFF]/30">
+              <CreditCard className="w-4 h-4" />
               <span>Stripe</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-500 text-xs border border-gray-800 rounded-full px-3 py-1.5">
-              <ShoppingCart className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-2 text-[#003087] text-xs font-bold bg-[#FFC439] rounded-xl px-4 py-2.5 shadow-lg shadow-[#FFC439]/30">
+              <ShoppingCart className="w-4 h-4" />
               <span>PayPal</span>
             </div>
           </div>
 
-          <div className="flex gap-8 text-sm text-gray-500">
+          <div className="flex gap-6 text-sm text-gray-500 flex-shrink-0 pr-14">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>

@@ -375,8 +375,8 @@ const arOverrides = {
     scrollToTop: "العودة للأعلى",
   },
   paymentIntegration: {
-    sectionTitle: "مشاريعنا المميزة",
-    sectionSubtitle: "مجموعة من المنصات التي صمّمناها وطوّرناها.",
+    sectionTitle: "مشاريع قمنا بتسليمها",
+    sectionSubtitle: "منصات حقيقية صمّمها وطوّرها وأطلقها فريقنا.",
     live: "مباشر",
     inProgress: "قيد التطوير",
     internship: "تدريب عملي",
