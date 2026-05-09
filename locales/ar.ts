@@ -667,6 +667,12 @@ const arOverrides = {
       },
     ],
   },
+  cookies: {
+    message: "نستخدم ملفات تعريف الارتباط لتحسين تجربتك وتحليل حركة الموقع وتقديم محتوى مناسب. بالنقر على \"قبول\"، توافق على استخدامنا لملفات تعريف الارتباط.",
+    accept: "قبول",
+    decline: "رفض",
+    privacy_policy: "سياسة الخصوصية",
+  },
 } as const
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>

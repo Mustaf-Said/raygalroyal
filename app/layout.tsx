@@ -1,12 +1,13 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ModalProvider } from "./components/ModalProvider";
 import LayoutWrapper from "./components/LayoutWrapper";
 import OrganizationSchema from "./components/seo/OrganizationSchema";
+import CookieBanner from "./components/CookieBanner";
+import AnalyticsLoader from "./components/AnalyticsLoader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -82,22 +83,6 @@ export default function RootLayout({
           }}
         />
 
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-C2K3XQQ389"
-          strategy="afterInteractive"
-        />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){window.dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-C2K3XQQ389');
-            `,
-          }}
-        />
       </head>
       <body className={`${inter.className} font-sans antialiased transition-colors duration-300`}>
         <OrganizationSchema
@@ -117,7 +102,9 @@ export default function RootLayout({
               <LayoutWrapper>{children}</LayoutWrapper>
             </ModalProvider>
           </ThemeProvider>
+          <CookieBanner />
         </LanguageProvider>
+        <AnalyticsLoader />
       </body>
     </html>
   );

@@ -709,6 +709,12 @@ const so = {
       technologiesValue: "12+",
     },
   },
+  cookies: {
+    message: "Waxaan isticmaalnaa cookie-yada si aan u hagaajino khibradaada, falanqeyno taraafikada, una gudbiyo waxyaabo la xiriira. Marka aad gujiso \"Aqbal\", waad oggolanaysaa isticmaalkeena cookie-yada.",
+    accept: "Aqbal",
+    decline: "Diibi",
+    privacy_policy: "Siyaasadda Asturnaanta",
+  },
 } as const
 
 export default so
