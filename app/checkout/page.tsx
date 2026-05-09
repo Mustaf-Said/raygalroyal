@@ -4,8 +4,6 @@ import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/app/components/LanguageProvider"
 
-type Provider = "stripe" | "paypal"
-
 function CheckoutContent() {
   const searchParams = useSearchParams()
   const { language } = useLanguage()
@@ -13,7 +11,6 @@ function CheckoutContent() {
   const domain = searchParams.get("domain") || ""
   const queryPrice = Number(searchParams.get("price") || "0")
 
-  const [provider, setProvider] = useState<Provider>("stripe")
   const [email, setEmail] = useState("")
   const [resolvedPrice, setResolvedPrice] = useState<number | null>(
     Number.isFinite(queryPrice) && queryPrice > 0 ? queryPrice : null
@@ -29,9 +26,6 @@ function CheckoutContent() {
         domain: "النطاق",
         price: "السعر",
         email: "البريد الإلكتروني",
-        provider: "طريقة الدفع",
-        stripe: "الدفع عبر Stripe",
-        paypal: "الدفع عبر PayPal",
         payNow: "ادفع الآن",
         invalid: "بيانات الدفع غير مكتملة.",
         resolvingPrice: "جاري جلب سعر النطاق...",
@@ -45,9 +39,6 @@ function CheckoutContent() {
         domain: "Domain",
         price: "Qiimaha",
         email: "Email",
-        provider: "Habka Lacag-bixinta",
-        stripe: "Ku bixi Stripe",
-        paypal: "Ku bixi PayPal",
         payNow: "Bixi Hadda",
         invalid: "Xogta lacag-bixinta way dhameystirnayn.",
         resolvingPrice: "Waxaa socda helitaanka qiimaha domain-ka...",
@@ -60,9 +51,6 @@ function CheckoutContent() {
       domain: "Domain",
       price: "Price",
       email: "Email",
-      provider: "Payment Method",
-      stripe: "Pay with Stripe",
-      paypal: "Pay with PayPal",
       payNow: "Pay Now",
       invalid: "Checkout details are incomplete.",
       resolvingPrice: "Resolving domain price...",
@@ -124,7 +112,7 @@ function CheckoutContent() {
         body: JSON.stringify({
           domain,
           price: finalPrice,
-          paymentProvider: provider,
+          paymentProvider: "stripe",
           email,
           language,
         }),
@@ -170,30 +158,6 @@ function CheckoutContent() {
               placeholder="you@example.com"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white"
             />
-          </div>
-
-          <div className="mb-6">
-            <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">{copy.provider}</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setProvider("stripe")}
-                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "stripe"
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                  }`}
-              >
-                {copy.stripe}
-              </button>
-              <button
-                onClick={() => setProvider("paypal")}
-                className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${provider === "paypal"
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                  }`}
-              >
-                {copy.paypal}
-              </button>
-            </div>
           </div>
 
           {error && <p className="text-red-500 mb-4">{error}</p>}

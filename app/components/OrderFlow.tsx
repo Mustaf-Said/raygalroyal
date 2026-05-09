@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, ShoppingCart, Upload, File as FileIcon, Loader2 } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, Check, Globe, Code, Layout, Cpu, Cloud, ShieldCheck, CreditCard, Upload, File as FileIcon, Loader2 } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import { cn } from "@/lib/utils"
 
@@ -49,7 +49,7 @@ export default function OrderFlow({
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadWarning, setUploadWarning] = useState<string | null>(null)
-  const [loadingProvider, setLoadingProvider] = useState<"stripe" | "paypal" | null>(null)
+  const [loadingProvider, setLoadingProvider] = useState<"stripe" | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [orderId, setOrderId] = useState<string | null>(null)
   const [customAmount, setCustomAmount] = useState("")
@@ -224,7 +224,7 @@ export default function OrderFlow({
     }
   }
 
-  const handleCheckout = async (provider: "stripe" | "paypal") => {
+  const handleCheckout = async (provider: "stripe") => {
     if (!selectedPackage || !orderId) {
       setPaymentError(t.order.errors.selectPackage)
       return
@@ -599,17 +599,6 @@ export default function OrderFlow({
                       <div className="flex items-center gap-4">
                         <CreditCard className="w-6 h-6" />
                         {loadingProvider === "stripe" ? t.order.redirecting : t.order.payWithStripe}
-                      </div>
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleCheckout("paypal")}
-                      disabled={loadingProvider !== null || !selectedPackage}
-                      className="w-full p-6 bg-[#FFC439] text-gray-900 font-bold rounded-2xl flex items-center justify-between hover:bg-[#E1AD2A] transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                    >
-                      <div className="flex items-center gap-4">
-                        <ShoppingCart className="w-6 h-6" />
-                        {loadingProvider === "paypal" ? t.order.redirecting : t.order.payWithPayPal}
                       </div>
                       <ChevronRight className="w-5 h-5" />
                     </button>
