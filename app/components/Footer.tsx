@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin, Building2, CreditCard, ShoppingCart } from "lucide-react"
+import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
 import Image from "next/image"
@@ -35,7 +35,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-gray-950 text-white pt-24 pb-12 overflow-hidden relative">
+    <footer className="bg-gray-950 text-white pt-24 pb-4 overflow-hidden relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-gray-800 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6">
@@ -205,23 +205,40 @@ export default function Footer() {
         </div>
         <ScrollToTop />
         {/* BOTTOM */}
-        <div className="pt-12 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-8 pb-0 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-gray-500 text-sm">
             © {year} Raygal Royal. {t.footer.rights}
           </p>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-white text-xs font-bold bg-[#635BFF] rounded-xl px-4 py-2.5 shadow-lg shadow-[#635BFF]/30">
-              <CreditCard className="w-4 h-4" />
-              <span>Stripe</span>
-            </div>
-            <div className="flex items-center gap-2 text-[#003087] text-xs font-bold bg-[#FFC439] rounded-xl px-4 py-2.5 shadow-lg shadow-[#FFC439]/30">
-              <ShoppingCart className="w-4 h-4" />
-              <span>PayPal</span>
+          <div className="flex items-center gap-3 flex-wrap justify-center">
+            <span className="text-gray-500 text-xs font-semibold tracking-widest uppercase whitespace-nowrap mt-1">
+              Payments by Stripe
+            </span>
+            <div className="flex items-center gap-1.5">
+              {/* Visa */}
+              <div className="bg-white rounded px-2 py-0.5 h-6 flex items-center justify-center">
+                <span className="text-[#1A1F71] font-extrabold text-[11px] tracking-tight">VISA</span>
+              </div>
+              {/* Mastercard */}
+              <div className="bg-[#1a1a1a] border border-gray-700 rounded px-1.5 py-0.5 h-6 flex items-center">
+                <div className="relative flex items-center w-6">
+                  <div className="w-4 h-4 rounded-full bg-[#EB001B] absolute left-0" />
+                  <div className="w-4 h-4 rounded-full bg-[#F79E1B] absolute left-2 opacity-90" />
+                </div>
+              </div>
+              {/* Amex */}
+              <div className="bg-[#2E77BC] rounded px-2 py-0.5 h-6 flex items-center justify-center">
+                <span className="text-white font-bold text-[9px] tracking-tight">AMEX</span>
+              </div>
+              {/* PayPal */}
+              <div className="bg-white rounded px-2 py-0.5 h-6 flex items-center justify-center gap-0">
+                <span className="text-[#003087] font-extrabold text-[10px]">Pay</span>
+                <span className="text-[#009CDE] font-extrabold text-[10px]">Pal</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-6 text-sm text-gray-500 flex-shrink-0 pr-14">
+          <div className="flex gap-6 text-sm text-gray-500 flex-shrink-0">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>

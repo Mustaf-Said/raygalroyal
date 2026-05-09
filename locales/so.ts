@@ -652,7 +652,7 @@ const so = {
   footer: {
     about: "Ku saabsan Raygal Royal",
     aboutDesc: "Siinta ganacsiyada xalal dijitaal ah oo heer sare ah iyo farsamo xirfadeed.",
-    links: "Kulaabo qaybahan",
+    links: "Xiriiriyaha Degdegga",
     contact: "Cinwaanada Xiriirka",
     rights: "Dhammaan xuquuqaha waa dhowran yihiin.",
     privacy: "Siyaasadda Asturnaanta",
