@@ -12,8 +12,8 @@ const projects = [
     description:
       "A full-featured marketplace for cars, houses and land listings with real-time weather across Somaliland cities.",
     logo: "/sahal.png",
-    logoContainer: "w-44 h-16",
-    textColor: "text-orange-500",
+    logoContainer: "w-34 h-12",
+    textColor: "text-indigo-500",
     status: "live" as const,
     link: "https://www.sahal.one",
   },
@@ -24,7 +24,7 @@ const projects = [
       "A comprehensive podcast platform supporting recording, AI-powered translation, publishing and monetization.",
     logo: "/podmanager.png",
     logoContainer: "w-12 h-12",
-    textColor: "text-indigo-500",
+    textColor: "text-orange-500",
     status: "live" as const,
     link: "https://podmanager.ai/",
   },
@@ -34,8 +34,8 @@ const projects = [
     description:
       "An official digital government platform for Somaliland — providing citizens with key public services online.",
     logo: "/flag.png",
-    logoContainer: "w-20 h-12",
-    textColor: "text-blue-500",
+    logoContainer: "w-18 h-12 rounded-full",
+    textColor: "text-green-700",
     status: "inProgress" as const,
     link: "",
   },
@@ -65,14 +65,14 @@ export default function PaymentIntegration() {
               transition={{ delay: index * 0.1 }}
               className="bg-white dark:bg-gray-950 p-8 rounded-[40px] border border-gray-100 dark:border-gray-800 shadow-xl flex flex-col gap-6"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start  justify-between h-16">
                 <div className={`${logoContainer} rounded-2xl overflow-hidden flex items-center justify-center p-1`}>
                   <Image
                     src={logo}
                     alt={name}
                     width={144}
                     height={48}
-                    className="object-contain w-full h-full"
+                    className="object-contain w-full"
                   />
                 </div>
                 <span

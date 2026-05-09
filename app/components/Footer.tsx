@@ -205,7 +205,7 @@ export default function Footer() {
         </div>
         <ScrollToTop />
         {/* BOTTOM */}
-        <div className="pt-8 pb-0 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-10 pb-0 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-gray-500 text-sm">
             © {year} Raygal Royal. {t.footer.rights}
           </p>
