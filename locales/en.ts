@@ -293,6 +293,11 @@ const en = {
     },
     sending: "Sending...",
     submitFailed: "Could not send your message. Please try again.",
+    directLine: "Direct line",
+    writeMessageIntro: "Write your message here and we'll get back to you quickly —",
+    orReachByEmail: "or reach us by email",
+    emailInFooter: "listed in the footer below.",
+    scrollToFooter: "Scroll to footer for email contact",
   },
   guarantee: {
     title: "Our Quality Guarantee",
@@ -668,6 +673,9 @@ const en = {
     marketplacePlatform: "Marketplace Platform",
     governmentPlatform: "Government Platform",
     visitSite: "Visit Site",
+    sahalDescription: "A full-featured marketplace for cars, houses and land listings with real-time weather across Somaliland cities.",
+    podmanagerDescription: "A comprehensive podcast platform supporting recording, AI-powered translation, publishing and monetization.",
+    somalilandDescription: "An official digital government platform for Somaliland — providing citizens with key public services online.",
   },
   about: {
     badge: "Our Agency",

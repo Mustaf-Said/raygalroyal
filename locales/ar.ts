@@ -287,6 +287,11 @@ const arOverrides = {
     },
     sending: "جارٍ الإرسال...",
     submitFailed: "تعذر إرسال رسالتك. يرجى المحاولة مرة أخرى.",
+    directLine: "خط مباشر",
+    writeMessageIntro: "اكتب رسالتك هنا وسنرد عليك بسرعة —",
+    orReachByEmail: "أو تواصل معنا عبر البريد الإلكتروني",
+    emailInFooter: "المذكور في تذييل الصفحة أدناه.",
+    scrollToFooter: "انتقل إلى التذييل للتواصل عبر البريد",
   },
   testimonials: {
     title: "آراء العملاء",
@@ -383,6 +388,9 @@ const arOverrides = {
     marketplacePlatform: "منصة سوق تجاري",
     governmentPlatform: "منصة حكومية",
     visitSite: "زيارة الموقع",
+    sahalDescription: "سوق متكامل لبيع السيارات والمنازل والأراضي مع تحديثات الطقس الفورية لمدن أرض الصومال.",
+    podmanagerDescription: "منصة بودكاست شاملة تدعم التسجيل والترجمة بالذكاء الاصطناعي والنشر وتحقيق الدخل.",
+    somalilandDescription: "منصة حكومية رقمية رسمية لأرض الصومال — تتيح للمواطنين الوصول إلى الخدمات العامة الأساسية عبر الإنترنت.",
   },
   about: {
     badge: "وكالتنا",
