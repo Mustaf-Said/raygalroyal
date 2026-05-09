@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, /* MessageSquare */ Phone, Send, CheckCircle2, ArrowDown, MessageCircle } from "lucide-react"
+import { Send, CheckCircle2, ArrowDown, MessageCircle } from "lucide-react"
 import { useLanguage } from "../components/LanguageProvider"
 import { useState } from "react"
 
@@ -75,26 +75,26 @@ export default function Contact() {
               <div className="space-y-5">
                 {/* Animated pulse icon */}
                 <a href="tel:+46722889588" className="flex items-center gap-3 w-fit group">
-                  <div className="relative w-10 h-10 flex-shrink-0">
+                  <div className="relative w-10 h-10 shrink-0">
                     <div className="absolute inset-0 rounded-full bg-blue-100 dark:bg-blue-900/30 animate-ping opacity-40" />
                     <div className="relative w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
                       <MessageCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-blue-500 transition-colors">Direct line</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-blue-500 transition-colors">{t.contact.directLine}</span>
                 </a>
 
                 {/* Message */}
                 <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Write your message here and we&apos;ll get back to you quickly —
-                  <span className="font-semibold text-blue-600 dark:text-blue-400"> or reach us by email</span>
-                  {" "}listed in the footer below.
+                  {t.contact.writeMessageIntro}
+                  <span className="font-semibold text-blue-600 dark:text-blue-400"> {t.contact.orReachByEmail}</span>
+                  {" "}{t.contact.emailInFooter}
                 </p>
 
                 {/* Footer hint */}
                 <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 w-fit">
                   <ArrowDown className="w-4 h-4 text-gray-400 animate-bounce" />
-                  <span className="text-sm text-gray-400">Scroll to footer for email contact</span>
+                  <span className="text-sm text-gray-400">{t.contact.scrollToFooter}</span>
                 </div>
               </div>
 

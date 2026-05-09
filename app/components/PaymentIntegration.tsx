@@ -9,8 +9,7 @@ const projects = [
   {
     name: "Sahal.one",
     badgeKey: "marketplacePlatform" as const,
-    description:
-      "A full-featured marketplace for cars, houses and land listings with real-time weather across Somaliland cities.",
+    descriptionKey: "sahalDescription" as const,
     logo: "/sahal.png",
     logoContainer: "w-34 h-12",
     textColor: "text-indigo-500",
@@ -20,8 +19,7 @@ const projects = [
   {
     name: "PodManager.AI",
     badgeKey: "internship" as const,
-    description:
-      "A comprehensive podcast platform supporting recording, AI-powered translation, publishing and monetization.",
+    descriptionKey: "podmanagerDescription" as const,
     logo: "/podmanager.png",
     logoContainer: "w-12 h-12",
     textColor: "text-orange-500",
@@ -31,8 +29,7 @@ const projects = [
   {
     name: "Somaliland.nu",
     badgeKey: "governmentPlatform" as const,
-    description:
-      "An official digital government platform for Somaliland — providing citizens with key public services online.",
+    descriptionKey: "somalilandDescription" as const,
     logo: "/flag.png",
     logoContainer: "w-18 h-12 rounded-full",
     textColor: "text-green-700",
@@ -56,7 +53,7 @@ export default function PaymentIntegration() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {projects.map(({ name, badgeKey, description, logo, logoContainer, textColor, status, link }, index) => (
+          {projects.map(({ name, badgeKey, descriptionKey, logo, logoContainer, textColor, status, link }, index) => (
             <motion.div
               key={name}
               initial={{ opacity: 0, y: 20 }}
@@ -88,7 +85,7 @@ export default function PaymentIntegration() {
               <div>
                 <div className="text-xs font-bold text-gray-400 uppercase mb-2">{p[badgeKey]}</div>
                 <h3 className={`text-2xl font-black mb-3 ${textColor}`}>{name}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{description}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{p[descriptionKey]}</p>
               </div>
 
               {link && (

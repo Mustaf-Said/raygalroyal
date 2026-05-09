@@ -293,6 +293,11 @@ const so = {
     },
     sending: "Waa la dirayaa...",
     submitFailed: "Fariinta lama diri karin. Fadlan mar kale isku day.",
+    directLine: "Khad toos ah",
+    writeMessageIntro: "Halkan ku qor fariintaada waxaannu ku soo jawaabi doonaa degdeg —",
+    orReachByEmail: "ama nala soo xiriir iimaylka",
+    emailInFooter: "ku qoran cagaha bogga hoose.",
+    scrollToFooter: "Hoos u xariiq si aad u hesho iimaylka xiriirka",
   },
   guarantee: {
     title: "Dammaanadda Tayada",
@@ -307,8 +312,8 @@ const so = {
     signatureRole: "Kooxda Hubinta Tayada",
   },
   privacy: {
-    title: "Siyaasadda Asturnaanta",
-    subtitle: "Asturnaantaadu muhiim bay noogu tahay. Siyaasaddan waxay sharaxaysaa sida aan u aruurino, u isticmaalno, oo uu u dhawrno xogta shakhsigaaga.",
+    title: "Siyaasada Asturnaanta",
+    subtitle: "Asturnaantaadu muhiim bay noogu tahay. Siyaasadan waxay sharaxaysaa sida aan u aruurino, u isticmaalno, oo uu u dhawrno xogta shakhsigaaga.",
     sections: {
       collection: "Xogta Aan Aruurino",
       usage: "Sida Aan Xogta Ugu Isticmaalno",
@@ -388,7 +393,7 @@ const so = {
     ],
   },
   cookie: {
-    title: "Siyaasadda Cookie-ga",
+    title: "Siyaasada Cookie-ga",
     subtitle: "Waxaan isticmaalnaa cookie-yada si aan u hagaajino khibradaada. Halkan waa faahfaahin cad oo ku saabsan waxa aan isticmaalno iyo sababta.",
     sections: {
       whatAreCookies: "Maxaa Ah Cookie-yada?",
@@ -396,7 +401,7 @@ const so = {
       analytics: "Cookie-yada Falanqaynta",
       marketing: "Cookie-yada Suuq-geynta",
       managing: "Maareynta Doorashadaada",
-      updates: "Cusbooneysiinta Siyaasadda",
+      updates: "Cusbooneysiinta Siyaasada",
     },
     content:
       "Cookie-yadu waa faylal qoraal ah oo yar oo lagu kaydiyay qalabkaaga marka aad booqato websaytkeena. Waxay na caawiyaan inaan fahno sida booqdayaashu ula falgalaan goobta oo aan hagaajino shaqaynteeda waqti ka dib.",
@@ -458,12 +463,12 @@ const so = {
       },
       {
         key: "updates",
-        title: "Cusbooneysiinta Siyaasadda",
-        body: "Waxaan laga yaabaa in aan cusboonaysiino Siyaasadda Cookie-ga ee wakhti ka wakhti ahaan marka adeegyadayadu horumaraan ama xeerarka isbeddelaan. Waxaan ku dhiirigelinayaa in aad mar mar dib u eegto boggan.",
+        title: "Cusbooneysiinta Siyaasada",
+        body: "Waxaan laga yaabaa in aan cusboonaysiino Siyaasada Cookie-ga ee wakhti ka wakhti ahaan marka adeegyadayadu horumaraan ama xeerarka isbeddelaan. Waxaan ku dhiirigelinayaa in aad mar mar dib u eegto boggan.",
         points: [
           "Isbedelladda muhiimka ah waxaa loo xiriirin doonaa iyada oo loo marayo ogeysiis goobteena ama iimaylka.",
-          "Taariikhda sare ee boggan had iyo jeer waxay muujin doontaa markii ugu dambeysay siyaasadda la dib u eegay.",
-          "Sii isticmaalka websaytkeena ka dib marka isbedelladdu la daabacaan waxay mataashaa oggolaanshahaaga siyaasadda la cusboonaysiiyay.",
+          "Taariikhda sare ee boggan had iyo jeer waxay muujin doontaa markii ugu dambeysay siyaasada la dib u eegay.",
+          "Sii isticmaalka websaytkeena ka dib marka isbedelladdu la daabacaan waxay mataashaa oggolaanshahaaga siyaasada la cusboonaysiiyay.",
         ],
       },
     ],
@@ -476,7 +481,7 @@ const so = {
       payment: "Shuruudaha Lacag-bixinta",
       client: "Mas'uuliyadda Macmiilka",
       delivery: "Rajada Keenista",
-      refund: "Siyaasadda Lacag-celinta",
+      refund: "Siyaasada Lacag-celinta",
       ip: "Lahaanshaha Aqooneed",
     },
     content:
@@ -524,7 +529,7 @@ const so = {
       },
       {
         key: "refund",
-        title: "Siyaasadda Lacag-celinta",
+        title: "Siyaasada Lacag-celinta",
         body: "Waxaan ku faanaa shaqadayada waxaanan ka damaanad qaadnaa mashruuc kasta oo aan gaarsiinno. Lacag-celinnada waxaa lagu qiimeeyaa kiis kasta gaar ahaan.",
         points: [
           "50%-ka deebaajiga asalka ah lama celin karo marka shaqada horumarinta ay bilaabato.",
@@ -631,7 +636,7 @@ const so = {
       orderId: "Aqoonsiga Dalabka",
       plan: "Xirmada",
       amount: "Cadadka",
-      backHome: "Ku laabo Bogga Hore",
+      backHome: "Ku laabo Boga Hore",
       confirmingPayment: "Waxaan xaqiijinaynaa lacag-bixintaada...",
       loadingConfirmation: "Waxaan soo gelinaynaa xaqiijinta lacag-bixinta...",
       fetchingDetails: "Waxaan soo qaadanaynaa faahfaahinta dalabka...",
@@ -652,12 +657,12 @@ const so = {
   footer: {
     about: "Ku saabsan Raygal Royal",
     aboutDesc: "Siinta ganacsiyada xalal dijitaal ah oo heer sare ah iyo farsamo xirfadeed.",
-    links: "Xiriiriyaha Degdegga",
+    links: "Xiriiriyaha Degdega",
     contact: "Cinwaanada Xiriirka",
-    rights: "Dhammaan xuquuqaha waa dhowran yihiin.",
-    privacy: "Siyaasadda Asturnaanta",
-    terms: "Shuruudaha Adeegga",
-    cookies: "Siyaasadda Cookie-ga",
+    rights: "Xuquuqdu dhawrsan.",
+    privacy: "Siyaasada Asturnaanta",
+    terms: "Shuruudaha Adeega",
+    cookies: "Siyaasada Cookie-ga",
   },
   common: {
     scrollToTop: "Kor ugu noqo",
@@ -665,12 +670,15 @@ const so = {
   paymentIntegration: {
     sectionTitle: "Mashaariicda Aanu Dhisannay",
     sectionSubtitle: "Madasha dhabta ah oo kooxdayadu naqshadaysay, dhisay oo bilaabay.",
-    live: "Waa Socda",
-    inProgress: "Horumarinta ayaa socota",
+    live: "Dhamaystiran",
+    inProgress: "Waa lawadaa",
     internship: "Tababar",
     marketplacePlatform: "Suuq Dijitaal",
     governmentPlatform: "Madasha Dowladda",
     visitSite: "Booqo Websaytka",
+    sahalDescription: "Suuq dhamaystiran oo loogu talagalay baabuurta, guryaha, iyo dhulka leh la-socodka cimilada ee waqtiga-dhabta ah ee magaalooyinka Somaliland.",
+    podmanagerDescription: "Madal podcast oo dhamaystiran oo taageeraya duubista, turjumaadda AI, daabacaadda, iyo helitaanka dakhliga.",
+    somalilandDescription: "Madal dowladeed dijitaal ah oo rasmi ah oo Somaliland — u siinaya muwaadiniinta adeegyada bulshada ee muhiimka ah online.",
   },
   about: {
     badge: "Hay'adeena",
@@ -699,21 +707,21 @@ const so = {
     missionBody: "Kaliya ma dhisno bogag; waxaan abuurnaa khibrado dijitaal ah oo kobciya ganacsiga, soo jiita isticmaalayaasha, kuna reeba saameyn waarta. Laga bilaabo startups ilaa shirkado waaweyn, waxaan kaa caawinaa inaad u diyaargarowdo mustaqbalka.",
     // so.ts
     stats: {
-      projectsCompleted: "Mashruucyada La Dhammeeyay",
+      projectsCompleted: "Mashruucyada La Dhameeyay",
       projectsCompletedValue: "150+",
       happyClients: "Macaamiisha Faraxsan",
       happyClientsValue: "90+",
-      experience: "Khibradda",
+      experience: "Khibrada",
       experienceValue: "5+ Sano",
-      technologies: "Tknolojiyada",
+      technologies: "Tiknolojiyada",
       technologiesValue: "12+",
     },
   },
   cookies: {
-    message: "Waxaan isticmaalnaa cookie-yada si aan u hagaajino khibradaada, falanqeyno taraafikada, una gudbiyo waxyaabo la xiriira. Marka aad gujiso \"Aqbal\", waad oggolanaysaa isticmaalkeena cookie-yada.",
+    message: "Waxaan isticmaalnaa cookie-yada si aan u hagaajino isticmaalka taraafikada, una gudbino waxyaabo la xiriira. Marka aad gujiso \"Aqbal\", waad oggolanaysaa isticmaalkeena cookie-yada.",
     accept: "Aqbal",
-    decline: "Diibi",
-    privacy_policy: "Siyaasadda Asturnaanta",
+    decline: "Diid",
+    privacy_policy: "Siyaasada Asturnaanta",
   },
 } as const
 

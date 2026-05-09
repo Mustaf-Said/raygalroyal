@@ -238,7 +238,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex gap-6 text-sm text-gray-500 flex-shrink-0">
+          <div className="flex gap-6 text-sm text-gray-500 shrink-0">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>
