@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 
-type Provider = "stripe" | "paypal"
+type Provider = "stripe"
 const MIN_CUSTOM_AMOUNT = 10
 
 const PLAN_TO_PRICE_ENV: Record<string, string> = {
@@ -11,7 +11,7 @@ const PLAN_TO_PRICE_ENV: Record<string, string> = {
   enterprise: "STRIPE_PRICE_ENTERPRISE",
 }
 
-const PLAN_TO_PAYPAL_PRICE: Record<string, string> = {
+const PLAN_BASE_PRICES: Record<string, string> = {
   basic: "1499",
   pro: "2999",
   enterprise: "5000",
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         currency = "SEK";
       }
     } else {
-      amount = parseFloat(PLAN_TO_PAYPAL_PRICE[plan]);
+      amount = parseFloat(PLAN_BASE_PRICES[plan]);
       currency = "USD";
     }
 
@@ -101,73 +101,6 @@ export async function POST(req: NextRequest) {
         status: "pending"
       })
       .eq("id", orderId)
-
-    if (provider === "paypal") {
-      const paypalBaseUrl = process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com"
-      const paypalCheckoutUrl = process.env.PAYPAL_CHECKOUT_URL || "https://www.sandbox.paypal.com/checkoutnow"
-
-      // 1. Get access token
-      const auth = await fetch(`${paypalBaseUrl}/v1/oauth2/token`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${Buffer.from(
-            `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`
-          ).toString("base64")}`,
-        },
-        body: "grant_type=client_credentials",
-      })
-
-      const authData = await auth.json()
-      const accessToken = authData.access_token
-
-      if (!accessToken) {
-        console.error("PayPal Auth failed:", authData)
-        return NextResponse.json({ error: "PayPal authentication failed" }, { status: 500 })
-      }
-
-      // 2. Create PayPal order
-      const orderRes = await fetch(`${paypalBaseUrl}/v2/checkout/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          intent: "CAPTURE",
-          purchase_units: [
-            {
-              custom_id: orderId,
-              amount: {
-                currency_code: isCustom ? "SEK" : currency,
-                value: isCustom ? amount.toFixed(2) : amount.toString(),
-              },
-            },
-          ],
-          application_context: {
-            return_url: `${origin}/paypal-success?orderId=${orderId}`,
-            cancel_url: `${origin}/paypal-cancel`,
-          },
-        })
-      })
-
-      const orderData = await orderRes.json()
-
-      if (!orderData.id) {
-        console.error("PayPal order creation failed:", orderData)
-        return NextResponse.json({ error: "PayPal order creation failed" }, { status: 500 })
-      }
-
-      // Update order with payment_id (paypal order id)
-      await supabase
-        .from("project_orders")
-        .update({ payment_id: orderData.id })
-        .eq("id", orderId)
-
-      return NextResponse.json({
-        url: `${paypalCheckoutUrl}?token=${orderData.id}`,
-      })
-    }
 
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY
     const stripe = new Stripe(stripeSecretKey!)

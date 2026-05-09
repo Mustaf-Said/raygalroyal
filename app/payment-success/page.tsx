@@ -17,10 +17,9 @@ function PaymentSuccessContent() {
   const { language } = useLanguage()
 
   const orderId = searchParams.get("orderId") || ""
-  const provider = (searchParams.get("provider") || "") as "stripe" | "paypal"
+  const provider = (searchParams.get("provider") || "") as "stripe"
   const domain = searchParams.get("domain") || ""
   const stripeSessionId = searchParams.get("session_id") || ""
-  const paypalToken = searchParams.get("token") || ""
 
   const [state, setState] = useState<ConfirmationState>({ status: "loading" })
 
@@ -66,7 +65,7 @@ function PaymentSuccessContent() {
       return
     }
 
-    const paymentId = provider === "stripe" ? stripeSessionId : paypalToken
+    const paymentId = stripeSessionId
     if (!paymentId) {
       setState({ status: "error", error: "Missing provider payment id." })
       return
@@ -118,7 +117,7 @@ function PaymentSuccessContent() {
     return () => {
       active = false
     }
-  }, [orderId, provider, stripeSessionId, paypalToken, domain])
+  }, [orderId, provider, stripeSessionId, domain])
 
   return (
     <section className="py-32 bg-gray-50 dark:bg-gray-950 min-h-screen">
