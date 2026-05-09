@@ -21,6 +21,12 @@ export const metadata: Metadata = {
 
   metadataBase: new URL("https://raygalroyal.com"),
 
+  verification: {
+    other: {
+      "impact-site-verification": "76817790-a843-4faf-9db0-ebf09e60592e",
+    },
+  },
+
   icons: {
     icon: "/logoB.png",
     shortcut: "/logoB.png",
