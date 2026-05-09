@@ -381,3 +381,155 @@ VALUES
   ('hosting', 24.99, true),
   ('email', 14.99, true)
 ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- RLS: Row Level Security for domain-commerce and review tables
+-- =============================================================================
+-- All backend API routes use SERVICE_ROLE_KEY which bypasses RLS.
+-- These policies protect direct anon/authenticated Supabase client access only.
+--
+-- Admin check: (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+-- This matches the server-side isAdminUser() check in lib/requestAuth.ts.
+-- =============================================================================
+
+-- 1. orders (domain purchase orders — ownership via user_email)
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own domain orders" ON public.orders;
+CREATE POLICY "Users can view own domain orders"
+ON public.orders
+FOR SELECT
+TO authenticated
+USING (
+  user_email = auth.email()
+  OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 2. hosting_accounts (no user ownership — admin only)
+ALTER TABLE public.hosting_accounts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can manage hosting accounts" ON public.hosting_accounts;
+CREATE POLICY "Admins can manage hosting accounts"
+ON public.hosting_accounts
+FOR ALL
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+)
+WITH CHECK (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 3. email_accounts (no user ownership — admin only)
+ALTER TABLE public.email_accounts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can manage email accounts" ON public.email_accounts;
+CREATE POLICY "Admins can manage email accounts"
+ON public.email_accounts
+FOR ALL
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+)
+WITH CHECK (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 4. ssl_certificates (no user ownership — admin only)
+ALTER TABLE public.ssl_certificates ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can manage SSL certificates" ON public.ssl_certificates;
+CREATE POLICY "Admins can manage SSL certificates"
+ON public.ssl_certificates
+FOR ALL
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+)
+WITH CHECK (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 5. domain_search_logs (anon INSERT for logging; admin SELECT only)
+ALTER TABLE public.domain_search_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can log domain searches" ON public.domain_search_logs;
+CREATE POLICY "Anyone can log domain searches"
+ON public.domain_search_logs
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins can read domain search logs" ON public.domain_search_logs;
+CREATE POLICY "Admins can read domain search logs"
+ON public.domain_search_logs
+FOR SELECT
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 6. reviews (public read approved; anon submit pending; admin update/delete)
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read approved reviews" ON public.reviews;
+CREATE POLICY "Public can read approved reviews"
+ON public.reviews
+FOR SELECT
+TO anon, authenticated
+USING (
+  status = 'approved'
+  OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+DROP POLICY IF EXISTS "Anyone can submit a review" ON public.reviews;
+CREATE POLICY "Anyone can submit a review"
+ON public.reviews
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (
+  status = 'pending'
+);
+
+DROP POLICY IF EXISTS "Admins can update reviews" ON public.reviews;
+CREATE POLICY "Admins can update reviews"
+ON public.reviews
+FOR UPDATE
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+)
+WITH CHECK (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+DROP POLICY IF EXISTS "Admins can delete reviews" ON public.reviews;
+CREATE POLICY "Admins can delete reviews"
+ON public.reviews
+FOR DELETE
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
+
+-- 7. domain_add_ons (public SELECT; admin INSERT/UPDATE/DELETE)
+ALTER TABLE public.domain_add_ons ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read domain add-on pricing" ON public.domain_add_ons;
+CREATE POLICY "Public can read domain add-on pricing"
+ON public.domain_add_ons
+FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Admins can manage domain add-ons" ON public.domain_add_ons;
+CREATE POLICY "Admins can manage domain add-ons"
+ON public.domain_add_ons
+FOR ALL
+TO authenticated
+USING (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+)
+WITH CHECK (
+  (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+);
