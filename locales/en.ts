@@ -706,6 +706,12 @@ const en = {
       technologiesValue: "12+",
     },
   },
+  cookies: {
+    message: "We use cookies to enhance your experience, analyze site traffic, and serve relevant content. By clicking \"Accept\", you consent to our use of cookies.",
+    accept: "Accept",
+    decline: "Decline",
+    privacy_policy: "Privacy Policy",
+  },
 } as const
 
 export default en
