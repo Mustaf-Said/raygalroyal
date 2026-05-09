@@ -11,6 +11,8 @@ type PackageKey = "support" | "basic" | "pro" | "enterprise"
 
 const PACKAGE_KEYS: PackageKey[] = ["support", "basic", "pro", "enterprise"]
 const MIN_SUPPORT_AMOUNT = 10
+const MIN_PROJECT_DETAILS_LENGTH = 10
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
 
 const SERVICES_ICONS = {
   web: Globe,
@@ -39,6 +41,10 @@ export default function OrderFlow({
   const [selectedService, setSelectedService] = useState<string | null>(preselectedService)
   const [projectDetails, setProjectDetails] = useState("")
   const [customerEmail, setCustomerEmail] = useState("")
+  const [projectDetailsError, setProjectDetailsError] = useState<string | null>(null)
+  const [projectDetailsTouched, setProjectDetailsTouched] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [emailTouched, setEmailTouched] = useState(false)
   const [selectedPackage, setSelectedPackage] = useState<string | null>(preselectedPackage)
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -65,6 +71,32 @@ export default function OrderFlow({
 
   const steps: Step[] = ["service", "details", "package", "payment"]
   const currentStepIndex = steps.indexOf(step)
+  const trimmedEmail = customerEmail.trim()
+  const trimmedProjectDetails = projectDetails.trim()
+  const isEmailValid = EMAIL_REGEX.test(trimmedEmail)
+  const isProjectDetailsValid = trimmedProjectDetails.length >= MIN_PROJECT_DETAILS_LENGTH
+
+  const validateEmail = (value: string) => {
+    const normalized = value.trim()
+    if (!normalized || !EMAIL_REGEX.test(normalized)) {
+      setEmailError(t.order.errors.invalidEmail)
+      return false
+    }
+
+    setEmailError(null)
+    return true
+  }
+
+  const validateProjectDetails = (value: string) => {
+    const normalized = value.trim()
+    if (normalized.length < MIN_PROJECT_DETAILS_LENGTH) {
+      setProjectDetailsError(t.order.errors.invalidProjectDetails)
+      return false
+    }
+
+    setProjectDetailsError(null)
+    return true
+  }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -74,7 +106,18 @@ export default function OrderFlow({
 
   const handleNext = async () => {
     if (step === "service" && selectedService) setStep("details")
-    else if (step === "details" && projectDetails.length > 10 && customerEmail.includes("@")) setStep("package")
+    else if (step === "details") {
+      setEmailTouched(true)
+      setProjectDetailsTouched(true)
+      const emailOk = validateEmail(customerEmail)
+      const detailsOk = validateProjectDetails(projectDetails)
+
+      if (!emailOk || !detailsOk) {
+        return
+      }
+
+      setStep("package")
+    }
     else if (step === "package" && selectedPackage) {
       if (selectedPackage === "support") {
         const parsedCustomAmount = Number(customAmount)
@@ -240,7 +283,11 @@ export default function OrderFlow({
     setStep("service")
     setSelectedService(null)
     setProjectDetails("")
+    setProjectDetailsError(null)
+    setProjectDetailsTouched(false)
     setCustomerEmail("")
+    setEmailError(null)
+    setEmailTouched(false)
     setSelectedPackage(null)
     setFile(null)
     setUploadWarning(null)
@@ -286,6 +333,7 @@ export default function OrderFlow({
               </div>
             </div>
             <button
+              aria-label="Open menu"
               onClick={() => { onClose(); reset(); }}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             >
@@ -346,22 +394,56 @@ export default function OrderFlow({
                       <input
                         type="email"
                         value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        onChange={(e) => {
+                          setCustomerEmail(e.target.value)
+                          if (emailTouched) {
+                            validateEmail(e.target.value)
+                          }
+                        }}
+                        onBlur={() => {
+                          setEmailTouched(true)
+                          validateEmail(customerEmail)
+                        }}
                         placeholder={t.order.placeholders.email}
-                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                        className={cn(
+                          "w-full px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                          emailError
+                            ? "border-red-500 focus:ring-red-500"
+                            : "border-gray-100 dark:border-gray-800 focus:ring-blue-600"
+                        )}
                       />
+                      {emailError && (
+                        <p className="text-sm text-red-600 dark:text-red-400">{emailError}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.order.steps.details}</label>
                       <textarea
                         value={projectDetails}
-                        onChange={(e) => setProjectDetails(e.target.value)}
+                        onChange={(e) => {
+                          setProjectDetails(e.target.value)
+                          if (projectDetailsTouched) {
+                            validateProjectDetails(e.target.value)
+                          }
+                        }}
+                        onBlur={() => {
+                          setProjectDetailsTouched(true)
+                          validateProjectDetails(projectDetails)
+                        }}
                         placeholder={t.order.placeholders.details}
                         rows={5}
-                        className="w-full p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
+                        className={cn(
+                          "w-full p-6 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:outline-none focus:ring-2 transition-all resize-none",
+                          projectDetailsError
+                            ? "border-red-500 focus:ring-red-500"
+                            : "border-gray-100 dark:border-gray-800 focus:ring-blue-600"
+                        )}
                       />
-                      <div className="text-right text-xs text-gray-400">
+                      {projectDetailsError && (
+                        <p className="text-sm text-red-600 dark:text-red-400">{projectDetailsError}</p>
+                      )}
+                      <div className={cn("text-right text-xs", projectDetailsError ? "text-red-500" : "text-gray-400")}>
                         {t.order.detailsCounter.replace("{count}", String(projectDetails.length))}
                       </div>
                     </div>
@@ -560,7 +642,7 @@ export default function OrderFlow({
                 disabled={
                   isUploading ||
                   (step === "service" && !selectedService) ||
-                  (step === "details" && (projectDetails.length < 10 || !customerEmail.includes("@"))) ||
+                  (step === "details" && (!isProjectDetailsValid || !isEmailValid)) ||
                   (step === "package" && !selectedPackage)
                 }
                 className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-blue-500/20 min-w-35 justify-center"

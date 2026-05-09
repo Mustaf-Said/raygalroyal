@@ -43,3 +43,5 @@ next-env.d.ts
 # GEMINI
 .GEMINI
 
+#AI geretion
+*.md

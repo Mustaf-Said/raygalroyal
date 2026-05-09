@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import { supabase } from "@/lib/supabase"
 import {
   clearFreelancerAuth,
   getFreelancerAccessToken,
@@ -71,22 +70,6 @@ export default function FreelancerDashboardPage() {
     setError(null)
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.access_token) {
-        const adminCheck = await fetch("/api/freelancers?admin=1", {
-          cache: "no-store",
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        })
-
-        if (adminCheck.ok) {
-          router.push("/admin")
-          return
-        }
-      }
-
       const token = getFreelancerAccessToken()
       if (!token) {
         router.push("/freelancer/login")
@@ -150,8 +133,8 @@ export default function FreelancerDashboardPage() {
         throw new Error("Please upload a profile image.")
       }
 
-      const response = await fetch("/api/freelancer/update", {
-        method: "PATCH",
+      const response = await fetch("/api/freelancer-application", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...getFreelancerAuthHeaders(),

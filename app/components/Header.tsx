@@ -1,22 +1,29 @@
 "use client"
-
+import { SomalilandFlag } from './SomalilandFlag'
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock } from "lucide-react"
-import { GB, SO, SA } from "country-flag-icons/react/3x2"
+import { Menu, X, ChevronDown, Sun, Moon, Globe, Lock, LogOut } from "lucide-react"
+import { GB, SA } from "country-flag-icons/react/3x2"
 import { SUPPORTED_LANGUAGES, useLanguage } from "./LanguageProvider"
 import type { Language } from "@/locales"
 import { useTheme } from "./ThemeProvider"
 import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
+import { clearAdminAuth, getAdminAccessToken } from "@/lib/adminClientAuth"
+import { clearFreelancerAuth, getFreelancerAccessToken } from "@/lib/freelancerAuth"
+import Image from "next/image"
 
 export default function Header() {
+  const router = useRouter()
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
   const [authMenuOpen, setAuthMenuOpen] = useState(false)
+  const [authRole, setAuthRole] = useState<"admin" | "freelancer" | null>(null)
   const languageMenuRef = useRef<HTMLDivElement | null>(null)
   const authMenuRef = useRef<HTMLDivElement | null>(null)
   const { language, setLanguage, t } = useLanguage()
@@ -29,9 +36,10 @@ export default function Header() {
     ar: "العربية",
   }
 
-  const languageFlags: Record<Language, typeof GB> = {
+  // Ändra typen på languageFlags
+  const languageFlags: Record<Language, React.ComponentType<{ className?: string; title?: string }>> = {
     en: GB,
-    so: SO,
+    so: SomalilandFlag,  // ← direkt, ingen wrapper behövs!
     ar: SA,
   }
 
@@ -58,6 +66,42 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", onClickOutside)
   }, [])
 
+  useEffect(() => {
+    const syncAuthState = () => {
+      const adminToken = getAdminAccessToken()
+      const freelancerToken = getFreelancerAccessToken()
+
+      if (adminToken) {
+        setAuthRole("admin")
+      } else if (freelancerToken) {
+        setAuthRole("freelancer")
+      } else {
+        setAuthRole(null)
+      }
+    }
+
+    syncAuthState()
+    window.addEventListener("storage", syncAuthState)
+    window.addEventListener("focus", syncAuthState)
+    return () => {
+      window.removeEventListener("storage", syncAuthState)
+      window.removeEventListener("focus", syncAuthState)
+    }
+  }, [pathname])
+
+  const handleLogout = async () => {
+    if (authRole === "admin") {
+      await fetch("/api/admin/logout", { method: "POST" })
+      clearAdminAuth()
+    } else if (authRole === "freelancer") {
+      clearFreelancerAuth()
+    }
+
+    setAuthRole(null)
+    setAuthMenuOpen(false)
+    setMenuOpen(false)
+    router.push("/")
+  }
 
   const navLinks = [
     { name: t.nav.home, href: "/" },
@@ -76,8 +120,8 @@ export default function Header() {
     { name: t.nav.projects, href: "/projects" },
     { name: t.nav.team, href: "/team" },
     { name: t.nav.pricing, href: "/pricing" },
-    { name: t.nav.faq, href: "/faq" },
-    { name: t.nav.contact, href: "/contact" },
+    /*  { name: t.nav.faq, href: "/faq" },
+     { name: t.nav.contact, href: "/contact" }, */
   ]
 
   const ActiveLanguageFlag = languageFlags[language]
@@ -93,16 +137,33 @@ export default function Header() {
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2 group">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
-              boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
-              border: "1px solid rgba(255,255,255,0.15)",
-            }}
+            className="w-10 h-10 rounded-r-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
+          /*  style={{
+             background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+             boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+             border: "1px solid rgba(255,255,255,0.15)",
+           }} */
           >
-            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} />
-            <span className="relative hover:rotate-360 transition-transform z-10">R</span>
+            {/*   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} /> */}
+            <span className="relative hover:rotate-360 transition-transform z-10">
+              <Image
+                src="/logoW.png"
+                alt="RaygalRoyal logo"
+                width={40}
+                height={40}
+                sizes="40px"
+                className="block dark:hidden"
+              />
+              <Image
+                src="/logoB.png"
+                alt="RaygalRoyal logo"
+                width={40}
+                height={40}
+                sizes="40px"
+                className="hidden dark:block"
+              />
+            </span>
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             {language === "ar" ? (
@@ -139,6 +200,7 @@ export default function Header() {
                       >
                         {link.dropdown.map((item) => (
                           <button
+                            aria-label="Open menu"
                             key={item.name}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -169,49 +231,61 @@ export default function Header() {
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
           {/* ADMIN BUTTON */}
-          <div className="relative" ref={authMenuRef}>
-            <button
-              onClick={() => setAuthMenuOpen((prev) => !prev)}
-              className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              title="Logins"
-              aria-haspopup="menu"
-              aria-expanded={authMenuOpen}
-            >
-              <Lock className="w-5 h-5" />
-            </button>
+          {!authRole ? (
+            <div className="relative" ref={authMenuRef}>
+              <button
+                aria-label="Open menu"
+                onClick={() => setAuthMenuOpen((prev) => !prev)}
+                className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                title="Logins"
+                aria-haspopup="menu"
+                aria-expanded={authMenuOpen}
+              >
+                <Lock className="w-5 h-5" />
+              </button>
 
-            <AnimatePresence>
-              {authMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
-                  role="menu"
-                >
-                  <Link
-                    href="/admin/orders"
-                    onClick={() => setAuthMenuOpen(false)}
-                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    role="menuitem"
+              <AnimatePresence>
+                {authMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl p-1 z-70"
+                    role="menu"
                   >
-                    Admin Login
-                  </Link>
-                  <Link
-                    href="/freelancer/login"
-                    onClick={() => setAuthMenuOpen(false)}
-                    className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    role="menuitem"
-                  >
-                    Freelancer Login
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    <Link
+                      href="/admin/login"
+                      onClick={() => setAuthMenuOpen(false)}
+                      className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      role="menuitem"
+                    >
+                      Admin Login
+                    </Link>
+                    <Link
+                      href="/freelancer/login"
+                      onClick={() => setAuthMenuOpen(false)}
+                      className="block w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      role="menuitem"
+                    >
+                      Freelancer Login
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <button
+              aria-label="Open menu"
+              onClick={() => void handleLogout()}
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          )}
 
           {/* THEME TOGGLE */}
           <button
+            aria-label="Open menu"
             onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={t.toggle.theme}
@@ -224,6 +298,7 @@ export default function Header() {
           {/* LANGUAGE SWITCHER */}
           <div className="relative" ref={languageMenuRef} dir="ltr">
             <button
+              aria-label="Open menu"
               onClick={() => setLanguageMenuOpen((prev) => !prev)}
               className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               title={t.toggle.label}
@@ -249,6 +324,7 @@ export default function Header() {
                       const Flag = languageFlags[lang]
                       return (
                         <button
+                          aria-label="Open menu"
                           key={lang}
                           onClick={() => {
                             setLanguage(lang)
@@ -275,6 +351,7 @@ export default function Header() {
 
           {/* START PROJECT CTA */}
           <button
+            aria-label="Open menu"
             onClick={() => openOrderModal()}
             className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group"
             style={{
@@ -294,6 +371,7 @@ export default function Header() {
 
           {/* MOBILE MENU TOGGLE */}
           <button
+            aria-label="Open menu"
             onClick={() => setMenuOpen(!menuOpen)}
             className="lg:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
           >
@@ -322,23 +400,36 @@ export default function Header() {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                href="/admin/orders"
-                onClick={() => setMenuOpen(false)}
-                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
-              >
-                <Lock className="w-4 h-4" />
-                Admin Login
-              </Link>
-              <Link
-                href="/freelancer/login"
-                onClick={() => setMenuOpen(false)}
-                className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
-              >
-                <Lock className="w-4 h-4" />
-                Freelancer Login
-              </Link>
+              {!authRole ? (
+                <>
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Lock className="w-4 h-4" />
+                    Admin Login
+                  </Link>
+                  <Link
+                    href="/freelancer/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2"
+                  >
+                    <Lock className="w-4 h-4" />
+                    Freelancer Login
+                  </Link>
+                </>
+              ) : (
+                <button
+                  aria-label="Open menu"
+                  onClick={() => void handleLogout()}
+                  className="px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors text-left"
+                >
+                  Logout
+                </button>
+              )}
               <button
+                aria-label="Open menu"
                 onClick={() => {
                   openOrderModal();
                   setMenuOpen(false);

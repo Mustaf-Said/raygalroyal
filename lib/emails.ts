@@ -1,7 +1,7 @@
 import { translations, type Language } from "@/locales"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const RESEND_FALLBACK_FROM = "Raygal Royal <onboarding@resend.dev>"
+export const RESEND_FALLBACK_FROM = "Raygal Royal <onboarding@resend.dev>"
 
 const isDomainNotVerifiedError = (errorText: string) => {
   const normalized = errorText.toLowerCase()
@@ -14,6 +14,71 @@ const isTestingRecipientRestrictionError = (errorText: string) => {
     normalized.includes("you can only send testing emails") ||
     normalized.includes("verify a domain")
   )
+}
+
+export type SendResendEmailResult =
+  | { ok: true }
+  | { ok: false; errorBody: string; testingRecipientBlocked: boolean }
+
+export async function sendResendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string
+  subject: string
+  html: string
+}): Promise<SendResendEmailResult> {
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY is not set. Email not sent.")
+    return { ok: false, errorBody: "RESEND_API_KEY is not set. Email not sent.", testingRecipientBlocked: false }
+  }
+
+  const configuredFromEmail = process.env.CONTACT_FROM_EMAIL?.trim()
+  const fromCandidates = configuredFromEmail
+    ? [configuredFromEmail, RESEND_FALLBACK_FROM]
+    : [RESEND_FALLBACK_FROM]
+
+  for (let index = 0; index < fromCandidates.length; index += 1) {
+    const from = fromCandidates[index]
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject,
+        html,
+      }),
+    })
+
+    if (res.ok) {
+      return { ok: true }
+    }
+
+    const errorBody = await res.text()
+    const testingRecipientBlocked = isTestingRecipientRestrictionError(errorBody)
+
+    if (isDomainNotVerifiedError(errorBody) && index < fromCandidates.length - 1) {
+      console.warn("Resend sender domain is not verified, retrying with onboarding sender.")
+      continue
+    }
+
+    return {
+      ok: false,
+      errorBody,
+      testingRecipientBlocked,
+    }
+  }
+
+  return {
+    ok: false,
+    errorBody: "Resend email could not be sent.",
+    testingRecipientBlocked: false,
+  }
 }
 
 export async function sendOrderConfirmationEmail({
@@ -31,11 +96,6 @@ export async function sendOrderConfirmationEmail({
   currency?: string
   language?: string
 }) {
-  if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY is not set. Email not sent.")
-    return
-  }
-
   const lang = (language === "so" ? "so" : "en") as Language
   const t = translations[lang].emails
 
@@ -56,12 +116,8 @@ export async function sendOrderConfirmationEmail({
     </div>
   `
 
-  const configuredFromEmail = process.env.CONTACT_FROM_EMAIL?.trim()
   const fallbackTestRecipient =
     process.env.RESEND_TEST_EMAIL?.trim() || process.env.CONTACT_RECEIVER_EMAIL?.trim()
-  const fromCandidates = configuredFromEmail
-    ? [configuredFromEmail, RESEND_FALLBACK_FROM]
-    : [RESEND_FALLBACK_FROM]
 
   const recipientCandidates = [email]
 
@@ -73,60 +129,39 @@ export async function sendOrderConfirmationEmail({
   }
 
   for (const recipient of recipientCandidates) {
-    for (const from of fromCandidates) {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from,
-          to: [recipient],
-          subject: t.subject,
-          html: html,
-        }),
-      })
+    const result = await sendResendEmail({
+      to: recipient,
+      subject: t.subject,
+      html,
+    })
 
-      if (res.ok) {
-        if (recipient !== email) {
-          console.warn(
-            `Order confirmation could not be sent to ${email} in current Resend mode. Sent to fallback inbox ${recipient} instead.`
-          )
-        } else {
-          console.log(`✅ Confirmation email sent to ${email} (${language})`)
-        }
-        return
-      }
-
-      const errorBody = await res.text()
-      const hasFallback = fromCandidates.length > 1
-      const isLastAttempt = from === fromCandidates[fromCandidates.length - 1]
-      const canRetryWithFallback = hasFallback && !isLastAttempt && isDomainNotVerifiedError(errorBody)
-      const testingRecipientBlocked = isTestingRecipientRestrictionError(errorBody)
-
-      if (canRetryWithFallback) {
-        console.warn("Resend sender domain is not verified, retrying with onboarding sender.")
-        continue
-      }
-
-      if (testingRecipientBlocked && recipient === email && recipientCandidates.length > 1) {
+    if (result.ok) {
+      if (recipient !== email) {
         console.warn(
-          "Resend account is in testing mode for this recipient. Retrying with fallback test recipient."
+          `Order confirmation could not be sent to ${email} in current Resend mode. Sent to fallback inbox ${recipient} instead.`
         )
-        break
+      } else {
+        console.log(`✅ Confirmation email sent to ${email} (${language})`)
       }
-
-      if (testingRecipientBlocked && recipient === email) {
-        console.warn(
-          "Order confirmation email was blocked by Resend testing-mode recipient restrictions. Verify a domain in Resend to send to customer emails."
-        )
-        return
-      }
-
-      console.error("Failed to send email via Resend:", errorBody)
       return
     }
+
+    if (result.testingRecipientBlocked && recipient === email && recipientCandidates.length > 1) {
+      console.warn(
+        "Resend account is in testing mode for this recipient. Retrying with fallback test recipient."
+      )
+      continue
+    }
+
+    if (result.testingRecipientBlocked && recipient === email) {
+      console.warn(
+        "Order confirmation email was blocked by Resend testing-mode recipient restrictions. Verify a domain in Resend to send to customer emails."
+      )
+      return
+    }
+
+    console.error("Failed to send email via Resend:", result.errorBody)
+    return
   }
 }
 

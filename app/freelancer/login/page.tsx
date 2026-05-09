@@ -1,41 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { useLanguage } from "../../components/LanguageProvider"
 import { setFreelancerAuth } from "@/lib/freelancerAuth"
-import { supabase } from "@/lib/supabase"
 
 export default function FreelancerLoginPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const redirectAdmin = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (!session?.access_token) {
-        return
-      }
-
-      const adminCheck = await fetch("/api/freelancers?admin=1", {
-        cache: "no-store",
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      })
-
-      if (adminCheck.ok) {
-        router.push("/admin")
-      }
-    }
-
-    void redirectAdmin()
-  }, [router])
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -59,6 +37,7 @@ export default function FreelancerLoginPage() {
 
       setFreelancerAuth({ accessToken: json.accessToken, userId: json.userId })
 
+      // Redirect to freelancer dashboard only (backend validated role)
       router.push("/freelancer/dashboard")
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Invalid email or password")
@@ -110,9 +89,10 @@ export default function FreelancerLoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-sm text-gray-600 dark:text-gray-300 flex gap-2">
-          <span>Don&apos;t have an account?</span>
-          <Link href="/freelancer/register" className="text-blue-600 dark:text-blue-400 font-semibold">Create account</Link>
+        <div className="mt-6 text-sm text-center">
+          <Link href="/forgot-password" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+            {t.forgotPassword}
+          </Link>
         </div>
       </div>
     </div>

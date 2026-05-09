@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle2, Package, CreditCard, ChevronRight, X, Loader2 } from "lucide-react"
 import { translations, type Language } from "@/locales"
-import { supabase } from "@/lib/supabase"
 import { useLanguage } from "./LanguageProvider"
 
 interface Order {
@@ -34,6 +33,19 @@ export default function SuccessModal() {
   const [order, setOrder] = useState<Order | null>(null)
   const [lang, setLang] = useState<Language>(currentLang as Language)
 
+  const fetchOrder = async (id: string) => {
+    const response = await fetch(`/api/payment/order?orderId=${encodeURIComponent(id)}`, {
+      cache: "no-store",
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const json = (await response.json().catch(() => null)) as { order?: Order } | null
+    return json?.order ?? null
+  }
+
   useEffect(() => {
     const confirmAndFetchOrder = async () => {
       setLoading(true)
@@ -60,16 +72,13 @@ export default function SuccessModal() {
         }
       }
 
-      // 2. Fetch updated order details
-      const { data } = await supabase
-        .from("project_orders")
-        .select("*")
-        .eq("id", orderId)
-        .single()
-
-      if (data) {
-        setOrder(data)
-        setLang(isLanguage(data.language) ? data.language : "en")
+      // 2. Fetch updated order details via backend API
+      if (orderId) {
+        const orderData = await fetchOrder(orderId)
+        if (orderData) {
+          setOrder(orderData)
+          setLang(isLanguage(orderData.language) ? orderData.language : "en")
+        }
       }
       setLoading(false)
     }

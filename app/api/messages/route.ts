@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/database.types"
 import { isAdminUser, requireUserFromRequest } from "@/lib/requestAuth"
+import { sendAdminNotification } from "@/lib/email/sendAdminNotification"
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -108,6 +109,24 @@ export async function POST(req: NextRequest) {
     const admin = isAdminUser(auth.user)
 
     if (!admin) {
+      const { data: freelancer, error: freelancerError } = await supabase
+        .from("freelancers")
+        .select("status")
+        .eq("user_id", auth.user.id)
+        .limit(1)
+        .maybeSingle()
+
+      if (freelancerError) {
+        return NextResponse.json({ error: freelancerError.message }, { status: 500 })
+      }
+
+      if (!freelancer || freelancer.status !== "approved") {
+        return NextResponse.json(
+          { error: "Freelancer messages are only available after approval" },
+          { status: 403 }
+        )
+      }
+
       const adminUserIds = await getAdminUserIds()
       if (!adminUserIds.includes(receiverId)) {
         return NextResponse.json({ error: "Freelancers can only message admin" }, { status: 403 })
@@ -122,6 +141,10 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    if (!admin) {
+      await sendAdminNotification({ type: "freelancer_message" })
     }
 
     return NextResponse.json({ success: true }, { status: 201 })

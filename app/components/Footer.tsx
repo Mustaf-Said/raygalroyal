@@ -1,12 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
+import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin, Building2, CreditCard, ShoppingCart } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
+import Image from "next/image"
+import { useState } from "react"
+import ContactPopup from "./ContactPopup"
 
 export default function Footer() {
   const { t, language } = useLanguage()
+  const [showContactPopup, setShowContactPopup] = useState(false)
   const year = new Date().getFullYear()
   const footerLegal = t.footer as typeof t.footer & {
     privacy?: string
@@ -41,18 +45,34 @@ export default function Footer() {
           <div className="space-y-8">
             <Link href="/" className="flex items-center gap-2 group">
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
-                  boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                }}
+                className="w-10 h-10  flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden rounded-r-full"
+              /*  style={{
+                 background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
+                 boxShadow: "0 0 16px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+                 border: "1px solid rgba(255,255,255,0.15)",
+               }} */
               >
-                <span
+                {/*     <span
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-                  style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }}
-                />
-                <span className="relative hover:rotate-360 transition-transform z-10">R</span>
+                style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))" }} 
+                  /> */}
+                <span className="relative hover:rotate-360 transition-transform z-10">
+                  <Image
+                    src="/logoB.png"
+                    alt="RaygalRoyal logo"
+                    width={36}
+                    height={36}
+                    className="hidden dark:block"
+                  />
+                  <Image
+                    src="/logoW.png"
+                    alt="RaygalRoyal logo"
+                    width={36}
+                    height={36}
+                    className="block dark:hidden"
+                  />
+
+                </span>
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-500 dark:text-white">
                 {language === "ar" ? (
@@ -127,10 +147,19 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-8">{t.footer.contact}</h3>
             <ul className="space-y-6">
-              <li className="flex items-start gap-4 text-gray-400">
+              {/* <li className="flex items-start gap-4 text-gray-400">
 
-                <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <MapPin className="w-6 h-6 text-blue-600 shrink-0" />
                 <span>{t.contact.location}</span>
+              </li> */}
+              <li className="flex items-center gap-4 text-gray-400">
+                <Mail className="w-6 h-6 text-blue-600 shrink-0" />
+                <button
+                  onClick={() => setShowContactPopup(true)}
+                  className="hover:text-blue-500 transition-colors text-left"
+                >
+                  support@raygalroyal.com
+                </button>
               </li>
               <li className="flex items-center gap-4 text-gray-400">
                 <Link
@@ -141,7 +170,7 @@ export default function Footer() {
 
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 flex-shrink-0"
+                    className="w-6 h-6 shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                     style={{ color: '#25D366' }}
@@ -151,16 +180,25 @@ export default function Footer() {
                   <span>{t.contact.mobile}</span>
                 </Link>
               </li>
-
               <li className="flex items-center gap-4 text-gray-400">
                 <Mail className="w-6 h-6 text-blue-600 shrink-0" />
-                <a
-                  href="mailto:support@raygalroyal.com"
-                  className="hover:text-blue-500 transition-colors"
+                <button
+                  onClick={() => setShowContactPopup(true)}
+                  className="hover:text-blue-500 transition-colors text-left"
                 >
-                  support@raygalroyal.com
+                  jobs@raygalroyal.com
+                </button>
+              </li>
+              <li className="flex items-start gap-4 text-gray-400">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Marklandsgatan+25,+41477+Gothenborg,+Sweden"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-4 group"
+                >
+                  <MapPin className="w-6 h-6 text-blue-600 shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <span className="group-hover:text-blue-400 transition-colors">{t.contact.location}</span>
                 </a>
-
               </li>
             </ul>
           </div>
@@ -171,11 +209,23 @@ export default function Footer() {
           <p className="text-gray-500 text-sm">
             © {year} Raygal Royal. {t.footer.rights}
           </p>
-          <div className="flex gap-8 text-sm text-gray-500">
-            <Link href="/privacy" className="hover:text-white transition-colors">
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-white text-xs font-bold bg-[#635BFF] rounded-xl px-4 py-2.5 shadow-lg shadow-[#635BFF]/30">
+              <CreditCard className="w-4 h-4" />
+              <span>Stripe</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#003087] text-xs font-bold bg-[#FFC439] rounded-xl px-4 py-2.5 shadow-lg shadow-[#FFC439]/30">
+              <ShoppingCart className="w-4 h-4" />
+              <span>PayPal</span>
+            </div>
+          </div>
+
+          <div className="flex gap-6 text-sm text-gray-500 flex-shrink-0 pr-14">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/terms-of-service" className="hover:text-white transition-colors">
               {language === "ar" ? "شروط الخدمة" : (footerLegal.terms ?? t.footer.terms)}
             </Link>
             <Link href="/cookies" className="hover:text-white transition-colors">
@@ -184,6 +234,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </footer >
+      <ContactPopup isOpen={showContactPopup} onClose={() => setShowContactPopup(false)} />
+    </footer>
   )
 }

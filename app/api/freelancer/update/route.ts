@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/database.types"
 import { requireUserFromRequest } from "@/lib/requestAuth"
+import { sendAdminNotification } from "@/lib/email/sendAdminNotification"
 
 type UpdateBody = {
   name?: string
@@ -160,6 +161,8 @@ export async function PATCH(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    await sendAdminNotification({ type: "freelancer_application" })
 
     return NextResponse.json({ success: true })
   } catch {

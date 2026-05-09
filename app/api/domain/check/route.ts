@@ -26,7 +26,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         domain: result.domain,
         availability: result.available,
+        availabilityStatus: result.availabilityStatus,
         price: result.price,
+        isPremium: result.isPremium,
+        pricingStatus: result.pricingStatus,
       })
     }
 
@@ -40,7 +43,10 @@ export async function GET(req: NextRequest) {
     const results = checks.map((item) => ({
       domain: item.domain,
       available: item.available,
+      availabilityStatus: item.availabilityStatus,
       price: item.price,
+      isPremium: item.isPremium,
+      pricingStatus: item.pricingStatus,
     }))
 
     return NextResponse.json(results)

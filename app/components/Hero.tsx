@@ -5,16 +5,27 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Play, Search } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Hero() {
   const { t } = useLanguage()
   const [domain, setDomain] = useState("")
+  const [loadVideo, setLoadVideo] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setLoadVideo(true)
+    }, 900)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [])
+
   const handleDomainSearch = () => {
-    if (!domain.trim()) return
-    router.push(`/domain-search?query=${encodeURIComponent(domain.trim())}`)
+    const nextDomain = domain.trim()
+    if (!nextDomain) return
+
+    router.push(`/domain-search?query=${encodeURIComponent(nextDomain)}`)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -30,9 +41,11 @@ export default function Hero() {
           loop
           muted
           playsInline
+          preload="none"
+          aria-hidden="true"
           className="w-full h-full object-cover opacity-40 dark:opacity-30"
         >
-          <source src="/videos/coding.mp4" type="video/mp4" />
+          {loadVideo ? <source src="/videos/coding.mp4" type="video/mp4" /> : null}
         </video>
         <div className="absolute inset-0 bg-linear-to-b from-white via-white/80 to-white dark:from-gray-950 dark:via-gray-950/80 dark:to-gray-950" />
       </div>
@@ -72,7 +85,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mb-3 max-w-xl mx-auto"
           >
-            <div className="flex items-center bg-white dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5 px-4 py-2 gap-2 transition-all focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:shadow-violet-200/40 dark:focus-within:shadow-violet-900/30 focus-within:shadow-xl">
+            <div className="flex items-center bg-white dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5 px-2 py-2 gap-2 transition-all focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:shadow-violet-200/40 dark:focus-within:shadow-violet-900/30 focus-within:shadow-xl">
               <Search className="w-5 h-5 text-violet-500 shrink-0" />
               <input
                 type="text"
@@ -80,11 +93,12 @@ export default function Hero() {
                 onChange={(e) => setDomain(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t.hero.domainPlaceholder ?? "Search for your perfect domain name..."}
-                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
+                className=" flex-1 min-w-0 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base py-1"
               />
               <button
+                aria-label="Open menu"
                 onClick={handleDomainSearch}
-                className="shrink-0 px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                className="shrink-0 px-4 sm:px-5 py-2 rounded-full text-white text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap"
                 style={{
                   background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
                   boxShadow: "0 0 16px rgba(124,58,237,0.35)",

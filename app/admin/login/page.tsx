@@ -1,10 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+import { setAdminAuth } from "@/lib/adminClientAuth"
 import { ShieldCheck, Loader2 } from "lucide-react"
-import { getFreelancerAccessToken } from "@/lib/freelancerAuth"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -13,59 +12,40 @@ export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    if (getFreelancerAccessToken()) {
-      router.push("/freelancer/dashboard")
-    }
-  }, [router])
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      // Call admin login API (backend validates role)
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession()
+      const json = (await response.json().catch(() => null)) as
+        | { error?: string; accessToken?: string; userId?: string }
+        | null
 
-        if (!session?.access_token) {
-          throw new Error("Invalid admin session")
-        }
-
-        const verifyResponse = await fetch("/api/freelancers?admin=1", {
-          cache: "no-store",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        })
-
-        if (!verifyResponse.ok) {
-          await supabase.auth.signOut()
-          throw new Error("Access denied. This account is not an admin account.")
-        }
-
-        router.push("/admin")
-      } catch (verifyError) {
-        setError(verifyError instanceof Error ? verifyError.message : "Access denied")
-        setLoading(false)
+      if (!response.ok || !json?.accessToken) {
+        throw new Error(json?.error || "Invalid email or password")
       }
+
+      setAdminAuth({ accessToken: json.accessToken, userId: json.userId })
+      router.push("/admin/orders")
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : "Invalid email or password")
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-gray-900 rounded-[32px] shadow-2xl p-10 border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-4xl shadow-2xl p-10 border border-gray-100 dark:border-gray-800">
           <div className="text-center mb-10">
             <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white mx-auto mb-6 shadow-xl shadow-blue-500/20">
               <ShieldCheck className="w-10 h-10" />

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { setFreelancerAuth } from "@/lib/freelancerAuth"
-import { supabase } from "@/lib/supabase"
+import { getAdminAccessToken } from "@/lib/adminClientAuth"
 
 type FormState = {
   name: string
@@ -25,17 +25,15 @@ export default function FreelancerRegisterPage() {
 
   useEffect(() => {
     const redirectAdmin = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+      const adminToken = getAdminAccessToken()
 
-      if (!session?.access_token) {
+      if (!adminToken) {
         return
       }
 
       const adminCheck = await fetch("/api/freelancers?admin=1", {
         cache: "no-store",
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${adminToken}` },
       })
 
       if (adminCheck.ok) {

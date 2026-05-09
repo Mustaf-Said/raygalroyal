@@ -1,28 +1,42 @@
 "use client"
 
+import { generateNamecheapAffiliateLink } from "@/lib/domain/affiliate"
+import { useLanguage } from "@/app/components/LanguageProvider"
+
 type DomainResultRowProps = {
   domain: string
   available: boolean
-  price: number
+  availabilityStatus: "available" | "taken" | "premium" | "unknown"
+  statusLabel: string
+  priceLabel: string
+  pricingTagLabel?: string
+  pricingTagTone?: "live" | "estimated" | "premium"
   isPrimary: boolean
   isSelected: boolean
-  availableLabel: string
-  unavailableLabel: string
   buyLabel: string
+  buyDisabled?: boolean
   onBuy: () => void
 }
 
 export default function DomainResultRow({
   domain,
   available,
-  price,
+  availabilityStatus,
+  statusLabel,
+  priceLabel,
+  pricingTagLabel,
+  pricingTagTone,
   isPrimary,
   isSelected,
-  availableLabel,
-  unavailableLabel,
   buyLabel,
+  buyDisabled,
   onBuy,
 }: DomainResultRowProps) {
+  const { t } = useLanguage()
+  const disableBuy = buyDisabled ?? !available
+  const showMakeOffer = availabilityStatus === "taken" || availabilityStatus === "unknown"
+  const makeOfferUrl = showMakeOffer ? generateNamecheapAffiliateLink(domain) : null
+
   return (
     <div
       className={[
@@ -43,25 +57,65 @@ export default function DomainResultRow({
               </span>
             ) : null}
           </h3>
-          <p className={available ? "text-emerald-500" : "text-red-400"}>
-            {available ? availableLabel : unavailableLabel}
+          <p
+            className={
+              availabilityStatus === "available"
+                ? "text-emerald-500"
+                : availabilityStatus === "taken"
+                  ? "text-red-400"
+                  : "text-amber-500"
+            }
+          >
+            {statusLabel}
           </p>
+          {pricingTagLabel ? (
+            <span
+              className={[
+                "inline-flex mt-2 text-[11px] px-2 py-1 rounded-full font-semibold",
+                pricingTagTone === "premium"
+                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                  : pricingTagTone === "estimated"
+                    ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+              ].join(" ")}
+            >
+              {pricingTagLabel}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 min-w-52.5">
-          <div className="text-lg font-bold text-gray-900 dark:text-white">${price}</div>
-          <button
-            disabled={!available}
-            onClick={onBuy}
-            className={[
-              "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
-              available
-                ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
-            ].join(" ")}
-          >
-            {available ? buyLabel : unavailableLabel}
-          </button>
+          {/* Price label — hidden for taken/unknown since they have no price */}
+          {!showMakeOffer && (
+            <div className="text-lg font-bold text-gray-900 dark:text-white text-right">
+              {priceLabel}
+            </div>
+          )}
+
+          {showMakeOffer && makeOfferUrl ? (
+            /* Make offer — opens Namecheap via affiliate link, commission tracked */
+            <a
+              href={makeOfferUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer ml-auto"
+            >
+              {t.domainSearch.makeOffer}
+            </a>
+          ) : (
+            <button
+              disabled={disableBuy}
+              onClick={onBuy}
+              className={[
+                "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
+                !disableBuy
+                  ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed",
+              ].join(" ")}
+            >
+              {!disableBuy ? buyLabel : statusLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>
