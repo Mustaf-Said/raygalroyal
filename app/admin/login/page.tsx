@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { setAdminAuth } from "@/lib/adminClientAuth"
+import Link from "next/link"
 import { ShieldCheck, Loader2 } from "lucide-react"
 
 export default function AdminLogin() {
@@ -98,6 +99,11 @@ export default function AdminLogin() {
         <p className="text-center mt-8 text-sm text-gray-400">
           Secure access restricted to authorized personnel only.
         </p>
+        <div className="text-center mt-4">
+          <Link href="/" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   )
