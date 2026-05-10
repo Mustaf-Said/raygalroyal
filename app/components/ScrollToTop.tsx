@@ -22,7 +22,7 @@ export default function ScrollToTop() {
     <button
       onClick={scrollUp}
       aria-label={t.common.scrollToTop}
-      className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full text-white flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+      className="fixed bottom-4 right-2 z-50 w-12 h-12 rounded-full text-white flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
       style={{
         background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
         boxShadow: "0 0 20px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",

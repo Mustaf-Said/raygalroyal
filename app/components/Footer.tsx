@@ -205,40 +205,40 @@ export default function Footer() {
         </div>
         <ScrollToTop />
         {/* BOTTOM */}
-        <div className="pt-10 pb-0 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-10 pb-3 border-t border-gray-900 flex flex-col md:flex-row justify-around items-center gap-6">
           <p className="text-gray-500 text-sm">
             © {year} Raygal Royal. {t.footer.rights}
           </p>
 
-          <div className="flex items-center gap-3 flex-wrap justify-center">
-            <span className="text-gray-500 text-xs font-semibold tracking-widest uppercase whitespace-nowrap mt-1">
+          <div className="flex items-center gap-3 flex-wrap justify-center opacity-60">
+            <span className="text-gray-500 text-xs   uppercase mt-1">
               Payments by Stripe
             </span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 ">
               {/* Visa */}
-              <div className="bg-white rounded px-2 py-0.5 h-6 flex items-center justify-center">
-                <span className="text-[#1A1F71] font-extrabold text-[11px] tracking-tight">VISA</span>
+              <div className="bg-white rounded  py-0.5 h-4 flex items-center justify-center">
+                <span className="text-[#1A1F71] font-extrabold px-1 text-[11px] tracking-tight">VISA</span>
               </div>
               {/* Mastercard */}
-              <div className="bg-[#1a1a1a] border border-gray-700 rounded px-1.5 py-0.5 h-6 flex items-center">
+              <div className="bg-[#1a1a1a] border border-gray-700 rounded px-1.5 py-0.5 h-4 flex items-center ">
                 <div className="relative flex items-center w-6">
                   <div className="w-4 h-4 rounded-full bg-[#EB001B] absolute left-0" />
                   <div className="w-4 h-4 rounded-full bg-[#F79E1B] absolute left-2 opacity-90" />
                 </div>
               </div>
               {/* Amex */}
-              <div className="bg-[#2E77BC] rounded px-2 py-0.5 h-6 flex items-center justify-center">
+              <div className="bg-[#2E77BC] rounded px-1 py-0.5 h-4 flex items-center justify-center">
                 <span className="text-white font-bold text-[9px] tracking-tight">AMEX</span>
               </div>
               {/* PayPal */}
-              <div className="bg-white rounded px-2 py-0.5 h-6 flex items-center justify-center gap-0">
-                <span className="text-[#003087] font-extrabold text-[10px]">Pay</span>
-                <span className="text-[#009CDE] font-extrabold text-[10px]">Pal</span>
+              <div className="bg-white rounded px-1 py-0.5 h-4 flex items-center justify-center gap-0">
+                <span className="text-[#003087] font-extrabold text-[9px]">Pay</span>
+                <span className="text-[#009CDE] font-extrabold text-[9px]">Pal</span>
               </div>
             </div>
           </div>
 
-          <div className="flex gap-6 text-sm text-gray-500 shrink-0">
+          <div className="flex gap-3 text-sm text-gray-500 shrink-0">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               {footerLegal.privacy ?? t.footer.privacy}
             </Link>
