@@ -203,6 +203,16 @@ const arOverrides = {
       startCheckout: "تعذر بدء عملية الدفع",
       retry: "تعذر بدء عملية الدفع. يرجى المحاولة مرة أخرى.",
     },
+    discount: {
+      regular_label: "السعر الاعتيادي",
+      toggle_label: "وفر 25%",
+      badge: "عرض محدود",
+      save_text: "توفر {amount}",
+      discount_applied: "تم تطبيق خصم 25%",
+      cta_discount: "احصل على خصم 25% الآن",
+      enterprise_badge: "سيتم تطبيق خصم 25%",
+      enterprise_cta: "احصل على خصم 25% — تواصل معنا",
+    },
   },
   team: {
     title: "تعرّف على الخبراء",

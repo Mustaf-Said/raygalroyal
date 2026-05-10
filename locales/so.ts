@@ -203,6 +203,16 @@ const so = {
       startCheckout: "Lama bilaabi karin lacag-bixinta",
       retry: "Lama bilaabi karin lacag-bixinta. Fadlan mar kale isku day.",
     },
+    discount: {
+      regular_label: "Qiimaha Caadiga ah",
+      toggle_label: "Badbaadi 25%",
+      badge: "Heshiis Xaddidan",
+      save_text: "Waxaad badbaadinaysaa {amount}",
+      discount_applied: "Qiimo dhac 25% ayaa la dabaqay",
+      cta_discount: "Hel 25% Dhimis Hadda",
+      enterprise_badge: "Qiimo dhac 25% ayaa la dabaqayaa",
+      enterprise_cta: "Hel 25% Dhimis — Nala Xiriir",
+    },
   },
   team: {
     title: "La Kulma Khubarada",
