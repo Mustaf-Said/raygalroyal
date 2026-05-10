@@ -232,7 +232,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           {/* ADMIN BUTTON */}
           {!authRole ? (
-            <div className="relative" ref={authMenuRef}>
+            <div className="relative hidden lg:block" ref={authMenuRef}>
               <button
                 aria-label="Open menu"
                 onClick={() => setAuthMenuOpen((prev) => !prev)}
