@@ -203,6 +203,16 @@ const en = {
       startCheckout: "Unable to start checkout",
       retry: "Unable to start checkout. Please try again.",
     },
+    discount: {
+      regular_label: "Regular Price",
+      toggle_label: "Save 25%",
+      badge: "Limited Offer",
+      save_text: "You save {amount}",
+      discount_applied: "25% discount applied",
+      cta_discount: "Get 25% Off Now",
+      enterprise_badge: "25% discount will be applied",
+      enterprise_cta: "Get 25% Off — Contact Us",
+    },
   },
   team: {
     title: "Meet the Experts",
