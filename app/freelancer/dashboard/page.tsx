@@ -204,7 +204,7 @@ export default function FreelancerDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 flex items-center justify-center text-gray-500">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 pt-20 flex items-center justify-center text-gray-500">
         <Loader2 className="w-7 h-7 animate-spin" />
       </div>
     )
@@ -212,7 +212,7 @@ export default function FreelancerDashboardPage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 flex items-center justify-center text-gray-500">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 pt-20 flex items-center justify-center text-gray-500">
         Freelancer profile not found.
       </div>
     )
@@ -221,7 +221,7 @@ export default function FreelancerDashboardPage() {
   const isApprovedProfile = profile.status === "approved"
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 pt-20">
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-xl p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>

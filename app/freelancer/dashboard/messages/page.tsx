@@ -134,7 +134,7 @@ export default function FreelancerMessagesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 pt-20">
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-xl p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Messages</h1>

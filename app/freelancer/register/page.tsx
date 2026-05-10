@@ -86,7 +86,7 @@ export default function FreelancerRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 flex items-center justify-center">
+    <div className="min-h-[calc(100vh-5rem)] mt-20 bg-gray-50 dark:bg-gray-950 p-6 flex items-center justify-center">
       <div className="w-full max-w-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-xl p-8 md:p-10">
         <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Freelancer Registration</h1>
         <p className="text-gray-500 mb-8">Create your freelancer account, then complete your application from the dashboard.</p>
