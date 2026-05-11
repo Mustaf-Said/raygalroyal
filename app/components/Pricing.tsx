@@ -347,7 +347,7 @@ export default function Pricing() {
             {t.pricing.discount.toggle_label}
           </span>
 
-          <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide animate-pulse">
+          <span className="bg-blue-600 text-center text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide animate-pulse">
             {t.pricing.discount.badge}
           </span>
         </div>
