@@ -118,10 +118,10 @@ export default function Header() {
       ]
     },
     { name: t.nav.projects, href: "/projects" },
-    { name: t.nav.team, href: "/team" },
     { name: t.nav.pricing, href: "/pricing" },
+    { name: t.nav.contact, href: "/contact" },
     /*  { name: t.nav.faq, href: "/faq" },
-     { name: t.nav.contact, href: "/contact" }, */
+     { name: t.nav.team, href: "/team" }, */
   ]
 
   const ActiveLanguageFlag = languageFlags[language]
