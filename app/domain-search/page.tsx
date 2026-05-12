@@ -195,7 +195,10 @@ function DomainSearchContent() {
 
   const handleSearch = () => {
     const nextQuery = searchInput.trim()
-    if (!nextQuery) return
+    if (!nextQuery) {
+      setError(copy.invalid)
+      return
+    }
 
     router.push(`/domain-search?query=${encodeURIComponent(nextQuery)}`)
   }
@@ -214,7 +217,7 @@ function DomainSearchContent() {
 
   useEffect(() => {
     if (!query) {
-      setError(copy.invalid)
+      setError(null)
       setResults([])
       setAiSuggestions([])
       setSelectedDomain(null)
@@ -336,9 +339,11 @@ function DomainSearchContent() {
 
         <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2">{copy.title}</h1>
-          <p className="text-base text-gray-600 dark:text-gray-400 mb-4">
-            {copy.subtitle} <span className="font-bold text-gray-900 dark:text-white">&quot;{query}&quot;</span>
-          </p>
+          {query && (
+            <p className="text-base text-gray-600 dark:text-gray-400 mb-4">
+              {copy.subtitle} <span className="font-bold text-gray-900 dark:text-white">&quot;{query}&quot;</span>
+            </p>
+          )}
 
           <SearchBar
             value={searchInput}
@@ -455,7 +460,7 @@ function DomainSearchContent() {
           </div>
         )}
 
-        {!loading && !error && results.length === 0 && (
+        {!loading && !error && !!query && results.length === 0 && (
           <div className="text-center text-gray-500 dark:text-gray-400">{copy.noResults}</div>
         )}
 
@@ -517,7 +522,7 @@ function DomainSearchContent() {
         </AnimatePresence>
 
         {/* MAIN GRID */}
-        {loading ? null : (
+        {!loading && !!query && (
           <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)] gap-8 items-start">
             <div>
               <div className="flex items-center justify-between mb-4 px-1">
