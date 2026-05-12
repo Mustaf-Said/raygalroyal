@@ -3,20 +3,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   turbopack: {},
-  /*   async redirects() {
-     return [
-       {
-         source: "/en",
-         destination: "/",
-         permanent: true,
-       },
-       {
-         source: "/en/:path*",
-         destination: "/:path*",
-         permanent: true,
-       },
-     ];
-   }, */
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "raygalroyal.com" }],
+        destination: "https://www.raygalroyal.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

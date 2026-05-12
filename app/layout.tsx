@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications with multilingual support.",
 
-  metadataBase: new URL("https://raygalroyal.com"),
+  metadataBase: new URL("https://www.raygalroyal.com"),
 
   verification: {
     other: {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "Raygal Royal | Digital Solutions Agency",
     description:
       "Raygal Royal is a professional digital agency specializing in modern, high-performance web and mobile applications.",
-    url: "https://raygalroyal.com",
+    url: "https://www.raygalroyal.com",
     siteName: "Raygal Royal",
     type: "website",
     images: [

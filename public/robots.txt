@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /team
+
+Sitemap: https://www.raygalroyal.com/sitemap.xml
