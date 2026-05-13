@@ -28,11 +28,11 @@ export default function SearchBar({
             if (e.key === "Enter") onSearch()
           }}
           placeholder={placeholder}
-          className="flex-1 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 min-h-10"
+          className="flex-1 min-w-0 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 min-h-10"
         />
         <button
           onClick={onSearch}
-          className="px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm md:text-base font-semibold hover:bg-blue-500 transition-colors cursor-pointer"
+          className="shrink-0 px-3 md:px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm md:text-base font-semibold hover:bg-blue-500 transition-colors cursor-pointer whitespace-nowrap"
         >
           {buttonLabel}
         </button>
