@@ -1,4 +1,5 @@
-import "../styles/globals.css";
+// @ts-expect-error CSS imports are handled by Next.js
+import "../styles/globals.css"
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { LanguageProvider } from "./components/LanguageProvider";
