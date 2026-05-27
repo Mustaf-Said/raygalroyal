@@ -6,6 +6,7 @@ const so = {
     projects: "Mashaariic",
     team: "Kooxda",
     pricing: "Qiimaha",
+    about: "Nagu Saabsan",
     faq: "Su'aalaha",
     contact: "Xiriir",
     startProject: "Bilow Mashruuc",

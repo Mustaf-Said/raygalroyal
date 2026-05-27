@@ -7,6 +7,7 @@ const arOverrides = {
     projects: "المشاريع",
     team: "الفريق",
     pricing: "الأسعار",
+    about: "من نحن",
     faq: "الأسئلة الشائعة",
     contact: "اتصل بنا",
     startProject: "ابدأ مشروعك",

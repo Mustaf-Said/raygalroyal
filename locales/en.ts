@@ -6,6 +6,7 @@ const en = {
     projects: "Projects",
     team: "Team",
     pricing: "Pricing",
+    about: "About",
     faq: "FAQ",
     contact: "Contact",
     startProject: "Start a Project",

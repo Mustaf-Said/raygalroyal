@@ -26,7 +26,7 @@ export default function AboutPage() {
               {t.about.badge}
             </span>
             <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 leading-tight">
-              {t.about.titlePrefix} <span className="text-blue-600">Raygal Royal</span>
+              {t.about.titlePrefix} <span className="text-blue-800">Raygal Royal</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
               {t.about.descriptionOne}
@@ -45,7 +45,7 @@ export default function AboutPage() {
               const Icon = value.icon
 
               return (
-                <div key={i} className="p-8 bg-gray-50 dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 transition-all">
+                <div key={i} className="p-8 bg-gray-50 dark:bg-gray-900 rounded-4xl border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 transition-all">
                   <Icon className="w-10 h-10 text-blue-600 mb-6" />
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
                   <p className="text-sm text-gray-500">{value.desc}</p>
@@ -56,7 +56,7 @@ export default function AboutPage() {
         </div>
 
         {/* MISSION SECTION */}
-        <div className="bg-blue-600 rounded-[60px] p-12 md:p-24 text-center text-white relative overflow-hidden">
+        <div className="rounded-[60px] p-12 md:p-24 text-center text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #2563eb, #c026d3)" }}>
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-black mb-10">{t.about.missionTitle}</h2>
