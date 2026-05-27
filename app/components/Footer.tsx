@@ -25,6 +25,7 @@ export default function Footer() {
     { label: t.nav.projects, href: "/projects" },
     { label: t.nav.team, href: "/team" },
     { label: t.nav.pricing, href: "/pricing" },
+    { label: t.nav.about, href: "/about" },
   ]
 
   const socialLinks = [
@@ -77,11 +78,11 @@ export default function Footer() {
               <span className="text-xl font-bold tracking-tight text-gray-500 dark:text-white">
                 {language === "ar" ? (
                   <>
-                    رايغال <span className="text-blue-600">رويال</span>
+                    رايغال <span className="text-blue-800">رويال</span>
                   </>
                 ) : (
                   <>
-                    Raygal<span className="text-blue-600">Royal</span>
+                    Raygal<span className="text-blue-800">Royal</span>
                   </>
                 )}
               </span>
