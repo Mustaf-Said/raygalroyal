@@ -157,7 +157,7 @@ export default function Footer() {
                 <Mail className="w-6 h-6 text-blue-600 shrink-0" />
                 <button
                   onClick={() => setShowContactPopup(true)}
-                  className="hover:text-blue-500 transition-colors text-left"
+                  className="hover:text-blue-500 transition-colors text-left cursor-pointer"
                 >
                   support@raygalroyal.com
                 </button>
@@ -185,7 +185,7 @@ export default function Footer() {
                 <Mail className="w-6 h-6 text-blue-600 shrink-0" />
                 <button
                   onClick={() => setShowContactPopup(true)}
-                  className="hover:text-blue-500 transition-colors text-left"
+                  className="hover:text-blue-500 transition-colors text-left cursor-pointer"
                 >
                   jobs@raygalroyal.com
                 </button>
