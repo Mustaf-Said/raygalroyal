@@ -238,7 +238,7 @@ export default function Header() {
               <button
                 aria-label="Open menu"
                 onClick={() => setAuthMenuOpen((prev) => !prev)}
-                className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                 title="Logins"
                 aria-haspopup="menu"
                 aria-expanded={authMenuOpen}
@@ -289,7 +289,7 @@ export default function Header() {
           <button
             aria-label="Open menu"
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+            className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={t.toggle.theme}
           >
             {
@@ -302,7 +302,7 @@ export default function Header() {
             <button
               aria-label="Open menu"
               onClick={() => setLanguageMenuOpen((prev) => !prev)}
-              className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+              className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors cursor-pointer"
               title={t.toggle.label}
               aria-haspopup="menu"
               aria-expanded={languageMenuOpen}
@@ -355,7 +355,7 @@ export default function Header() {
           <button
             aria-label="Open menu"
             onClick={() => openOrderModal()}
-            className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group"
+            className="hidden sm:block relative px-5 py-2.5 text-white text-sm font-black rounded-full transition-all duration-300 active:scale-95 overflow-hidden group cursor-pointer"
             style={{
               background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 60%, #c026d3 100%)",
               boxShadow: "0 0 20px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",

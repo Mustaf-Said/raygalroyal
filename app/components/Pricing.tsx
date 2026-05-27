@@ -257,7 +257,7 @@ export default function Pricing() {
             void handleCheckout(plan.key)
           }}
           disabled={(isSupportPlan && supportLoading) || checkoutLoading === plan.key}
-          className="w-full py-2.5 rounded-xl font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-60 disabled:pointer-events-none relative overflow-hidden group"
+          className="w-full py-2.5 rounded-xl font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-60 disabled:pointer-events-none relative overflow-hidden group cursor-pointer"
           style={plan.popular ? {
             background: "rgba(255,255,255,0.95)",
             color: "#0f0c29",
@@ -330,7 +330,7 @@ export default function Pricing() {
             aria-checked={discountActive}
             onClick={() => setDiscountActive(v => !v)}
             className={cn(
-              "relative w-14 h-7 rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500",
+              "relative w-14 h-7 rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer",
               discountActive ? "bg-blue-600 border-blue-600" : "bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-600"
             )}
           >
