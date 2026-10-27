@@ -33,8 +33,8 @@ const projects = [
     logo: "/flag.png",
     logoContainer: "w-18 h-12 rounded-full",
     textColor: "text-green-700",
-    status: "inProgress" as const,
-    link: "",
+    status: "live" as const,
+    link: "https://somaliland.nu/",
   },
 ]
 
