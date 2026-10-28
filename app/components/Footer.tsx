@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { FacebookIcon, TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
+import {/*  FacebookIcon, */ TwitterIcon, LinkedinIcon, GithubIcon, Mail, MapPin } from "lucide-react"
 import { useLanguage } from "./LanguageProvider"
 import ScrollToTop from "./ScrollToTop"
 import Image from "next/image"
@@ -29,7 +29,7 @@ export default function Footer() {
   ]
 
   const socialLinks = [
-    { Icon: FacebookIcon, href: "https://www.facebook.com/mustfa99/", label: "Facebook" },
+    /*  { Icon: FacebookIcon, href: "https://www.facebook.com/mustfa99/", label: "Facebook" }, */
     { Icon: TwitterIcon, href: "https://x.com/MR4273083817955", label: "Twitter/X" },
     { Icon: LinkedinIcon, href: "https://www.linkedin.com/in/mustafa-said-b6b164198/", label: "LinkedIn" },
     { Icon: GithubIcon, href: "https://github.com/Mustaf-Said", label: "GitHub" },

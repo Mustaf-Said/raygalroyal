@@ -21,7 +21,7 @@ export default function RootPage() {
       <Guarantee />
       <Team />
       <Pricing />
-      <PaymentIntegration />
+      {/*   <PaymentIntegration /> */}
       <FAQ />
       <Contact />
     </>

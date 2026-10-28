@@ -16,7 +16,7 @@ const projects = [
     status: "live" as const,
     link: "https://www.sahal.one",
   },
-  {
+  /* {
     name: "PodManager.AI",
     badgeKey: "internship" as const,
     descriptionKey: "podmanagerDescription" as const,
@@ -25,7 +25,7 @@ const projects = [
     textColor: "text-orange-500",
     status: "live" as const,
     link: "https://podmanager.ai/",
-  },
+  }, */
   {
     name: "Somaliland.nu",
     badgeKey: "governmentPlatform" as const,
@@ -52,7 +52,7 @@ export default function PaymentIntegration() {
           <p className="text-xl text-gray-600 dark:text-gray-400">{p.sectionSubtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {projects.map(({ name, badgeKey, descriptionKey, logo, logoContainer, textColor, status, link }, index) => (
             <motion.div
               key={name}

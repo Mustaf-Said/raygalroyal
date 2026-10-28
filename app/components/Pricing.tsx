@@ -294,7 +294,7 @@ export default function Pricing() {
   }
 
   return (
-    <section id="pricing" className="py-20 bg-white dark:bg-gray-950 overflow-hidden">
+    <section id="pricing" className="py-20 mb-5 bg-white dark:bg-gray-950 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <motion.h2
