@@ -191,7 +191,7 @@ export default function Footer() {
                 </button>
               </li>
               <li className="flex items-start gap-4 text-gray-400">
-                <a
+                {/*  <a
                   href="https://www.google.com/maps/search/?api=1&query=Marklandsgatan+25,+41477+Gothenborg,+Sweden"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -199,7 +199,7 @@ export default function Footer() {
                 >
                   <MapPin className="w-6 h-6 text-blue-600 shrink-0 group-hover:text-blue-400 transition-colors" />
                   <span className="group-hover:text-blue-400 transition-colors">{t.contact.location}</span>
-                </a>
+                </a> */}
               </li>
             </ul>
           </div>

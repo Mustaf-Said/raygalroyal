@@ -7,7 +7,7 @@ import { useLanguage } from "./LanguageProvider"
 import { useModals } from "./ModalProvider"
 import { cn } from "@/lib/utils"
 
-const PRICES = { basic: 699, pro: 1599 }
+const PRICES = { basic: 1499, pro: 2999 }
 
 const formatPrice = (n: number) => n.toLocaleString('en-US')
 const getDiscounted = (base: number) => Math.round(base * 0.75)
@@ -214,6 +214,7 @@ export default function Pricing() {
                 )}>
                   {discountActive ? formatPrice(getDiscounted(basePrice)) : formatPrice(basePrice)}
                 </span>
+
               </div>
               {discountActive && (
                 <p className="text-green-400 text-xs font-semibold mt-1 animate-fade-in">

@@ -158,15 +158,15 @@ export default function Team() {
             </motion.p>
           </div>
 
-          <div className="flex justify-end mb-6">
+          {/*  <div className="flex justify-end mb-6">
             <Link
               href="/freelancers"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-950 dark:bg-blue-600 text-white font-semibold hover:opacity-90 transition-opacity"
             >
               {defaultApplyText.seeMoreFreelancers} <span aria-hidden="true">&rarr;</span>
             </Link>
-          </div>
-
+          </div> */}
+          {/* 
           {membersLoading ? (
             <div className="text-center text-gray-600 dark:text-gray-400 mb-10">{defaultApplyText.loadingTeam}</div>
           ) : displayedMembers.length > 0 ? (
@@ -202,7 +202,7 @@ export default function Team() {
             </div>
           ) : (
             <div className="text-center text-gray-600 dark:text-gray-400 mb-10">{defaultApplyText.noFreelancers}</div>
-          )}
+          )} */}
 
           {/* JOIN THE TEAM CTA */}
           <motion.div
